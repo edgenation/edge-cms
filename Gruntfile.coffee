@@ -1,5 +1,7 @@
 module.exports = (grunt) ->
     require("load-grunt-tasks")(grunt)
+
+    minifyify = require "minifyify"
     
     grunt.initConfig
         pkg: grunt.file.readJSON "package.json"
@@ -38,6 +40,22 @@ module.exports = (grunt) ->
                 options:
                     reporter: "travis-cov"
                 src: ["test/tdd/**/*.coffee"]
+
+
+        browserify:
+            dist:
+                options:
+                    transform: ["coffeeify"]
+                    browserifyOptions:
+                        extensions: [".coffee"]
+                        debug: true
+                    preBundleCB: (b) ->
+                        b.plugin minifyify,
+                            output: "dist/edge-cms.min.map.json"
+                            map: "edge-cms.min.map.json"
+                            compressPath: ""
+                files:
+                    "dist/edge-cms.min.js": ["src/CMS.coffee"]
 
 
         watch:

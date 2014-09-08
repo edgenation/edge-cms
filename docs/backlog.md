@@ -2,7 +2,6 @@
 
 ## Current
 - Helper to create a default express app
-- Grunt generates dist folder
 - Create example app using edge-cms, in separate repository
 - Define high level modules for CMS
 - Define directory layout
@@ -22,3 +21,4 @@
 ## Done
 - Create the CMS core class
 - Add CMS to existing express app
+- Grunt generates dist folder
