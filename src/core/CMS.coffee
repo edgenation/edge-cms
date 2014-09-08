@@ -1,7 +1,7 @@
 express = require "express"
 
 class CMS
-    constructor: (@app) ->
+    init: (@app) ->
         if not @app then @createApp()
 
     createApp: ->

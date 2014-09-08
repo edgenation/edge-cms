@@ -10,30 +10,36 @@ CMS = require "../../src/core/CMS"
 mockery.deregisterMock "express"
 
 describe "CMS", ->
+    cms = null
+    beforeEach -> cms = new CMS
+    afterEach -> cms = null
+
     describe "constructor", ->
-        beforeEach -> sinon.stub CMS.prototype, "createApp"
-        afterEach -> CMS.prototype.createApp.restore()
-        
         it "is a function", -> (typeof CMS).should.equal "function"
-        it "is instantiable", -> (new CMS).should.be.ok
+        it "is instantiable", -> cms.should.be.ok
+
+
+    describe "init", ->
+        beforeEach -> sinon.stub cms, "createApp"
+        afterEach -> cms.createApp.restore()
+
         it "uses the express app given", ->
             app = {id: 1}
-            cms = new CMS(app)
+            cms.init app
             cms.app.should.equal app
         it "creates a default express app", ->
-            cms = new CMS()
-            CMS.prototype.createApp.should.have.been.called
+            cms.init()
+            cms.createApp.should.have.been.called
 
 
     describe "createApp", ->
         it "creates an express app", ->
-            cms = new CMS({})
             cms.createApp()
             cms.app.should.equal express
 
 
     describe "start", ->
         it "listens on port 3000", ->
-            cms = new CMS express
+            cms.init express
             cms.start()
             express.listen.should.have.been.called
