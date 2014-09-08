@@ -1,10 +1,3 @@
-###
-CMS = proxyquire "../../src/CMS", {
-    express: {}
-    }
-###
-#CMS = require "../../src/CMS"
-
 express = { listen: sinon.spy() }
 mockery.registerMock "express", sinon.stub().returns express
 
@@ -12,7 +5,7 @@ mockery.enable
     warnOnReplace: false,
     warnOnUnregistered: false
 
-CMS = require "../../src/CMS"
+CMS = require "../../src/core/CMS"
 
 mockery.deregisterMock "express"
 
@@ -30,8 +23,8 @@ describe "CMS", ->
         it "creates a default express app", ->
             cms = new CMS()
             CMS.prototype.createApp.should.have.been.called
-            
-    
+
+
     describe "createApp", ->
         it "creates an express app", ->
             cms = new CMS({})

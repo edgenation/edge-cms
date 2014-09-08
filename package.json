@@ -47,10 +47,9 @@
     "load-grunt-tasks": "^0.6.0",
     "minifyify": "^4.1.1",
     "mocha": "^1.21.4",
-    "proxyquire": "^1.0.1",
     "sinon": "^1.10.3",
     "sinon-chai": "^2.5.0",
-    "travis-cov": "^0.2.5", 
+    "travis-cov": "^0.2.5",
     "coffee-script": "~1.8.0",
     "mockery": "^1.4.0"
   },

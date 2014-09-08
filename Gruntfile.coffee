@@ -17,6 +17,9 @@ module.exports = (grunt) ->
             tests:
                 files:
                     src: ["test/**/*.coffee"]
+            backend:
+                files:
+                    src: ["src/**/*.coffee"]
 
 
         # Backend tests
@@ -55,7 +58,7 @@ module.exports = (grunt) ->
                             map: "edge-cms.min.map.json"
                             compressPath: ""
                 files:
-                    "dist/edge-cms.min.js": ["src/CMS.coffee"]
+                    "dist/edge-cms.min.js": ["src/index.coffee"]
 
 
         watch:
