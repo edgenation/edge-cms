@@ -50,7 +50,12 @@
     "proxyquire": "^1.0.1",
     "sinon": "^1.10.3",
     "sinon-chai": "^2.5.0",
-    "travis-cov": "^0.2.5",
-    "coffee-script": "~1.8.0"
+    "travis-cov": "^0.2.5", 
+    "coffee-script": "~1.8.0",
+    "mockery": "^1.4.0"
+  },
+  "dependencies": {
+    "express": "^4.8.8",
+    "jade": "^1.6.0"
   }
 }

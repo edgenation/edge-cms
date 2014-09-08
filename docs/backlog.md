@@ -1,6 +1,7 @@
 # Backlog
 
 ## Current
+- Login route
 - Helper to create a default express app
 - Create example app using edge-cms, in separate repository
 - Define high level modules for CMS
