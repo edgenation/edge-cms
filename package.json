@@ -10,9 +10,22 @@
   "scripts": {
     "test": "grunt test"
   },
+  "config": {
+    "blanket": {
+      "pattern": "src",
+      "loader": "./node-loaders/coffee-script",
+      "data-cover-never": "node_modules"
+    },
+    "travis-cov": {
+      "threshold": 90
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/edgenation/edge-cms.git"
+  },
+  "engines": {
+    "node": "0.10.x"
   },
   "author": "Chris Sheppard",
   "license": "GPL",
@@ -21,10 +34,19 @@
   },
   "homepage": "https://github.com/edgenation/edge-cms",
   "devDependencies": {
+    "blanket": "^1.1.6",
+    "chai": "^1.9.1",
     "coffeelint": "^1.6.0",
     "grunt": "^0.4.5",
     "grunt-coffeelint": "0.0.13",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-mocha-test": "^0.11.0",
     "grunt-newer": "^0.7.0",
-    "load-grunt-tasks": "^0.6.0"
+    "load-grunt-tasks": "^0.6.0",
+    "mocha": "^1.21.4",
+    "proxyquire": "^1.0.1",
+    "sinon": "^1.10.3",
+    "sinon-chai": "^2.5.0",
+    "travis-cov": "^0.2.5"
   }
 }
