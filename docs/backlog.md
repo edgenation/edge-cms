@@ -1,8 +1,6 @@
 # Backlog
 
 ## Current
-- Create the CMS core class
-- Add CMS to existing express app
 - Helper to create a default express app
 - Grunt generates dist folder
 - Create example app using edge-cms, in separate repository
@@ -18,3 +16,9 @@
 - Users
 - Pages
 - Blog, posts & comments
+
+---------------------------------------
+
+## Done
+- Create the CMS core class
+- Add CMS to existing express app
