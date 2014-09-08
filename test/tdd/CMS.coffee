@@ -5,7 +5,7 @@ mockery.enable
     warnOnReplace: false,
     warnOnUnregistered: false
 
-CMS = require "../../src/core/CMS"
+CMS = require "../../src/core/cms"
 
 mockery.deregisterMock "express"
 

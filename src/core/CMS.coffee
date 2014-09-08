@@ -11,4 +11,9 @@ class CMS
         server = @app.listen 3000, ->
             console.log("Listening on port %d", server.address().port);
 
+    use: (middleware) -> middleware @
+
+    configure: ->
+
+
 module.exports = CMS

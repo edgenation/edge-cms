@@ -1,2 +1,3 @@
 module.exports =
-    CMS: require "./core/CMS"
+    CMS: require "./core/cms"
+    Log: require "./core/log"
