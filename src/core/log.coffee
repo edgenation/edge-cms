@@ -1,6 +1,6 @@
 chalk = require "chalk"
 moment = require "moment"
-logSymbols = require "log-symbols"
+symbols = require "log-symbols"
 
 
 Log =
@@ -9,10 +9,10 @@ Log =
         console.log chalk.gray("[" + date + "]") + " " + message
 
     debug: (message) -> Log.log chalk.dim(message)
-    success: (message) -> Log.log logSymbols.success + " " + chalk.green(message)
-    info: (message) -> Log.log logSymbols.info + " " + chalk.blue(message)
-    warn: (message) -> Log.log logSymbols.warning + " " + chalk.yellow(message)
-    error: (message) -> Log.log logSymbols.error + " " + chalk.red(message)
+    success: (message) -> Log.log symbols.success + " " + chalk.green(message)
+    info: (message) -> Log.log symbols.info + " " + chalk.blue(message)
+    warn: (message) -> Log.log symbols.warning + " " + chalk.yellow(message)
+    error: (message) -> Log.log symbols.error + " " + chalk.red(message)
 
 
 module.exports = Log

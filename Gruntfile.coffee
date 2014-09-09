@@ -68,4 +68,4 @@ module.exports = (grunt) ->
             
     grunt.registerTask "test", ["newer:coffeelint", "mochaTest"]
     grunt.registerTask "build", ["browserify"]
-    grunt.registerTask "default", ["test"]
+    grunt.registerTask "default", ["test", "build"]
