@@ -45,6 +45,16 @@ module.exports = (grunt) ->
                 src: ["test/tdd/**/*.coffee"]
 
 
+        coffee:
+            dist:
+                expand: true
+                flatten: false
+                cwd: "src"
+                src: ["**/*.coffee"]
+                dest: "lib"
+                ext: ".js"
+
+        # Should be used for frontend code
         browserify:
             dist:
                 options:
