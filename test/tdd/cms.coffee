@@ -1,13 +1,8 @@
 express = { listen: sinon.spy() }
-mockery.registerMock "express", sinon.stub().returns express
 
-mockery.enable
-    warnOnReplace: false,
-    warnOnUnregistered: false
+CMS = proxyquire "../src/core/cms",
+    express: sinon.stub().returns express
 
-CMS = require "../../src/core/cms"
-
-mockery.deregisterMock "express"
 
 describe "CMS", ->
     cms = null
@@ -43,3 +38,15 @@ describe "CMS", ->
             cms.init express
             cms.start()
             express.listen.should.have.been.called
+            
+        
+    describe "use", ->
+        mockMiddleware = null
+        
+        beforeEach ->
+            mockMiddleware = sinon.stub().returns 12
+        it "calls the middleware function", ->
+            cms.use mockMiddleware
+            mockMiddleware.should.have.been.calledWith cms
+        it "returns the middleware result", ->
+            cms.use(mockMiddleware).should.equal 12

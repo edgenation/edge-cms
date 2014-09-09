@@ -74,8 +74,9 @@ module.exports = (grunt) ->
         watch:
             backend:
                 files: ["src/**/*.coffee", "test/tdd/**/*.coffee"]
-                tasks: ["test"]
-            
+                tasks: ["test", "build"]
+
+
     grunt.registerTask "test", ["newer:coffeelint", "mochaTest"]
-    grunt.registerTask "build", ["browserify"]
+    grunt.registerTask "build", ["newer:coffee"]
     grunt.registerTask "default", ["test", "build"]

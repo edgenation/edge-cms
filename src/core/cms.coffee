@@ -1,5 +1,7 @@
 express = require "express"
 
+Log = require "./log"
+
 class CMS
     init: (@app) ->
         if not @app then @createApp()
@@ -9,7 +11,7 @@ class CMS
 
     start: ->
         server = @app.listen 3000, ->
-            console.log("Listening on port %d", server.address().port);
+            Log.success "Listening on port " + server.address().port
 
     use: (middleware) -> middleware @
 
