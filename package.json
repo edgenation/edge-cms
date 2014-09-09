@@ -54,9 +54,10 @@
     "mockery": "^1.4.0"
   },
   "dependencies": {
+    "chalk": "~0.5.1",
     "express": "^4.8.8",
     "jade": "^1.6.0",
-    "chalk": "~0.5.1",
+    "log-symbols": "^1.0.0",
     "moment": "~2.8.3"
   }
 }
