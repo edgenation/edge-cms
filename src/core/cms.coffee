@@ -1,23 +1,24 @@
 express = require "express"
 
-Log = require "./log"
+MultiViews = require "./multi-views"
 
 class CMS
-    constructor: (@config) ->
+    setConfig: (@config) ->
 
-    init: (@app) ->
-        if not @app then @createApp()
 
-    createApp: ->
-        @app = express()
+    setApp: (@app) ->
+        # Enable multiple view directories
+        MultiViews @app
+        @app.set "views", [
+            @config.get("views")        # Client app views
+            "#{__dirname}/../views"     # CMS core views
+        ]
 
-    start: ->
-        server = @app.listen 3000, ->
-            Log.success "Listening on port " + server.address().port
+        # Admin assets
+        @app.use express["static"] "/admin/assets", "#{__dirname}/../public"
+
 
     use: (middleware) -> middleware @
-
-    configure: ->
 
 
 module.exports = CMS

@@ -22,9 +22,19 @@ module.exports = (configDirectory) ->
                 default: "mongodb://127.0.0.1/edge-cms-example"
                 env: "MONGO_URL"
         name:
-            doc: "The application name"
+            doc: "The application name."
             format: String
             default: "EdgeCMS"
+        "cookie-secret-key":
+            doc: "A secret key for cookies."
+            format: String
+            default: "secret-key"
+        views:
+            doc: "The views directory of the app"
+            format: String
+        public:
+            doc: "The public directory of the app"
+            format: String
 
     # Load environment dependent configuration
     env = conf.get "env"

@@ -1,50 +1,48 @@
-express = { listen: sinon.spy() }
+expressApp =
+    get: sinon.spy()
+    set: sinon.spy()
+    use: sinon.spy()
+
+express = sinon.stub().returns expressApp
+express.static = sinon.stub().returns "static"
+
+multiViews = sinon.spy()
 
 CMS = proxyquire "../src/core/cms",
-    express: sinon.stub().returns express
+    "./multi-views": multiViews
+    express: express
 
 
 describe "CMS", ->
     cms = null
-    mockConfig = {}
-    beforeEach -> cms = new CMS(mockConfig)
+    mockConfig = get: sinon.stub().returnsArg 0
+    beforeEach -> cms = new CMS()
     afterEach -> cms = null
 
     describe "constructor", ->
         it "is a function", -> (typeof CMS).should.equal "function"
         it "is instantiable", -> cms.should.be.ok
-        it "sets the config", -> cms.config.should.equal mockConfig
 
+    describe "setConfig", ->
+        it "sets the config", ->
+            cms.setConfig mockConfig
+            cms.config.should.equal mockConfig
 
-    describe "init", ->
-        beforeEach -> sinon.stub cms, "createApp"
-        afterEach -> cms.createApp.restore()
+    # TODO: ./multi-views does not seem to be getting mocked by proxyquire
+    # Seems this is to with blanket? :(
+    # Might have to investigate moving to istanbul / ibrik
+    xdescribe "setApp", ->
+        beforeEach -> cms.setConfig mockConfig
+        it "enables multiple view locations on the app", ->
+            cms.setApp expressApp
+            multiViews.should.have.been.calledWith expressApp
+        xit "sets the views to use both the app and cms directorires", ->
+        xit "uses the admin static public route", ->
 
-        it "uses the express app given", ->
-            app = {id: 1}
-            cms.init app
-            cms.app.should.equal app
-        it "creates a default express app", ->
-            cms.init()
-            cms.createApp.should.have.been.called
-
-
-    describe "createApp", ->
-        it "creates an express app", ->
-            cms.createApp()
-            cms.app.should.equal express
-
-
-    describe "start", ->
-        it "listens on port 3000", ->
-            cms.init express
-            cms.start()
-            express.listen.should.have.been.called
-            
         
     describe "use", ->
         mockMiddleware = null
-        
+
         beforeEach ->
             mockMiddleware = sinon.stub().returns 12
         it "calls the middleware function", ->

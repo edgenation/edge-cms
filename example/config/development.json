@@ -1,3 +1,4 @@
 {
-    "name": "EdgeCMS Example App - Development"
+    "name": "EdgeCMS Example App - Development",
+    "cookie-secret-key": "secret-example-dev"
 }
