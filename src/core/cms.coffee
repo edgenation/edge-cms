@@ -3,6 +3,8 @@ express = require "express"
 Log = require "./log"
 
 class CMS
+    constructor: (@config) ->
+
     init: (@app) ->
         if not @app then @createApp()
 

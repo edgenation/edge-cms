@@ -1,7 +1,9 @@
 edgeCMS = require "../lib"
 
-edgeCMS.Log.info "Starting Example App"
+config = edgeCMS.Config "#{__dirname}/config"
 
-cms = new edgeCMS.CMS()
+edgeCMS.Log.info "Starting " + config.get("name")
+
+cms = new edgeCMS.CMS(config)
 cms.init()
 cms.start()

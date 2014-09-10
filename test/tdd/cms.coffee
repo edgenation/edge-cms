@@ -6,12 +6,14 @@ CMS = proxyquire "../src/core/cms",
 
 describe "CMS", ->
     cms = null
-    beforeEach -> cms = new CMS
+    mockConfig = {}
+    beforeEach -> cms = new CMS(mockConfig)
     afterEach -> cms = null
 
     describe "constructor", ->
         it "is a function", -> (typeof CMS).should.equal "function"
         it "is instantiable", -> cms.should.be.ok
+        it "sets the config", -> cms.config.should.equal mockConfig
 
 
     describe "init", ->

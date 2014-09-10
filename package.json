@@ -56,6 +56,7 @@
   },
   "dependencies": {
     "chalk": "~0.5.1",
+    "convict": "^0.4.2",
     "express": "^4.8.8",
     "jade": "^1.6.0",
     "log-symbols": "^1.0.0",
