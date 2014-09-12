@@ -11,12 +11,11 @@ class CMS
         MultiViews @app
         @app.set "views", [
             @config.get("views")        # Client app views
-            "#{__dirname}/../views"     # CMS core views
+            "#{__dirname}/../view"      # CMS core views
         ]
 
         # Admin assets
         @app.use express["static"] "/admin/assets", "#{__dirname}/../public"
-
 
     use: (middleware) -> middleware @
 
