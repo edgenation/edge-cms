@@ -9,7 +9,7 @@ module.exports = (grunt) ->
         bump:
             options:
                 files: ["package.json"]
-                updateConfigs: []
+                updateConfigs: ["pkg"]
                 commit: true
                 commitMessage: "chore(release): v%VERSION%"
                 commitFiles: ["package.json"]
@@ -19,7 +19,11 @@ module.exports = (grunt) ->
                 push: true
                 pushTo: "origin master"
                 gitDescribeOptions: "--tags --always --abbrev=1 --dirty=-d"
-        
+
+        changelog:
+            options:
+                dest: "CHANGELOG.md"
+
         # Lint the coffeescript
         coffeelint:
             options:
