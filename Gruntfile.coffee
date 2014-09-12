@@ -6,6 +6,19 @@ module.exports = (grunt) ->
     grunt.initConfig
         pkg: grunt.file.readJSON "package.json"
         
+        bump:
+            options:
+                files: ["package.json"]
+                updateConfigs: []
+                commit: true
+                commitMessage: "chore(release): v%VERSION%"
+                commitFiles: ["package.json"]
+                createTag: true
+                tagName: "v%VERSION%"
+                tagMessage: "Version %VERSION%"
+                push: true
+                pushTo: "origin master"
+                gitDescribeOptions: "--tags --always --abbrev=1 --dirty=-d"
         
         # Lint the coffeescript
         coffeelint:
