@@ -17,6 +17,8 @@ class CMS
         # Admin assets
         @app.use express["static"] "/admin/assets", "#{__dirname}/../public"
 
+        @app.use "/admin", require "../route/admin/auth"
+
     use: (middleware) -> middleware @
 
 

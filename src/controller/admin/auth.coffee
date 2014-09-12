@@ -1,7 +1,8 @@
 auth =
+    # Show the login form
     view: (req, res, next) ->
-        # TODO: Show the login form
-        
+        res.render "admin/login"
+
     login: (req, res, next) ->
         # Log the user in
         

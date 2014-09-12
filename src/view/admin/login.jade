@@ -1,1 +1,17 @@
-h1 Login
+//- Login page
+extends ../layout/cms
+
+block content
+    h1 Login
+
+    form(method="post")
+        .form-row
+            label(for="email") Email:
+            input#email(type="email", name="email")
+
+        .form-row
+            label(for="password") Password:
+            input#password(type="password", name="password")
+
+        .form-row
+            button.btn(type="submit") Login
