@@ -1,0 +1,12 @@
+{
+    "verbose": true,
+    "ignore": [
+        ".git",
+        "node_modules",
+        "bower_components",
+        ".sass-cache",
+        ".idea"
+    ],
+    "watch": ["src/**/*"],
+    "ext": "js"
+}
