@@ -1,0 +1,45 @@
+{
+  "name": "edge-cms",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A JavaScript CMS",
+  "main": "src/index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "gulp test",
+    "start": "node src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/edgenation/edge-cms.git"
+  },
+  "engines": {
+    "node": ">= 0.10.x",
+    "npm": ">=1.3"
+  },
+  "author": "Chris Sheppard (http://www.chrissheppard.co.uk/)",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/edgenation/edge-cms/issues"
+  },
+  "homepage": "https://github.com/edgenation/edge-cms",
+  "devDependencies": {},
+  "dependencies": {
+    "body-parser": "^1.10.2",
+    "chalk": "^0.5.1",
+    "compression": "^1.3.0",
+    "convict": "^0.6.1",
+    "cookie-parser": "^1.3.3",
+    "express": "^4.11.1",
+    "helmet": "^0.6.0",
+    "log-symbols": "^1.0.1",
+    "method-override": "^2.3.1",
+    "moment": "^2.9.0",
+    "mongoose": "^3.8.22",
+    "q": "^1.1.2",
+    "response-time": "^2.2.0"
+  }
+}
