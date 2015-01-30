@@ -1,6 +1,7 @@
 var mongoose = require("mongoose"),
     express = require("express"),
-    Q = require("q");
+    Q = require("q"),
+    _ = require("lodash");
 
 var Controller = require("./controller");
 
@@ -12,10 +13,6 @@ ApiController.restifyModel = function (Model) {
 
     // Get all content containers
     router.get("/", function (req, res, next) {
-        // TODO: Add a ?count=X query string limit
-
-        // TODO: Validate the count - is there an express pre-thing to do this?
-
         Q.ninvoke(Model, "find")
             .then(Controller.checkDataReturned)
             .then(Controller.sendResponse(res))
@@ -30,7 +27,6 @@ ApiController.restifyModel = function (Model) {
             .spread(Controller.checkDataReturned)
             .then(Controller.sendResponse(res, 201))
             .fail(next);
-            //.fail(next);
     });
 
     // Get a single content container
@@ -59,6 +55,70 @@ ApiController.restifyModel = function (Model) {
     router.delete("/:id", function (req, res, next) {
         Q.ninvoke(Model, "findByIdAndRemove", req.params.id)
             .then(Controller.sendResponse(res, 200))
+            .fail(next);
+    });
+
+    router.all("/", ApiController.methodNotAllowed);
+    router.all("/:id", ApiController.methodNotAllowed);
+
+    return router;
+};
+
+ApiController.restifyModelCollection = function (CollectionModel, collectionName, Model) {
+    var router = express.Router({mergeParams: true});
+
+    router.use(function (req, res, next) {
+        // Load the CollectionModel
+        var query = CollectionModel.findOne({_id: req.params.cid}).populate(collectionName);
+
+        Q.ninvoke(query, "exec")
+            .then(Controller.checkDataReturned)
+            .then(function (collection) {
+                req.collection = collection;
+                next();
+            })
+            .fail(next);
+    });
+
+    // Get all the items in the collection
+    router.get("/", function (req, res, next) {
+        res.send(req.collection[collectionName]);
+    });
+
+    // Put an item in the collection
+    router.put("/", function (req, res, next) {
+        Q.ninvoke(Model, "findOne", {_id: req.body.id})
+            .then(Controller.checkDataReturned)
+            .then(function (model) {
+                var val = _.find(req.collection[collectionName], function (item) {
+                    return item._id.equals(model._id);
+                });
+
+                if (val) {
+                    // Already there...
+                    Controller.sendResponse(res, 201)(req.collection);
+                } else {
+                    // Add the model to the collection
+                    req.collection[collectionName].addToSet(model);
+
+                    // Save the collection
+                    Q.ninvoke(req.collection, "save")
+                        .spread(Controller.checkDataReturned)
+                        .then(Controller.sendResponse(res, 201))
+                        .fail(next);
+                }
+            })
+            .fail(next);
+    });
+
+    // Remove an item from the collection
+    router.delete("/:id", function (req, res, next) {
+        req.collection[collectionName].pull(req.params.id);
+
+        // Save the collection
+        Q.ninvoke(req.collection, "save")
+            .spread(Controller.checkDataReturned)
+            .then(Controller.sendResponse(res, 201))
             .fail(next);
     });
 
