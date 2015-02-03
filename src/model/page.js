@@ -10,6 +10,7 @@ var PageSchema = new mongoose.Schema({
     },
     url: {
         type: String,
+        index: {unique: true},
         trim: true,
         required: true,
         match: /^([a-z0-9\-\/]{1,1000})$/
@@ -26,6 +27,13 @@ var PageSchema = new mongoose.Schema({
     },
 
     containers: [{type: mongoose.Schema.Types.ObjectId, ref: "ContentContainer"}]
+});
+
+
+PageSchema.pre("save", function (next) {
+    // Update the timestamp
+    this.updated = Date.now();
+    next();
 });
 
 

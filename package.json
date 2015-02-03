@@ -41,6 +41,7 @@
     "method-override": "^2.3.1",
     "moment": "^2.9.0",
     "mongoose": "^3.8.22",
+    "pluralize": "^1.1.2",
     "q": "^1.1.2",
     "response-time": "^2.2.0"
   }

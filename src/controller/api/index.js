@@ -71,6 +71,7 @@ ApiController.error500 = function (err, req, res, next) {
             error.stack = err.stack;
         }
     }
+    console.error(err.stack);
 
     res.status(error.status).json(error);
 };
