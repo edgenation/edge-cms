@@ -15,9 +15,9 @@ router.get("/:id", Controller.details);
 router.put("/:id", Controller.update);
 router.delete("/:id", Controller.remove);
 
-router.get("/:id/content", Controller.listContent);
-router.put("/:id/content/:iid", Controller.addToContent);
-router.delete("/:id/content/:iid", Controller.removeFromContent);
+//router.get("/:id/content", Controller.listContent);
+//router.put("/:id/content/:iid", Controller.addToContent);
+//router.delete("/:id/content/:iid", Controller.removeFromContent);
 
 
 module.exports = router;

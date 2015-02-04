@@ -1,9 +1,12 @@
-var express = require("express");
+var express = require("express"),
+    bodyParser = require("body-parser");
 
 var ApiController = require("../../controller/api");
 
 
 var router = express.Router();
+
+router.use(bodyParser.json());
 
 // Add routes
 router.use("/content", require("./content"));

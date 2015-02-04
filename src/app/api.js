@@ -16,14 +16,14 @@ var API = function () {
 API.prototype.createApp = function () {
     this.app = express();
     this.app.use(compression());
-    this.app.use(bodyParser.urlencoded({extended: true}));
-    this.app.use(bodyParser.json());
+    //this.app.use(bodyParser.urlencoded({extended: true}));
+    //this.app.use(bodyParser.json());
     this.app.use(responseTime());
     this.app.use(helmet());
     this.app.use(methodOverride());
     this.app.use("/api", require("../route/api"));
 
-    this.app.set("port", process.env.PORT || 3000);
+    this.app.set("port", process.env.PORT || 4000);
     this.app.set("host", process.env.HOST || "0.0.0.0");
 
     return this.app;

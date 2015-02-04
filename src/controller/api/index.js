@@ -1,5 +1,9 @@
 var mongoose = require("mongoose"),
-    _ = require("lodash");
+    Q = require("q"),
+    _ = require("lodash"),
+    pluralize = require("pluralize");
+
+var ApiDataService = require("../../service/api/data");
 
 var ApiController = {};
 
@@ -19,9 +23,9 @@ ApiController.checkDataReturned = function (data) {
     return data;
 };
 
-ApiController.updateProps = function (req) {
+ApiController.updateProps = function (post) {
     return function (data) {
-        _.forEach(req.body, function (value, prop) {
+        _.forEach(post, function (value, prop) {
             data[prop] = value;
         });
 
@@ -71,10 +75,81 @@ ApiController.error500 = function (err, req, res, next) {
             error.stack = err.stack;
         }
     }
-    console.error(err.stack);
+
+    if (error.status !== 404) {
+        console.error(err.stack);
+    }
 
     res.status(error.status).json(error);
 };
 
+
+ApiController.list = function (Model, property, pageSize) {
+    return function (req, res, next) {
+        ApiDataService.list(req, Model, property, pageSize)
+            .then(ApiController.sendResponse(res, 200))
+            .fail(next);
+    };
+};
+
+ApiController.create = function (Model, property) {
+    return function (req, res, next) {
+        ApiDataService.create(req, Model, property)
+            .then(function (data) {
+                // TODO: Use current URL to generate new one
+                res.setHeader("Location", "/api/" + property + "/" + data[property].id);
+                return data;
+            })
+            .then(ApiController.sendResponse(res, 201))
+            .fail(next);
+    };
+};
+
+ApiController.details = function (Model, property) {
+    return function (req, res, next) {
+        ApiDataService.details(req, Model, property)
+            .then(ApiController.sendResponse(res, 200))
+            .fail(next);
+    };
+};
+
+ApiController.update = function (Model, property) {
+    return function (req, res, next) {
+        ApiDataService.update(req, Model, property)
+            .then(ApiController.sendResponse(res, 200))
+            .fail(next);
+    };
+};
+
+ApiController.remove = function (Model, property) {
+    return function (req, res, next) {
+        ApiDataService.update(req, Model, property)
+            .then(ApiController.sendResponse(res, 204))
+            .fail(next);
+    };
+};
+
+ApiController.listLinks = function (Model) {
+    return function (req, res, next) {
+        ApiDataService.listLinks(req, Model)
+            .then(ApiController.sendResponse(res, 200))
+            .fail(next);
+    };
+};
+
+ApiController.restForModel = function (Model, perPage) {
+    perPage = perPage || 2;
+    var singularProperty = Model.modelName.substr(0, 1).toLowerCase() + Model.modelName.substr(1);
+    var pluralProperty = pluralize(singularProperty);
+
+    return {
+        list: ApiController.list(Model, pluralProperty, perPage),
+        create: ApiController.create(Model, singularProperty),
+        details: ApiController.details(Model, singularProperty),
+        update: ApiController.update(Model, singularProperty),
+        remove: ApiController.remove(Model, singularProperty),
+        listLinks: ApiController.listLinks(Model)
+    };
+};
 
 module.exports = ApiController;

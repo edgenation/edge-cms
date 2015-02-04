@@ -6,6 +6,8 @@ var ApiController = require("./index"),
     ContentContainer = require("../../model/content-container");
 
 
+var ContentContainerController = ApiController.restForModel(ContentContainer, 2);
+/*
 var ContentContainerController = {
     list: function (req, res, next) {
         Q.ninvoke(ContentContainer, "find")
@@ -109,6 +111,6 @@ var ContentContainerController = {
             .fail(next);
     }
 };
-
+*/
 module.exports = ContentContainerController;
 

@@ -15,9 +15,10 @@ router.get("/:id", Controller.details);
 router.put("/:id", Controller.update);
 router.delete("/:id", Controller.remove);
 
-router.get("/:id/containers", Controller.listContainers);
-router.put("/:id/containers/:iid", Controller.addToContainers);
-router.delete("/:id/containers/:iid", Controller.removeFromContainers);
+router.get("/:id/links/:link", Controller.listLinks);
+//router.put("/:id/containers/:iid", Controller.addToContainers);
+//router.delete("/:id/containers/:iid", Controller.removeFromContainers);
 
+// API.restRouter("/page", Page);
 
 module.exports = router;
