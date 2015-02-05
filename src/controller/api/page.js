@@ -1,43 +1,11 @@
-var Q = require("q"),
-    _ = require("lodash");
-
 var ApiController = require("./index"),
-    ContentContainer = require("../../model/content-container"),
     Page = require("../../model/page");
 
 
-
-
 // http://jsonapi.org/format/
-//var PageController = ApiController.restForModel(Page, 2);
-var PageController = {
-    list: ApiController.list(Page, "pages", 2),
-    create: ApiController.create(Page, "page"),
-    details: ApiController.details(Page, "page"),
-    update: ApiController.update(Page, "page"),
-    remove: ApiController.remove(Page, "page"),
+var PageController = ApiController.restForModel(Page, 2);
 
-    listLinks: ApiController.listLinks(Page),
-
-
-    addToContainers: function (req, res, next) {},
-    removeFromContainers: function (req, res, next) {}
 /*
-    listContainers: function (req, res, next) {
-        var query = Page.findOne({_id: req.params.id}).populate("containers");
-
-        Q.ninvoke(query, "exec")
-            .then(ApiController.checkDataReturned)
-            .then(function (page) {
-                Q.ninvoke(ContentContainer, "populate", page.containers, {path: "content"})
-                    .then(function (containers) {
-                        ApiController.sendResponse(res, 200)(containers);
-                    })
-                    .fail(next);
-            })
-            .fail(next);
-    },
-
     addToContainers: function (req, res, next) {
         Q.ninvoke(Page, "findOne", {_id: req.params.id})
             .then(ApiController.checkDataReturned)
@@ -84,8 +52,6 @@ var PageController = {
             })
             .fail(next);
     }
-    */
-};
+*/
 
 module.exports = PageController;
-

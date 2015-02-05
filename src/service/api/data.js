@@ -220,7 +220,7 @@ ApiDataService.remove = function (req, Model, property) {
 };
 
 
-ApiDataService.listLinks = function (req, Model) {
+ApiDataService.linksList = function (req, Model) {
     var linkedProperty = req.params.link;
 
     var query = Model.findOne({_id: req.params.id});
@@ -238,6 +238,14 @@ ApiDataService.listLinks = function (req, Model) {
             return data[linkedProperty];
         })
         .then(ApiDataService.wrapInProperty(linkedProperty));
+};
+
+ApiDataService.linksAdd = function (req, Model) {
+    return Q.reject("TODO");
+};
+
+ApiDataService.linksRemove = function (req, Model) {
+    return Q.reject("TODO");
 };
 
 

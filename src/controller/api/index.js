@@ -129,9 +129,25 @@ ApiController.remove = function (Model, property) {
     };
 };
 
-ApiController.listLinks = function (Model) {
+ApiController.linksList = function (Model) {
     return function (req, res, next) {
-        ApiDataService.listLinks(req, Model)
+        ApiDataService.linksList(req, Model)
+            .then(ApiController.sendResponse(res, 200))
+            .fail(next);
+    };
+};
+
+ApiController.linksAdd = function (Model) {
+    return function (req, res, next) {
+        ApiDataService.linksAdd(req, Model)
+            .then(ApiController.sendResponse(res, 200))
+            .fail(next);
+    };
+};
+
+ApiController.linksRemove = function (Model) {
+    return function (req, res, next) {
+        ApiDataService.linksRemove(req, Model)
             .then(ApiController.sendResponse(res, 200))
             .fail(next);
     };
@@ -148,7 +164,9 @@ ApiController.restForModel = function (Model, perPage) {
         details: ApiController.details(Model, singularProperty),
         update: ApiController.update(Model, singularProperty),
         remove: ApiController.remove(Model, singularProperty),
-        listLinks: ApiController.listLinks(Model)
+        linksList: ApiController.linksList(Model),
+        linksAdd: ApiController.linksAdd(Model),
+        linksRemove: ApiController.linksRemove(Model)
     };
 };
 
