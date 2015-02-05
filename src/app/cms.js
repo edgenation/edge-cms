@@ -22,6 +22,8 @@ CMS.prototype.createApp = function () {
     this.app.set("host", process.env.HOST || "0.0.0.0");
 
     // TODO: Add cms routes etc
+    this.app.use(express.static(__dirname + "/../../public"));
+    this.app.use(express.static(__dirname + "/../../bower_components"));
 
     return this.app;
 };

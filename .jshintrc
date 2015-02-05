@@ -29,10 +29,12 @@
     "singleGroups": false,
     "undef": true,
     "unused": true,
-    "browser": false,
+    "browser": true,
     "node": true,
     "devel": true,
+    "esnext": true,
     "strict": false,
     "globals": {
+        "angular": false
     }
 }
