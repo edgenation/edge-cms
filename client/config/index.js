@@ -1,6 +1,6 @@
-import cmsError from "../error/index";
+import cmsError from "../error/error.route";
 
-var cmsConfig = angular.module("cms.config", [
+var cmsConfig = angular.module("cms.config.module", [
     "ui.router",
     cmsError.name
 ]);
@@ -9,8 +9,7 @@ cmsConfig.config([
     "$locationProvider",
     "$urlRouterProvider",
     function ($locationProvider, $urlRouterProvider) {
-        $locationProvider.html5Mode(true);
-
+        //$locationProvider.html5Mode(true);
 
         $urlRouterProvider.rule(function ($injector, $location) {
             var path = $location.path();
