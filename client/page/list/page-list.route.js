@@ -16,14 +16,18 @@ cmsPageList.config([
     }
 ]);
 
-cmsPageList.controller("cmsPageListCtrl", [
-    "Page",
-    function (Page) {
-        Page.all().success(function (data) {
-            console.log(data);
-        });
+
+class CmsPageListCtrl {
+    constructor(Page) {
+        console.log("CmsPageListCtrl");
+        this.pages = [];
+
+        Page.all().then(response => this.pages = response.pages);
     }
-]);
+}
+CmsPageListCtrl.$inject = ["cms.page.factory"];
+
+cmsPageList.controller("cmsPageListCtrl", CmsPageListCtrl);
 
 
 export default cmsPageList;

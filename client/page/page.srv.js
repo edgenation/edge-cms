@@ -1,6 +1,6 @@
 var cmsPageFactory = angular.module("cms.page.factory.module", []);
 
-cmsPageFactory.factory("Page", [
+cmsPageFactory.factory("cms.page.factory", [
     "$http",
     function ($http) {
         var BASE_URL = "/api/page";
