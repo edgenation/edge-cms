@@ -8,7 +8,8 @@ var browserify = require("browserify"),
 
 
 var
-    es6Path = "./client/bootstrap.js",
+    //es6Path = "./client/v1/bootstrap.js",
+    es6Path = "./client/v2/cms.js",
     compilePath = "./public/js";
 
 
