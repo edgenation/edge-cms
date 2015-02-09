@@ -1,5 +1,4 @@
 var mongoose = require("mongoose"),
-    Q = require("q"),
     _ = require("lodash"),
     pluralize = require("pluralize");
 
