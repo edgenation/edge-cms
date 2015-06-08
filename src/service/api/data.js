@@ -110,7 +110,7 @@ ApiDataService.addLinkedData = function (propertyName, Model, req) {
 
             var linkedQuery = LinkedModel.find({"_id": {$in: linkedIds}});
             promises.push(
-                Q.ninvoke(linkedQuery, "exec")
+                Q(linkedQuery.exec())
                     .then(ApiDataService.ensureDataReturned)
                     .then(function (linkedData) {
                         if (!data.linked) {
@@ -174,7 +174,7 @@ ApiDataService.list = function (req, Model, property, pageSize) {
     ApiDataService.sortQuery(listQuery, req);
     ApiDataService.selectQuery(listQuery, req);
 
-    return Q.ninvoke(listQuery, "exec")
+    return Q(listQuery.exec())
         .then(ApiDataService.ensureDataReturned)
         .then(ApiDataService.wrapInProperty(property))
         .then(ApiDataService.addLinkedData(property, Model, req))
@@ -194,7 +194,7 @@ ApiDataService.details = function (req, Model, property) {
 
     ApiDataService.selectQuery(detailQuery, req);
 
-    return Q.ninvoke(detailQuery, "exec")
+    return Q(detailQuery.exec())
         .then(ApiDataService.ensureDataReturned)
         .then(ApiDataService.wrapInProperty(property))
         .then(ApiDataService.addLinkedData(property, Model, req));
@@ -225,7 +225,7 @@ ApiDataService.linksList = function (req, Model) {
 
     //var LinkedModel = require("../../model/content-container");
 
-    return Q.ninvoke(query, "exec")
+    return Q(query.exec())
         .then(ApiDataService.ensureDataReturned)
         .then(function (data) {
             return Q.ninvoke(Model, "populate", data, {path: linkedProperty});
