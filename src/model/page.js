@@ -38,10 +38,15 @@ PageSchema.pre("save", function (next) {
 
 
 PageSchema.set("toJSON", {
-    transform: function (doc, ret, options) {
-        ret.id = ret._id;
-        delete ret._id;
-        delete ret.__v;
+    transform: function(doc, ret, options) {
+        var json = {
+            id: ret._id,
+            type: "page",
+            attributes: ret
+        };
+        delete json.attributes._id;
+        delete json.attributes.__v;
+        return json;
     }
 });
 

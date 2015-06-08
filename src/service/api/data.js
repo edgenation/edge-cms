@@ -73,7 +73,7 @@ ApiDataService.getModelFromName = function (Model, name) {
 };
 
 
-ApiDataService.addLinkedData = function (propertyName, Model, req) {
+ApiDataService.addIncludedData = function (propertyName, Model, req) {
     var includes = req.query.include;
     if (!includes) {
         return Q.resolve();
@@ -114,10 +114,10 @@ ApiDataService.addLinkedData = function (propertyName, Model, req) {
                     .then(ApiDataService.ensureDataReturned)
                     .then(function (linkedData) {
                         if (!response.included) {
-                            response.included = {};
+                            response.included = [];
                         }
 
-                        response.included[linkedProperty] = linkedData;
+                        response.included.push(linkedData);
                         return response;
                     })
             );
@@ -177,7 +177,7 @@ ApiDataService.list = function (req, Model, property, pageSize) {
     return Q(listQuery.exec())
         .then(ApiDataService.ensureDataReturned)
         .then(ApiDataService.wrapInProperty("data"))
-        .then(ApiDataService.addLinkedData(property, Model, req))
+        .then(ApiDataService.addIncludedData(property, Model, req))
         .then(ApiDataService.addMetaData(Model, property, page, pageSize));
 };
 
@@ -197,7 +197,7 @@ ApiDataService.details = function (req, Model, property) {
     return Q(detailQuery.exec())
         .then(ApiDataService.ensureDataReturned)
         .then(ApiDataService.wrapInProperty("data"))
-        .then(ApiDataService.addLinkedData(property, Model, req));
+        .then(ApiDataService.addIncludedData(property, Model, req));
 };
 
 ApiDataService.update = function (req, Model, property) {
@@ -230,8 +230,8 @@ ApiDataService.linksList = function (req, Model) {
         .then(function (data) {
             return Q.ninvoke(Model, "populate", data, {path: linkedProperty});
         })
-        //.then(ApiDataService.addLinkedData("page", Model, req))
-        //.then(ApiDataService.addLinkedData("content", LinkedModel, req))
+        //.then(ApiDataService.addIncludedData("page", Model, req))
+        //.then(ApiDataService.addIncludedData("content", LinkedModel, req))
         .then(function (data) {
             return data[linkedProperty];
         })

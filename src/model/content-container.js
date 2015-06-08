@@ -31,10 +31,15 @@ ContentContainerSchema.pre("save", function (next) {
 
 
 ContentContainerSchema.set("toJSON", {
-    transform: function (doc, ret, options) {
-        ret.id = ret._id;
-        delete ret._id;
-        delete ret.__v;
+    transform: function(doc, ret, options) {
+        var json = {
+            id: ret._id,
+            type: "content-container",
+            attributes: ret
+        };
+        delete json.attributes._id;
+        delete json.attributes.__v;
+        return json;
     }
 });
 

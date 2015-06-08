@@ -183,11 +183,16 @@ UserSchema.statics.getAuthenticated = function (username, password, cb) {
 
 
 UserSchema.set("toJSON", {
-    transform: function (doc, ret, options) {
-        ret.id = ret._id;
-        delete ret._id;
-        delete ret.__v;
-        delete ret.password;
+    transform: function(doc, ret, options) {
+        var json = {
+            id: ret._id,
+            type: "user",
+            attributes: ret
+        };
+        delete json.attributes._id;
+        delete json.attributes.__v;
+        delete json.attributes.password;
+        return json;
     }
 });
 
