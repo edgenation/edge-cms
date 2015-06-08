@@ -238,12 +238,38 @@ ApiDataService.linksList = function (req, Model) {
         .then(ApiDataService.wrapInProperty(linkedProperty));
 };
 
-ApiDataService.linksAdd = function (req, Model) {
-    return Q.reject("TODO");
+ApiDataService.linksAdd = function(req, Model) {
+    // TODO: Validate the body?
+    var linkedProperty = req.params.link;
+
+    return Q.ninvoke(Model, "findOne", { _id: req.params.id })
+        .then(ApiDataService.ensureDataReturned)
+        .then(function(model) {
+            // TODO: Validate does not already exist?
+            if (model[linkedProperty].indexOf(req.body[linkedProperty]) === -1) {
+                model[linkedProperty].push(req.body[linkedProperty]);
+            }
+
+            return Q.ninvoke(model, "save")
+                .spread(ApiDataService.ensureDataReturned)
+                .then(ApiDataService.wrapInProperty(linkedProperty));
+        });
 };
 
-ApiDataService.linksRemove = function (req, Model) {
-    return Q.reject("TODO");
+ApiDataService.linksRemove = function(req, Model) {
+    // TODO: Validate the body?
+    var linkedProperty = req.params.link;
+
+    return Q.ninvoke(Model, "findOne", { _id: req.params.id })
+        .then(ApiDataService.ensureDataReturned)
+        .then(function(model) {
+            // TODO: Validate it exists?
+            model[linkedProperty].pull(req.body[linkedProperty]);
+
+            return Q.ninvoke(model, "save")
+                .spread(ApiDataService.ensureDataReturned)
+                .then(ApiDataService.wrapInProperty(linkedProperty));
+        });
 };
 
 
