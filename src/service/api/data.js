@@ -4,7 +4,7 @@ var Q = require("q"),
 var ApiDataService = {};
 
 
-ApiDataService.updateProps = function (req, property) {
+ApiDataService.updatePropsFromBody = function (req, property) {
     return function (data) {
         _.forEach(req.body[property], function (value, prop) {
             data[prop] = value;
@@ -203,7 +203,7 @@ ApiDataService.details = function (req, Model, property) {
 ApiDataService.update = function (req, Model, property) {
     return Q.ninvoke(Model, "findOne", {_id: req.params.id})
         .then(ApiDataService.ensureDataReturned)
-        .then(ApiDataService.updateProps(req, property))
+        .then(ApiDataService.updatePropsFromBody(req, property))
         .then(function (model) {
             return Q.ninvoke(model, "save")
                 .spread(ApiDataService.ensureDataReturned)

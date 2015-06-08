@@ -14,22 +14,13 @@ ApiController.sendResponse = function (res, status) {
     };
 };
 
+
 ApiController.checkDataReturned = function (data) {
     if (!data) {
         throw null;
     }
 
     return data;
-};
-
-ApiController.updateProps = function (post) {
-    return function (data) {
-        _.forEach(post, function (value, prop) {
-            data[prop] = value;
-        });
-
-        return data;
-    };
 };
 
 
