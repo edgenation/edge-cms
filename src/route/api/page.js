@@ -14,9 +14,9 @@ router.get("/:id", Controller.details);
 router.put("/:id", Controller.update);
 router.delete("/:id", Controller.remove);
 
-router.get("/:id/links/:link", Controller.linksList);
-router.put("/:id/links/:link", Controller.linksAdd);
-router.delete("/:id/links/:link", Controller.linksRemove);
+router.get("/:id/:link", Controller.linksList);
+router.put("/:id/:link", Controller.linksAdd);
+router.delete("/:id/:link", Controller.linksRemove);
 
 // API.restRouter("/page", Page);
 

@@ -13,12 +13,12 @@ router.use(function(req, res, next) {
 });
 
 // Verify the content type header
-router.use(function (req, res, next) {
-    if (!req.headers || req.headers["content-type"] !== "application/vnd.api+json") {
-        return next({ status: 415, message: "415 Unsupported Media Type" });
-    }
-    next();
-});
+//router.use(function (req, res, next) {
+//    if (!req.headers || req.headers["content-type"] !== "application/vnd.api+json") {
+//        return next({ status: 415, message: "415 Unsupported Media Type" });
+//    }
+//    next();
+//});
 
 router.use(bodyParser.json());
 
