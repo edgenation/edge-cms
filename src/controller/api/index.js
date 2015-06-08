@@ -79,6 +79,21 @@ ApiController.error500 = function (err, req, res, next) {
         console.error(err.stack);
     }
 
+    // http://jsonapi.org/format/#errors
+    //var error = {
+    //    id: "",
+    //    links: {},
+    //    status: 200,
+    //    code: "",
+    //    title: "",
+    //    detail: "",
+    //    source: {
+    //        pointer: "",
+    //        parameter: ""
+    //    },
+    //    meta: {}
+    //};
+
     res.status(error.status).json(error);
 };
 

@@ -79,7 +79,7 @@ ApiDataService.addLinkedData = function (propertyName, Model, req) {
         return Q.resolve();
     }
 
-    return function (data) {
+    return function (response) {
         var promises = [];
 
         includes = includes.split(",");
@@ -99,13 +99,13 @@ ApiDataService.addLinkedData = function (propertyName, Model, req) {
             var LinkedModel = ApiDataService.getModelFromName(Model, linkedModelName);
 
             var linkedIds = [];
-            if (Array.isArray(data[propertyName])) {
-                _.forEach(data[propertyName], function (d) {
+            if (Array.isArray(response.data)) {
+                _.forEach(response.data, function (d) {
                     linkedIds = linkedIds.concat(d[linkedProperty]);
                 });
                 _.uniq(linkedIds, "id");
             } else {
-                linkedIds = data[propertyName][linkedProperty];
+                linkedIds = response.data[linkedProperty];
             }
 
             var linkedQuery = LinkedModel.find({"_id": {$in: linkedIds}});
@@ -113,12 +113,12 @@ ApiDataService.addLinkedData = function (propertyName, Model, req) {
                 Q(linkedQuery.exec())
                     .then(ApiDataService.ensureDataReturned)
                     .then(function (linkedData) {
-                        if (!data.linked) {
-                            data.linked = {};
+                        if (!response.included) {
+                            response.included = {};
                         }
 
-                        data.linked[linkedProperty] = linkedData;
-                        return data;
+                        response.included[linkedProperty] = linkedData;
+                        return response;
                     })
             );
         });
@@ -126,7 +126,7 @@ ApiDataService.addLinkedData = function (propertyName, Model, req) {
         if (promises.length === 1) {
             return promises[0];
         } else {
-            return promises.reduce(Q.when, Q(data));
+            return promises.reduce(Q.when, Q(response));
         }
     };
 };
@@ -176,7 +176,7 @@ ApiDataService.list = function (req, Model, property, pageSize) {
 
     return Q(listQuery.exec())
         .then(ApiDataService.ensureDataReturned)
-        .then(ApiDataService.wrapInProperty(property))
+        .then(ApiDataService.wrapInProperty("data"))
         .then(ApiDataService.addLinkedData(property, Model, req))
         .then(ApiDataService.addMetaData(Model, property, page, pageSize));
 };
@@ -186,7 +186,7 @@ ApiDataService.create = function (req, Model, property) {
 
     return Q.ninvoke(model, "save")
         .spread(ApiDataService.ensureDataReturned)
-        .then(ApiDataService.wrapInProperty(property));
+        .then(ApiDataService.wrapInProperty("data"));
 };
 
 ApiDataService.details = function (req, Model, property) {
@@ -196,7 +196,7 @@ ApiDataService.details = function (req, Model, property) {
 
     return Q(detailQuery.exec())
         .then(ApiDataService.ensureDataReturned)
-        .then(ApiDataService.wrapInProperty(property))
+        .then(ApiDataService.wrapInProperty("data"))
         .then(ApiDataService.addLinkedData(property, Model, req));
 };
 
@@ -207,14 +207,14 @@ ApiDataService.update = function (req, Model, property) {
         .then(function (model) {
             return Q.ninvoke(model, "save")
                 .spread(ApiDataService.ensureDataReturned)
-                .then(ApiDataService.wrapInProperty(property));
+                .then(ApiDataService.wrapInProperty("data"));
         });
 };
 
 ApiDataService.remove = function (req, Model, property) {
     return Q.ninvoke(Model, "findByIdAndRemove", req.params.id)
         .then(ApiDataService.ensureDataReturned)
-        .then(ApiDataService.wrapInProperty(property));
+        .then(ApiDataService.wrapInProperty("data"));
 };
 
 
@@ -235,7 +235,7 @@ ApiDataService.linksList = function (req, Model) {
         .then(function (data) {
             return data[linkedProperty];
         })
-        .then(ApiDataService.wrapInProperty(linkedProperty));
+        .then(ApiDataService.wrapInProperty("data"));
 };
 
 ApiDataService.linksAdd = function(req, Model) {
@@ -252,7 +252,7 @@ ApiDataService.linksAdd = function(req, Model) {
 
             return Q.ninvoke(model, "save")
                 .spread(ApiDataService.ensureDataReturned)
-                .then(ApiDataService.wrapInProperty(linkedProperty));
+                .then(ApiDataService.wrapInProperty("data"));
         });
 };
 
@@ -268,7 +268,7 @@ ApiDataService.linksRemove = function(req, Model) {
 
             return Q.ninvoke(model, "save")
                 .spread(ApiDataService.ensureDataReturned)
-                .then(ApiDataService.wrapInProperty(linkedProperty));
+                .then(ApiDataService.wrapInProperty("data"));
         });
 };
 
