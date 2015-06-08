@@ -4,9 +4,9 @@ var Q = require("q"),
 var ApiDataService = {};
 
 
-ApiDataService.updatePropsFromBody = function (req, property) {
+ApiDataService.updateAttributesFromBody = function (req) {
     return function (data) {
-        _.forEach(req.body[property], function (value, prop) {
+        _.forEach(req.body.data.attributes, function (value, prop) {
             data[prop] = value;
         });
 
@@ -23,6 +23,7 @@ ApiDataService.ensureDataReturned = function (data) {
 };
 
 ApiDataService.selectQuery = function (query, req) {
+    // GET /articles?include=author&fields[articles]=title,body&fields[people]=name HTTP/1.1
     var fields = req.query.fields;
     var includes = req.query.include;
 
@@ -35,13 +36,13 @@ ApiDataService.selectQuery = function (query, req) {
     }
 };
 
-ApiDataService.paginateQuery = function (query, req, pageSize) {
-    var page = req.query.page;
-    // TODO: Validate page >= 1
-    page = parseInt(page, 10) || 1;
-    query.skip(pageSize * (page - 1));
-    query.limit(pageSize);
-    return page;
+ApiDataService.paginateQuery = function (query, req, limit) {
+    var offset = req.query.offset;
+    // TODO: Validate offset >= 0
+    offset = parseInt(offset, 10) || 0;
+    query.skip(offset);
+    query.limit(limit);
+    return offset;
 };
 
 ApiDataService.sortQuery = function (query, req) {
@@ -131,37 +132,39 @@ ApiDataService.addIncludedData = function (propertyName, Model, req) {
     };
 };
 
-ApiDataService.addMetaData = function (Model, property, page, pageSize) {
-    return function (data) {
+ApiDataService.addPaginationData = function (Model, property, offset, limit) {
+    return function (response) {
         return Q.ninvoke(Model, "count").then(function (count) {
-            if (!data.meta) {
-                data.meta = {};
+            if (!response.meta) {
+                response.meta = {};
+            }
+            if (!response.links) {
+                response.links = {};
             }
 
-            data.meta[property] = {
-                page: page,
-                pageSize: pageSize,
-                count: count,
-                pageCount: Math.ceil(count / pageSize),
-                previousPage: null,
-                nextPage: null,
-                previousHref: null,
-                nextHref: null
+            response.meta.page = {
+                ofsset: offset,
+                limit: limit,
+                total: count
             };
 
-            if (page > 1) {
-                data.meta[property].previousPage = page - 1;
+            // TODO: Add the links
+            response.links.first = null;
+            response.links.last = null;
+            response.links.prev = null;
+            response.links.next = null;
+
+            if (offset - limit >= 0) {
                 // TODO: Add the href
-                data.meta[property].previousHref = "";
+                response.links.prev = offset - limit;
             }
 
-            if (page < data.meta[property].pageCount) {
-                data.meta[property].nextPage = page + 1;
+            if (offset + limit < response.meta.page.count) {
                 // TODO: Add the href
-                data.meta[property].nextHref = "";
+                response.links.next = offset + limit;
             }
 
-            return data;
+            return response;
         });
     };
 };
@@ -178,11 +181,11 @@ ApiDataService.list = function (req, Model, property, pageSize) {
         .then(ApiDataService.ensureDataReturned)
         .then(ApiDataService.wrapInProperty("data"))
         .then(ApiDataService.addIncludedData(property, Model, req))
-        .then(ApiDataService.addMetaData(Model, property, page, pageSize));
+        .then(ApiDataService.addPaginationData(Model, property, page, pageSize));
 };
 
 ApiDataService.create = function (req, Model, property) {
-    var model = new Model(req.body[property]);
+    var model = new Model(req.body.data.attributes);
 
     return Q.ninvoke(model, "save")
         .spread(ApiDataService.ensureDataReturned)
@@ -203,7 +206,7 @@ ApiDataService.details = function (req, Model, property) {
 ApiDataService.update = function (req, Model, property) {
     return Q.ninvoke(Model, "findOne", {_id: req.params.id})
         .then(ApiDataService.ensureDataReturned)
-        .then(ApiDataService.updatePropsFromBody(req, property))
+        .then(ApiDataService.updateAttributesFromBody(req))
         .then(function (model) {
             return Q.ninvoke(model, "save")
                 .spread(ApiDataService.ensureDataReturned)

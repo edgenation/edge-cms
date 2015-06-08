@@ -11,11 +11,11 @@ router.param("id", ApiController.validateId);
 router.get("/", Controller.list);
 router.post("/", Controller.create);
 router.get("/:id", Controller.details);
-router.put("/:id", Controller.update);
+router.patch("/:id", Controller.update);
 router.delete("/:id", Controller.remove);
 
 router.get("/:id/:link", Controller.linksList);
-router.put("/:id/:link", Controller.linksAdd);
+router.patch("/:id/:link", Controller.linksAdd);
 router.delete("/:id/:link", Controller.linksRemove);
 
 // API.restRouter("/page", Page);
