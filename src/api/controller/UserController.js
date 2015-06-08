@@ -1,5 +1,5 @@
-var ApiController = require("./index"),
-    User = require("../../model/user");
+var ApiController = require("./ApiController"),
+    User = require("../model/user");
 
 
 // TODO: Authentication?

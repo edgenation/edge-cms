@@ -1,4 +1,4 @@
-var cms = require("./app/cms");
+var cms = require("./site/app");
 
 cms.createApp();
 cms.startServer();

@@ -21,7 +21,7 @@ API.prototype.createApp = function () {
     this.app.use(responseTime());
     this.app.use(helmet());
     this.app.use(methodOverride());
-    this.app.use("/api", require("../route/api"));
+    this.app.use("/api", require("./route/index"));
 
     this.app.set("port", process.env.PORT || 4000);
     this.app.set("host", process.env.HOST || "0.0.0.0");
@@ -32,7 +32,7 @@ API.prototype.createApp = function () {
 API.prototype.useApp = function (app) {
     this.app = app;
     this.app.use(methodOverride());
-    this.app.use("/api", require("../route/api"));
+    this.app.use("/api", require("./route/index"));
 };
 
 API.prototype.connectDB = function () {

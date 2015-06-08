@@ -1,5 +1,5 @@
-var ApiController = require("./index"),
-    Content = require("../../model/content");
+var ApiController = require("./ApiController"),
+    Content = require("../model/content");
 
 
 var ContentController = ApiController.restForModel(Content, 2);

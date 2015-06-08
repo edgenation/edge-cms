@@ -1,5 +1,5 @@
-var ApiController = require("./index"),
-    Page = require("../../model/page");
+var ApiController = require("./ApiController"),
+    Page = require("../model/page");
 
 
 // http://jsonapi.org/format/

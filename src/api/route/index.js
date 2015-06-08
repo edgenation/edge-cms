@@ -1,7 +1,7 @@
 var express = require("express"),
     bodyParser = require("body-parser");
 
-var ApiController = require("../../controller/api");
+var ApiController = require("../controller/ApiController");
 
 
 var router = express.Router();

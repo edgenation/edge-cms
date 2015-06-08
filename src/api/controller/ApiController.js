@@ -2,7 +2,7 @@ var mongoose = require("mongoose"),
     _ = require("lodash"),
     pluralize = require("pluralize");
 
-var ApiDataService = require("../../service/api/data");
+var ApiDataService = require("../ApiDataService");
 
 var ApiController = {};
 

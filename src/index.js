@@ -1,5 +1,5 @@
-var api = require("./app/api");
-var cms = require("./app/cms");
+var api = require("./api/app");
+var cms = require("./site/app");
 
 var app = cms.createApp();
 api.useApp(app);
