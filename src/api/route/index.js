@@ -1,5 +1,7 @@
-var express = require("express"),
-    bodyParser = require("body-parser");
+var _ = require("lodash"),
+    express = require("express"),
+    bodyParser = require("body-parser"),
+    requireDir = require("require-dir");
 
 var ApiController = require("../controller/ApiController");
 
@@ -22,11 +24,13 @@ router.use(function(req, res, next) {
 
 router.use(bodyParser.json());
 
-// Add routes
-router.use("/content", require("./content"));
-router.use("/content-container", require("./content-container"));
-router.use("/page", require("./page"));
-router.use("/user", require("./user"));
+// Add all routes
+var routes = requireDir();
+
+_.forEach(routes, function(route, slug) {
+    router.use("/" + slug, route);
+});
+
 
 // Error routes
 router.use(ApiController.error404);
