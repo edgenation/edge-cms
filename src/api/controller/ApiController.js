@@ -1,8 +1,6 @@
-var mongoose = require("mongoose"),
-    _ = require("lodash"),
-    pluralize = require("pluralize");
+var pluralize = require("pluralize");
 
-var ApiDataService = require("../ApiDataService");
+var ApiDataService = require("../service/ApiDataService");
 
 var ApiController = {};
 
@@ -26,7 +24,7 @@ ApiController.checkDataReturned = function (data) {
 
 // Router middleware to validate :id
 ApiController.validateId = function (req, res, next, id) {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!ApiDataService.isValidId(id)) {
         var err = new Error("Invalid ID");
         err.status = 400;
         return next(err);
@@ -134,25 +132,25 @@ ApiController.remove = function (Model, property) {
     };
 };
 
-ApiController.linksList = function (Model) {
+ApiController.includesList = function (Model) {
     return function (req, res, next) {
-        ApiDataService.linksList(req, Model)
+        ApiDataService.includesList(req, Model)
             .then(ApiController.sendResponse(res, 200))
             .fail(next);
     };
 };
 
-ApiController.linksAdd = function (Model) {
+ApiController.includesAdd = function (Model) {
     return function (req, res, next) {
-        ApiDataService.linksAdd(req, Model)
+        ApiDataService.includesAdd(req, Model)
             .then(ApiController.sendResponse(res, 200))
             .fail(next);
     };
 };
 
-ApiController.linksRemove = function (Model) {
+ApiController.includesRemove = function (Model) {
     return function (req, res, next) {
-        ApiDataService.linksRemove(req, Model)
+        ApiDataService.includesRemove(req, Model)
             .then(ApiController.sendResponse(res, 200))
             .fail(next);
     };
@@ -169,9 +167,9 @@ ApiController.restForModel = function (Model, perPage) {
         details: ApiController.details(Model, singularProperty),
         update: ApiController.update(Model, singularProperty),
         remove: ApiController.remove(Model, singularProperty),
-        linksList: ApiController.linksList(Model),
-        linksAdd: ApiController.linksAdd(Model),
-        linksRemove: ApiController.linksRemove(Model)
+        includesList: ApiController.includesList(Model),
+        includesAdd: ApiController.includesAdd(Model),
+        includesRemove: ApiController.includesRemove(Model)
     };
 };
 

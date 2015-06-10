@@ -21,8 +21,8 @@ router.get("/:id", UserController.details);
 router.patch("/:id", UserController.update);
 router.delete("/:id", UserController.remove);
 
-router.get("/:id/:link", UserController.linksList);
-router.patch("/:id/:link", UserController.linksAdd);
-router.delete("/:id/:link", UserController.linksRemove);
+router.get("/:id/:relationship", UserController.includesList);
+router.patch("/:id/:relationship", UserController.includesAdd);
+router.delete("/:id/:relationship", UserController.includesRemove);
 
 module.exports = router;

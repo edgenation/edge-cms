@@ -14,8 +14,8 @@ router.get("/:id", ContentController.details);
 router.patch("/:id", ContentController.update);
 router.delete("/:id", ContentController.remove);
 
-router.get("/:id/:link", ContentController.linksList);
-router.patch("/:id/:link", ContentController.linksAdd);
-router.delete("/:id/:link", ContentController.linksRemove);
+router.get("/:id/:relationship", ContentController.includesList);
+router.patch("/:id/:relationship", ContentController.includesAdd);
+router.delete("/:id/:relationship", ContentController.includesRemove);
 
 module.exports = router;

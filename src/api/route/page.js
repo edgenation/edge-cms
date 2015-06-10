@@ -14,9 +14,9 @@ router.get("/:id", PageController.details);
 router.patch("/:id", PageController.update);
 router.delete("/:id", PageController.remove);
 
-router.get("/:id/:link", PageController.linksList);
-router.patch("/:id/:link", PageController.linksAdd);
-router.delete("/:id/:link", PageController.linksRemove);
+router.get("/:id/:relationship", PageController.includesList);
+router.patch("/:id/:relationship", PageController.includesAdd);
+router.delete("/:id/:relationship", PageController.includesRemove);
 
 // API.restRouter("/page", Page);
 

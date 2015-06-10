@@ -1,8 +1,12 @@
 var Q = require("q"),
-    _ = require("lodash");
+    _ = require("lodash"),
+    mongoose = require("mongoose");
 
 var ApiDataService = {};
 
+ApiDataService.isValidId = function(id) {
+    return mongoose.Types.ObjectId.isValid(id);
+};
 
 ApiDataService.updateAttributesFromBody = function (req) {
     return function (data) {
@@ -221,36 +225,36 @@ ApiDataService.remove = function (req, Model, property) {
 };
 
 
-ApiDataService.linksList = function (req, Model) {
-    var linkedProperty = req.params.link;
+ApiDataService.includesList = function (req, Model) {
+    var relationshipProperty = req.params.relationship;
 
     var query = Model.findOne({_id: req.params.id});
 
-    //var LinkedModel = require("../../model/content-container");
+    //var RelationshipModel = require("../../model/content-container");
 
     return Q(query.exec())
         .then(ApiDataService.ensureDataReturned)
         .then(function (data) {
-            return Q.ninvoke(Model, "populate", data, {path: linkedProperty});
+            return Q.ninvoke(Model, "populate", data, {path: relationshipProperty});
         })
         //.then(ApiDataService.addIncludedData("page", Model, req))
-        //.then(ApiDataService.addIncludedData("content", LinkedModel, req))
+        //.then(ApiDataService.addIncludedData("content", RelationshipModel, req))
         .then(function (data) {
-            return data[linkedProperty];
+            return data[relationshipProperty];
         })
         .then(ApiDataService.wrapInProperty("data"));
 };
 
-ApiDataService.linksAdd = function(req, Model) {
+ApiDataService.includesAdd = function(req, Model) {
     // TODO: Validate the body?
-    var linkedProperty = req.params.link;
+    var relationshipProperty = req.params.relationship;
 
     return Q.ninvoke(Model, "findOne", { _id: req.params.id })
         .then(ApiDataService.ensureDataReturned)
         .then(function(model) {
-            // TODO: Validate does not already exist?
-            if (model[linkedProperty].indexOf(req.body[linkedProperty]) === -1) {
-                model[linkedProperty].push(req.body[linkedProperty]);
+            // Check the item is not already in the collection
+            if (model[relationshipProperty].indexOf(req.body[relationshipProperty]) === -1) {
+                model[relationshipProperty].push(req.body[relationshipProperty]);
             }
 
             return Q.ninvoke(model, "save")
@@ -259,15 +263,14 @@ ApiDataService.linksAdd = function(req, Model) {
         });
 };
 
-ApiDataService.linksRemove = function(req, Model) {
+ApiDataService.includesRemove = function(req, Model) {
     // TODO: Validate the body?
-    var linkedProperty = req.params.link;
+    var relationshipProperty = req.params.relationship;
 
     return Q.ninvoke(Model, "findOne", { _id: req.params.id })
         .then(ApiDataService.ensureDataReturned)
         .then(function(model) {
-            // TODO: Validate it exists?
-            model[linkedProperty].pull(req.body[linkedProperty]);
+            model[relationshipProperty].pull(req.body[relationshipProperty]);
 
             return Q.ninvoke(model, "save")
                 .spread(ApiDataService.ensureDataReturned)
