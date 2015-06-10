@@ -1,5 +1,6 @@
 var mongoose = require("mongoose"),
-    bcrypt = require("bcrypt-nodejs");
+    bcrypt = require("bcrypt-nodejs"),
+    apiSchemaPlugin = require("./apiSchemaPlugin");
 
 
 var SALT_WORK_FACTOR = 10,
@@ -30,21 +31,12 @@ var UserSchema = new mongoose.Schema({
         trim: true,
         index: {unique: true}
     },
-    created: {
-        type: Date,
-        default: Date.now,
-        required: true
-    },
-    updated: {
-        type: Date,
-        default: Date.now,
-        required: true
-    },
 
     loginAttempts: {type: Number, required: true, default: 0},
     lockUntil: {type: Number}
 });
 
+UserSchema.plugin(apiSchemaPlugin, { type: "user" });
 
 // Check for a future lockUntil timestamp
 UserSchema.virtual("isLocked").get(function () {
@@ -52,7 +44,7 @@ UserSchema.virtual("isLocked").get(function () {
 });
 
 
-var reasons = UserSchema.statics.failedLogin = {
+UserSchema.statics.failedLogin = {
     NOT_FOUND: 0,
     PASSWORD_INCORRECT: 1,
     MAX_ATTEMPTS: 2
@@ -60,9 +52,6 @@ var reasons = UserSchema.statics.failedLogin = {
 
 UserSchema.pre("save", function (next) {
     var user = this;
-
-    // Update the timestamp
-    user.updated = Date.now();
 
     // Check to see if the password was modified
     if (!user.isModified("password")) {
@@ -129,7 +118,7 @@ UserSchema.statics.getAuthenticated = function (username, password, cb) {
 
         // Make sure the user exists
         if (!user) {
-            return cb(null, null, reasons.NOT_FOUND);
+            return cb(null, null, UserSchema.statics.failedLogin.NOT_FOUND);
         }
 
         // Check if the account is currently locked
@@ -139,7 +128,7 @@ UserSchema.statics.getAuthenticated = function (username, password, cb) {
                 if (err) {
                     return cb(err);
                 }
-                return cb(null, null, reasons.MAX_ATTEMPTS);
+                return cb(null, null, UserSchema.statics.failedLogin.MAX_ATTEMPTS);
             });
         }
 
@@ -175,26 +164,11 @@ UserSchema.statics.getAuthenticated = function (username, password, cb) {
                 if (err) {
                     return cb(err);
                 }
-                return cb(null, null, reasons.PASSWORD_INCORRECT);
+                return cb(null, null, UserSchema.statics.failedLogin.PASSWORD_INCORRECT);
             });
         });
     });
 };
 
 
-UserSchema.set("toJSON", {
-    transform: function(doc, ret, options) {
-        var json = {
-            id: ret._id,
-            type: "user",
-            attributes: ret
-        };
-        delete json.attributes._id;
-        delete json.attributes.__v;
-        delete json.attributes.password;
-        return json;
-    }
-});
-
-
-module.exports = mongoose.model("User", UserSchema);
+module.exports = mongoose.model("user", UserSchema);

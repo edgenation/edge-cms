@@ -3,6 +3,8 @@
 
 ## API
 
+- [x] Extending schemas via plugins
+- [ ] Model to json api format?
 - [ ] Validation pagination parameters
 - [ ] Nested includes
 - [ ] Relationships
