@@ -5,7 +5,7 @@
 
 - [ ] Validation pagination parameters
 - [ ] Nested includes
-- [ ] References
+- [ ] Relationships
 - [ ] Links
 - [ ] User authentication
 - [ ] Content restriction?
