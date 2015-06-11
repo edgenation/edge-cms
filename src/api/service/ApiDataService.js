@@ -120,10 +120,14 @@ ApiDataService.addIncludedData = function(Model, req) {
         return (linkedProperty.indexOf(".") !== -1);
     });
 
-    // TODO: Ensure nested also includes parent!
-    // E.g. include=containers.content
-    // This should infer include=containers,containers.content
+    // Ensure nested also includes parent if not specified
+    _.forEach(nestedIncludes, function (includedProperty) {
+        includedProperty = includedProperty.split(".");
 
+        if (includes.indexOf(includedProperty[0]) === -1) {
+            includes.push(includedProperty[0])
+        }
+    });
 
     // Process the includes
     return function(response) {
