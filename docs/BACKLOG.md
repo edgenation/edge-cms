@@ -3,6 +3,7 @@
 
 ## API
 
+- [ ] Filtering (aka search)
 - [x] Extending schemas via plugins
 - [ ] Model to json api format?
 - [ ] Validation pagination parameters
@@ -12,6 +13,7 @@
 - [ ] User authentication
 - [ ] Content restriction?
 - [ ] Tests
+- [ ] Make collections plural (pages, containers etc)?
 
 ## Server
 - [ ] Serve CMS page
