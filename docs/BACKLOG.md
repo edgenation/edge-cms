@@ -14,6 +14,7 @@
 - [ ] User authentication
 - [ ] Content restriction?
 - [ ] Tests
+- [ ] Configuration
 - [ ] Make collections plural (pages, containers etc)?
 
 ## Server
