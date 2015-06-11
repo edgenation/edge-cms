@@ -31,12 +31,21 @@ ApiDataService.selectQuery = function (query, req) {
     var fields = req.query.fields;
     var includes = req.query.include;
 
+    // TODO: Fix sparse fieldsets
+    // TODO: Verify this includes behaviour
     if (fields) {
         // Force includes if used
         if (includes) {
             fields += "," + includes;
         }
         query.select(fields.replace(/,/g, " "));
+    }
+};
+
+ApiDataService.whereQuery = function (query, req) {
+    // GET /comments?filter[post]=1,2&filter[author]=12
+    if (req.query.filter) {
+        query.where(req.query.filter);
     }
 };
 
@@ -232,6 +241,7 @@ ApiDataService.list = function (req, Model, pageSize) {
     var listQuery = Model.find();
 
     var page = ApiDataService.paginateQuery(listQuery, req, pageSize);
+    ApiDataService.whereQuery(listQuery, req);
     ApiDataService.sortQuery(listQuery, req);
     ApiDataService.selectQuery(listQuery, req);
 

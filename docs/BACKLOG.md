@@ -3,7 +3,8 @@
 
 ## API
 
-- [ ] Filtering (aka search)
+- [x] Filtering (aka search)
+- [ ] Fix sparse fieldsets - now uses array syntax
 - [x] Extending schemas via plugins
 - [ ] Model to json api format?
 - [ ] Validation pagination parameters
