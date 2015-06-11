@@ -6,7 +6,7 @@
 - [x] Extending schemas via plugins
 - [ ] Model to json api format?
 - [ ] Validation pagination parameters
-- [ ] Nested includes
+- [x] Nested includes
 - [ ] Relationships
 - [ ] Links
 - [ ] User authentication

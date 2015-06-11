@@ -69,73 +69,122 @@ ApiDataService.getReferencedModelNameByPath = function (Model, path) {
         return false;
     }
 
-    // TODO: Check type is always array
-    return Model.schema.paths[path].options.type[0].ref;
+    if (Array.isArray(Model.schema.paths[path].options.type)) {
+        return Model.schema.paths[path].options.type[0].ref
+    } else {
+        return Model.schema.paths[path].options.ref;
+    }
 };
 
 ApiDataService.getModelFromName = function (Model, name) {
     return Model.db.model(name);
 };
 
+ApiDataService.getIncludedDataFor = function(Model, linkedProperty, response, location) {
+    location = location || "data";
+    var linkedModelName = ApiDataService.getReferencedModelNameByPath(Model, linkedProperty);
+    var LinkedModel = ApiDataService.getModelFromName(Model, linkedModelName);
 
-ApiDataService.addIncludedData = function (Model, req) {
+    var linkedIds = [];
+    if (Array.isArray(response[location])) {
+        _.forEach(response[location], function(d) {
+            linkedIds = linkedIds.concat(d[linkedProperty]);
+        });
+        _.uniq(linkedIds, "id");
+    } else {
+        linkedIds = response[location][linkedProperty];
+    }
+
+    var linkedQuery = LinkedModel.find({ "_id": { $in: linkedIds } });
+    return Q(linkedQuery.exec())
+        .then(ApiDataService.ensureDataReturned)
+        .then(function(linkedData) {
+            if (!response.included) {
+                response.included = [];
+            }
+
+            response.included = response.included.concat(linkedData);
+            return response;
+        });
+};
+
+ApiDataService.addIncludedData = function(Model, req) {
     var includes = req.query.include;
     if (!includes) {
         return Q.resolve();
     }
 
-    return function (response) {
-        var promises = [];
+    includes = includes.split(",");
 
-        includes = includes.split(",");
+    var nestedIncludes = _.remove(includes, function(linkedProperty) {
+        return (linkedProperty.indexOf(".") !== -1);
+    });
 
-        _.forEach(includes, function (linkedProperty) {
-            // TODO: Nested includes that include a . - e.g. containers.content
-            //if (linkedProperty.indexOf(".") !== -1) {
-            //    return;
-            //}
+    // TODO: Ensure nested also includes parent!
+    // E.g. include=containers.content
+    // This should infer include=containers,containers.content
 
-            // TODO: Validate the linkedProperty is part of the model!
+
+    // Process the includes
+    return function(response) {
+        var funcs = [];
+
+        // Single includes
+        _.forEach(includes, function(linkedProperty) {
+            // No such nested property
             if (!Model.schema.paths[linkedProperty]) {
                 return;
             }
 
-            var linkedModelName = ApiDataService.getReferencedModelNameByPath(Model, linkedProperty);
-            var LinkedModel = ApiDataService.getModelFromName(Model, linkedModelName);
+            var func = function(response) {
+                return ApiDataService.getIncludedDataFor(Model, linkedProperty, response);
+            };
 
-
-            var linkedIds = [];
-            if (Array.isArray(response.data)) {
-                _.forEach(response.data, function (d) {
-                    linkedIds = linkedIds.concat(d[linkedProperty]);
-                });
-                _.uniq(linkedIds, "id");
-            } else {
-                linkedIds = response.data[linkedProperty];
-            }
-
-            var linkedQuery = LinkedModel.find({"_id": {$in: linkedIds}});
-            promises.push(
-                Q(linkedQuery.exec())
-                    .then(ApiDataService.ensureDataReturned)
-                    .then(function (linkedData) {
-                        if (!response.included) {
-                            response.included = [];
-                        }
-
-                        response.included.push(linkedData);
-                        return response;
-                    })
-            );
+            funcs.push(func);
         });
 
-        if (promises.length === 1) {
-            return promises[0];
-        } else {
-            return promises.reduce(Q.when, Q(response));
-        }
+        // Nested includes that include a . - e.g. containers.content
+        _.forEach(nestedIncludes, function(linkedPropertyObj) {
+            linkedPropertyObj = linkedPropertyObj.split(".");
+
+            // Ensure only one level deep!
+            if (linkedPropertyObj.length !== 2) {
+                return;
+            }
+
+            var parentProperty = linkedPropertyObj[0];
+            var nestedProperty = linkedPropertyObj[1];
+
+            // No such nested property
+            if (!Model.schema.paths[parentProperty]) {
+                return;
+            }
+
+            var func = function(response) {
+                // If there is no included data to parse
+                if (!response.included || response.included.length === 0) {
+                    return response;
+                }
+
+                var parentModelName = ApiDataService.getReferencedModelNameByPath(Model, parentProperty);
+                var ParentModel = ApiDataService.getModelFromName(Model, parentModelName);
+
+                // No such deep nested property
+                if (!ParentModel.schema.paths[nestedProperty]) {
+                    return response;
+                }
+
+                return ApiDataService.getIncludedDataFor(ParentModel, nestedProperty, response, "included");
+            };
+
+            funcs.push(func);
+        });
+
+
+        return funcs.reduce(Q.when, Q(response));
     };
 };
+
 
 ApiDataService.addPaginationData = function (Model, offset, limit) {
     return function (response) {
