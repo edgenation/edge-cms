@@ -50,7 +50,6 @@
     "method-override": "^2.3.1",
     "moment": "^2.9.0",
     "mongoose": "^4.0.5",
-    "pluralize": "^1.1.2",
     "q": "^1.1.2",
     "require-dir": "^0.3.0",
     "response-time": "^2.2.0"

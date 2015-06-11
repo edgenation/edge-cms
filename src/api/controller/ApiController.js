@@ -1,5 +1,3 @@
-var pluralize = require("pluralize");
-
 var ApiDataService = require("../service/ApiDataService");
 
 var ApiController = {};
@@ -87,46 +85,46 @@ ApiController.error500 = function (err, req, res, next) {
 };
 
 
-ApiController.list = function (Model, property, pageSize) {
+ApiController.list = function (Model, pageSize) {
     return function (req, res, next) {
-        ApiDataService.list(req, Model, property, pageSize)
+        ApiDataService.list(req, Model, pageSize)
             .then(ApiController.sendResponse(res, 200))
             .fail(next);
     };
 };
 
-ApiController.create = function (Model, property) {
+ApiController.create = function (Model) {
     return function (req, res, next) {
-        ApiDataService.create(req, Model, property)
-            .then(function (data) {
-                // TODO: Use current URL to generate new one
-                res.setHeader("Location", "/api/" + property + "/" + data[property].id);
-                return data;
+        ApiDataService.create(req, Model)
+            .then(function (response) {
+                // TODO: Use current URL to generate new one?
+                res.setHeader("Location", "/api/" + Model.modelName + "/" + response.data.id);
+                return response;
             })
             .then(ApiController.sendResponse(res, 201))
             .fail(next);
     };
 };
 
-ApiController.details = function (Model, property) {
+ApiController.details = function (Model) {
     return function (req, res, next) {
-        ApiDataService.details(req, Model, property)
+        ApiDataService.details(req, Model)
             .then(ApiController.sendResponse(res, 200))
             .fail(next);
     };
 };
 
-ApiController.update = function (Model, property) {
+ApiController.update = function (Model) {
     return function (req, res, next) {
-        ApiDataService.update(req, Model, property)
+        ApiDataService.update(req, Model)
             .then(ApiController.sendResponse(res, 200))
             .fail(next);
     };
 };
 
-ApiController.remove = function (Model, property) {
+ApiController.remove = function (Model) {
     return function (req, res, next) {
-        ApiDataService.update(req, Model, property)
+        ApiDataService.update(req, Model)
             .then(ApiController.sendResponse(res, 204))
             .fail(next);
     };
@@ -159,14 +157,13 @@ ApiController.includesRemove = function (Model) {
 ApiController.restForModel = function (Model, perPage) {
     perPage = perPage || 2;
     var singularProperty = Model.modelName.substr(0, 1).toLowerCase() + Model.modelName.substr(1);
-    var pluralProperty = pluralize(singularProperty);
 
     return {
-        list: ApiController.list(Model, pluralProperty, perPage),
-        create: ApiController.create(Model, singularProperty),
-        details: ApiController.details(Model, singularProperty),
-        update: ApiController.update(Model, singularProperty),
-        remove: ApiController.remove(Model, singularProperty),
+        list: ApiController.list(Model, perPage),
+        create: ApiController.create(Model),
+        details: ApiController.details(Model),
+        update: ApiController.update(Model),
+        remove: ApiController.remove(Model),
         includesList: ApiController.includesList(Model),
         includesAdd: ApiController.includesAdd(Model),
         includesRemove: ApiController.includesRemove(Model)

@@ -64,13 +64,13 @@ ApiDataService.wrapInProperty = function (propertyName) {
     };
 };
 
-ApiDataService.getModelNameFromProperty = function (Model, property) {
-    if (!Model.schema.paths[property]) {
+ApiDataService.getReferencedModelNameByPath = function (Model, path) {
+    if (!Model.schema.paths[path]) {
         return false;
     }
 
     // TODO: Check type is always array
-    return Model.schema.paths[property].options.type[0].ref;
+    return Model.schema.paths[path].options.type[0].ref;
 };
 
 ApiDataService.getModelFromName = function (Model, name) {
@@ -78,7 +78,7 @@ ApiDataService.getModelFromName = function (Model, name) {
 };
 
 
-ApiDataService.addIncludedData = function (propertyName, Model, req) {
+ApiDataService.addIncludedData = function (Model, req) {
     var includes = req.query.include;
     if (!includes) {
         return Q.resolve();
@@ -100,8 +100,9 @@ ApiDataService.addIncludedData = function (propertyName, Model, req) {
                 return;
             }
 
-            var linkedModelName = ApiDataService.getModelNameFromProperty(Model, linkedProperty);
+            var linkedModelName = ApiDataService.getReferencedModelNameByPath(Model, linkedProperty);
             var LinkedModel = ApiDataService.getModelFromName(Model, linkedModelName);
+
 
             var linkedIds = [];
             if (Array.isArray(response.data)) {
@@ -136,7 +137,7 @@ ApiDataService.addIncludedData = function (propertyName, Model, req) {
     };
 };
 
-ApiDataService.addPaginationData = function (Model, property, offset, limit) {
+ApiDataService.addPaginationData = function (Model, offset, limit) {
     return function (response) {
         return Q.ninvoke(Model, "count").then(function (count) {
             if (!response.meta) {
@@ -174,7 +175,7 @@ ApiDataService.addPaginationData = function (Model, property, offset, limit) {
 };
 
 
-ApiDataService.list = function (req, Model, property, pageSize) {
+ApiDataService.list = function (req, Model, pageSize) {
     var listQuery = Model.find();
 
     var page = ApiDataService.paginateQuery(listQuery, req, pageSize);
@@ -184,11 +185,11 @@ ApiDataService.list = function (req, Model, property, pageSize) {
     return Q(listQuery.exec())
         .then(ApiDataService.ensureDataReturned)
         .then(ApiDataService.wrapInProperty("data"))
-        .then(ApiDataService.addIncludedData(property, Model, req))
-        .then(ApiDataService.addPaginationData(Model, property, page, pageSize));
+        .then(ApiDataService.addIncludedData(Model, req))
+        .then(ApiDataService.addPaginationData(Model, page, pageSize));
 };
 
-ApiDataService.create = function (req, Model, property) {
+ApiDataService.create = function (req, Model) {
     var model = new Model(req.body.data.attributes);
 
     return Q.ninvoke(model, "save")
@@ -196,7 +197,7 @@ ApiDataService.create = function (req, Model, property) {
         .then(ApiDataService.wrapInProperty("data"));
 };
 
-ApiDataService.details = function (req, Model, property) {
+ApiDataService.details = function (req, Model) {
     var detailQuery = Model.findOne({_id: req.params.id});
 
     ApiDataService.selectQuery(detailQuery, req);
@@ -204,10 +205,10 @@ ApiDataService.details = function (req, Model, property) {
     return Q(detailQuery.exec())
         .then(ApiDataService.ensureDataReturned)
         .then(ApiDataService.wrapInProperty("data"))
-        .then(ApiDataService.addIncludedData(property, Model, req));
+        .then(ApiDataService.addIncludedData(Model, req));
 };
 
-ApiDataService.update = function (req, Model, property) {
+ApiDataService.update = function (req, Model) {
     return Q.ninvoke(Model, "findOne", {_id: req.params.id})
         .then(ApiDataService.ensureDataReturned)
         .then(ApiDataService.updateAttributesFromBody(req))
@@ -218,7 +219,7 @@ ApiDataService.update = function (req, Model, property) {
         });
 };
 
-ApiDataService.remove = function (req, Model, property) {
+ApiDataService.remove = function (req, Model) {
     return Q.ninvoke(Model, "findByIdAndRemove", req.params.id)
         .then(ApiDataService.ensureDataReturned)
         .then(ApiDataService.wrapInProperty("data"));
@@ -237,8 +238,8 @@ ApiDataService.includesList = function (req, Model) {
         .then(function (data) {
             return Q.ninvoke(Model, "populate", data, {path: relationshipProperty});
         })
-        //.then(ApiDataService.addIncludedData("page", Model, req))
-        //.then(ApiDataService.addIncludedData("content", RelationshipModel, req))
+        //.then(ApiDataService.addIncludedData(Model, req))
+        //.then(ApiDataService.addIncludedData(RelationshipModel, req))
         .then(function (data) {
             return data[relationshipProperty];
         })
