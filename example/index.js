@@ -1,14 +1,15 @@
 var edgeCMS = require("../src");
 
-var cms = new edgeCMS.CMS();
+var config = edgeCMS.config(__dirname + "/config");
+var cms = new edgeCMS.site();
 
 // Set a logger
 //cms.set("log", edgeCMS.logger);
 
 // Create the CMS app
 cms.createApp({
-    port: process.env.PORT || 4000,
-    host: process.env.HOST || "0.0.0.0"
+    port: config.get("port"),
+    host: config.get("host")
 });
 
 // Add our client views
@@ -20,14 +21,14 @@ cms.modify("views", function(views) {
 cms.use(edgeCMS.errorHandler());
 
 // Add cms routing
-cms.use(edgeCMS.cmsRouter());
+cms.use(edgeCMS.router());
 
 
 // Apply the CMS API
 edgeCMS.api.useApp(cms.app);
 
 // Connect to the database
-edgeCMS.api.connectDB(process.env.MONGO_URL || "mongodb://localhost/edge-cms-prototype")
+edgeCMS.api.connectDB(config.get("database"))
     .then(function () {
         cms.startServer();
     })

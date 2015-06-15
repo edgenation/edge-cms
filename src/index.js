@@ -1,11 +1,13 @@
 var api = require("./api/app");
-var CMS = require("./site/app");
+var site = require("./site/app");
 var errorHandler = require("./site/errorHandler");
-var cmsRouter = require("./site/cmsRouter");
+var router = require("./site/router");
+var config = require("./site/config");
 
 module.exports = {
     api: api,
-    CMS: CMS,
+    site: site,
     errorHandler: errorHandler,
-    cmsRouter: cmsRouter
+    router: router,
+    config: config
 };
