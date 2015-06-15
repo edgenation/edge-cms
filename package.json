@@ -6,7 +6,9 @@
   "main": "src/index.js",
   "directories": {
     "doc": "docs",
-    "test": "test"
+    "test": "test",
+    "lib": "src",
+    "example": "example"
   },
   "scripts": {
     "test": "gulp test",
