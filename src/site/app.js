@@ -10,7 +10,7 @@ var CMS = function () {
     this.app = null;
 };
 
-CMS.prototype.createApp = function () {
+CMS.prototype.createApp = function (options) {
     this.app = express();
     this.app.use(compression());
     this.app.use(bodyParser.urlencoded({extended: true}));
@@ -18,8 +18,8 @@ CMS.prototype.createApp = function () {
     this.app.use(responseTime());
     this.app.use(helmet());
 
-    this.app.set("port", process.env.PORT || 4000);
-    this.app.set("host", process.env.HOST || "0.0.0.0");
+    this.app.set("port", options.port || 4000);
+    this.app.set("host", options.host || "0.0.0.0");
 
     this.app.set("view engine", "jade");
     this.app.set("views", __dirname + "/view");

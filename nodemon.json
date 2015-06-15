@@ -7,6 +7,9 @@
         ".sass-cache",
         ".idea"
     ],
-    "watch": ["src/**/*"],
+    "watch": [
+        "src/**/*.js",
+        "example/**/*.js"
+    ],
     "ext": "js"
 }
