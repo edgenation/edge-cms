@@ -20,6 +20,24 @@ function loadCmsPage(url) {
     }));
 }
 
+function apiPageAdapter(response) {
+    var page = response.entity.data[0];
+
+    _.forEach(page.attributes.containers, function(containerId, n, containers) {
+        containers[n] = _.find(response.entity.included, function(include) {
+            return include.id === containerId;
+        });
+
+        _.forEach(containers[n].attributes.content, function(contentId, n, content) {
+            content[n] = _.find(response.entity.included, function(include) {
+                return include.id === contentId;
+            });
+        });
+    });
+
+    return page;
+}
+
 // Check to see if this page exists in the API
 function cmsRouter(options) {
     return function cmsRouter(req, res, next) {
@@ -39,21 +57,7 @@ function cmsRouter(options) {
                 return res.send(response.entity);
             }
 
-            var page = response.entity.data[0];
-
-            _.forEach(page.attributes.containers, function (containerId, n, containers) {
-                containers[n] = _.find(response.entity.included, function(include) {
-                    return include.id === containerId;
-                });
-
-                _.forEach(containers[n].attributes.content, function(contentId, n, content) {
-                    content[n] = _.find(response.entity.included, function(include) {
-                        return include.id === contentId;
-                    });
-                });
-            });
-
-            res.render("page", { page: page });
+            res.render("page", { page: apiPageAdapter(response) });
         }).fail(function(response) {
             // API error
             next(response.entity);
