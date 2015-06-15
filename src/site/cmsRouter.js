@@ -65,4 +65,10 @@ function cmsRouter(options) {
     };
 }
 
-module.exports = cmsRouter;
+module.exports = function (options) {
+    return {
+        init: function(app, cms) {
+            app.use(cmsRouter());
+        }
+    }
+};

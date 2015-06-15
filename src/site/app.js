@@ -5,9 +5,49 @@ var express = require("express"),
     responseTime = require("response-time"),
     cookieParser = require("cookie-parser");
 
+require("./jadeMultiLayout");
+
 
 var CMS = function () {
     this.app = null;
+    this.options = [];
+    this.set("log", console);
+    this.set("views", [__dirname + "/view"]);
+};
+
+CMS.prototype.set = function(option, value) {
+    this.options[option] = value;
+};
+
+CMS.prototype.modify = function(option, fn) {
+    fn(this.options[option]);
+};
+
+CMS.prototype.get = function(option) {
+    return this.options[option];
+};
+
+CMS.prototype.use = function(middleware) {
+    return middleware.init(this.app, this);
+};
+
+CMS.prototype.log = function(level, msg) {
+    var logger = this.get("log");
+
+    if (!logger) {
+        return;
+    }
+
+    if (!msg) {
+        msg = level;
+        level = "log";
+    }
+
+    if (typeof logger[level] !== "function") {
+        level = "log";
+    }
+
+    logger[level].call(this, msg);
 };
 
 CMS.prototype.createApp = function (options) {
@@ -22,24 +62,34 @@ CMS.prototype.createApp = function (options) {
     this.app.set("host", options.host || "0.0.0.0");
 
     this.app.set("view engine", "jade");
-    this.app.set("views", __dirname + "/view");
+};
 
-    // View CMS pages
-    this.app.use(require("./cmsRouter")());
+CMS.prototype.initApp = function () {
+    // Set the views
+    this.app.set("views", this.get("views"));
+    this.app.locals.basedir = this.get("views");
 
-    // TODO: Add cms routes etc
     this.app.use(express.static(__dirname + "/../../public"));
     this.app.use(express.static(__dirname + "/../../bower_components"));
 
-    return this.app;
+    // Set the error handlers if they exist
+    var error404 = this.get("404");
+    if (error404) {
+        this.app.use(error404);
+    }
+
+    var error500 = this.get("500");
+    if (error500) {
+        this.app.use(error500);
+    }
 };
 
 CMS.prototype.startServer = function () {
-    // TODO: Add error handler routes
+    this.initApp();
 
     this.app.listen(this.app.get("port"), this.app.get("host"), function () {
         console.log("CMS Server started: http://" + this.address().address + ":" + this.address().port);
     });
 };
 
-module.exports = new CMS();
+module.exports = CMS;
