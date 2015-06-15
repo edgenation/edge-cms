@@ -7,7 +7,7 @@ var PageSchema = new mongoose.Schema({
         type: String,
         trim: true,
         // match: /^([[:alpha:][:space:][:punct:]]{1,100})$/
-        match: /^([^\f\n\r\t]{1,100})$/
+        match: /^\/([^\f\n\r\t]{1,100})$/
     },
     url: {
         type: String,
