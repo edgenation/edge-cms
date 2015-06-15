@@ -1,4 +1,5 @@
 var Q = require("q");
+var _ = require("lodash");
 var rest = require("rest");
 var mime = require("rest/interceptor/mime");
 var pathPrefix = require("rest/interceptor/pathPrefix");
@@ -8,14 +9,14 @@ var timeout = require("rest/interceptor/timeout");
 var client = rest
     .wrap(timeout, { timeout: 10e3 })   // 10 seconds
     .wrap(mime, { mime: "application/vnd.api+json" })
-    .wrap(pathPrefix, { prefix: "http://localhost:4000" });
+    .wrap(pathPrefix, { prefix: "http://localhost:4000" }); // TODO: Get from config
 
 
 function loadCmsPage(url) {
     // Attempt to load the page from the API
     return Q(client({
         path: "/api/page",
-        params: { "filter[url]=": url }
+        params: { "filter[url]=": url, include: "containers.content" }
     }));
 }
 
@@ -34,8 +35,25 @@ function cmsRouter(options) {
                 return next();
             }
 
-            // TODO: Send the response - render template etc
-            res.send(response.entity);
+            if (req.query.raw) {
+                return res.send(response.entity);
+            }
+
+            var page = response.entity.data[0];
+
+            _.forEach(page.attributes.containers, function (containerId, n, containers) {
+                containers[n] = _.find(response.entity.included, function(include) {
+                    return include.id === containerId;
+                });
+
+                _.forEach(containers[n].attributes.content, function(contentId, n, content) {
+                    content[n] = _.find(response.entity.included, function(include) {
+                        return include.id === contentId;
+                    });
+                });
+            });
+
+            res.render("page", { page: page });
         }).fail(function(response) {
             // API error
             next(response.entity);

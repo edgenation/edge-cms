@@ -21,6 +21,9 @@ CMS.prototype.createApp = function () {
     this.app.set("port", process.env.PORT || 4000);
     this.app.set("host", process.env.HOST || "0.0.0.0");
 
+    this.app.set("view engine", "jade");
+    this.app.set("views", __dirname + "/view");
+
     // View CMS pages
     this.app.use(require("./cmsRouter")());
 
