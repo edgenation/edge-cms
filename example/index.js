@@ -7,8 +7,8 @@ var cms = new edgeCMS.CMS();
 
 // Create the CMS app
 cms.createApp({
-    port: process.env.PORT,
-    host: process.env.HOST
+    port: process.env.PORT || 4000,
+    host: process.env.HOST || "0.0.0.0"
 });
 
 // Add our client views
@@ -27,7 +27,7 @@ cms.use(edgeCMS.cmsRouter());
 edgeCMS.api.useApp(cms.app);
 
 // Connect to the database
-edgeCMS.api.connectDB("mongodb://localhost/edge-cms-prototype")
+edgeCMS.api.connectDB(process.env.MONGO_URL || "mongodb://localhost/edge-cms-prototype")
     .then(function () {
         cms.startServer();
     })
