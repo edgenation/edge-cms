@@ -20,19 +20,35 @@ function loadCmsPage(url) {
     }));
 }
 
+function flattenAttributes(data) {
+    _.forEach(data.attributes, function(value, name) {
+        data[name] = value;
+    });
+
+    delete data.attributes;
+}
+
+function nestIncluded(data, included) {
+    _.forEach(data, function(id, index, content) {
+        content[index] = _.find(included, function(include) {
+            return include.id === id;
+        });
+
+        flattenAttributes(content[index]);
+    });
+}
+
 function apiPageAdapter(response) {
     var page = response.entity.data[0];
 
-    _.forEach(page.attributes.regions, function(regionId, n, regions) {
-        regions[n] = _.find(response.entity.included, function(include) {
-            return include.id === regionId;
-        });
+    flattenAttributes(page);
 
-        _.forEach(regions[n].attributes.content, function(contentId, n, content) {
-            content[n] = _.find(response.entity.included, function(include) {
-                return include.id === contentId;
-            });
-        });
+    // Nest the regions
+    nestIncluded(page.regions, response.entity.included);
+
+    // Nest the region contents
+    _.forEach(page.regions, function(regionId, regionIndex, regions) {
+        nestIncluded(regions[regionIndex].content, response.entity.included);
     });
 
     return page;
@@ -59,7 +75,7 @@ function cmsRouter(options) {
 
             var page = apiPageAdapter(response);
 
-            res.render("templates/page/" + page.attributes.template, { page: page });
+            res.render("templates/page/" + page.template, { page: page });
         }).fail(function(response) {
             // API error
             next(response.entity);

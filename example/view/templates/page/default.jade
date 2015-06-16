@@ -3,9 +3,9 @@ extends /layout/main
 block content
 
     h1 Example
-    h2 #{page.attributes.title}
+    h2 #{page.title}
 
-    each region in page.attributes.regions
+    each region in page.regions
         div
             h2= region.name
             p

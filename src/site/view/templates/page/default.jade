@@ -2,11 +2,11 @@ extends /layout/main
 
 block content
 
-    h1 #{page.attributes.title}
+    h1 #{page.title}
 
     ul
-        each region in page.attributes.regions
+        each region in page.regions
             li #{region.id} - #{region.type}
             ul
-                each content in region.attributes.content
+                each content in region.content
                     li #{content.id} - #{content.type}

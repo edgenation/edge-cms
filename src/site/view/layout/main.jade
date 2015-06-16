@@ -9,8 +9,8 @@ html(lang="en-GB")
     head
         meta(charset="UTF-8")
 
-        if page
-            title #{page.attributes.title} - Edge CMS
+        if page && page.title
+            title #{page.title} - Edge CMS
         else
             title Edge CMS
     body
