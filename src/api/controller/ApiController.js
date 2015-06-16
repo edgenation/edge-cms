@@ -89,7 +89,7 @@ ApiController.list = function (Model, pageSize) {
     return function (req, res, next) {
         ApiDataService.list(req, Model, pageSize)
             .then(ApiController.sendResponse(res, 200))
-            .fail(next);
+            .catch(next);
     };
 };
 
@@ -102,7 +102,7 @@ ApiController.create = function (Model) {
                 return response;
             })
             .then(ApiController.sendResponse(res, 201))
-            .fail(next);
+            .catch(next);
     };
 };
 
@@ -110,7 +110,7 @@ ApiController.details = function (Model) {
     return function (req, res, next) {
         ApiDataService.details(req, Model)
             .then(ApiController.sendResponse(res, 200))
-            .fail(next);
+            .catch(next);
     };
 };
 
@@ -118,7 +118,7 @@ ApiController.update = function (Model) {
     return function (req, res, next) {
         ApiDataService.update(req, Model)
             .then(ApiController.sendResponse(res, 200))
-            .fail(next);
+            .catch(next);
     };
 };
 
@@ -126,7 +126,7 @@ ApiController.remove = function (Model) {
     return function (req, res, next) {
         ApiDataService.update(req, Model)
             .then(ApiController.sendResponse(res, 204))
-            .fail(next);
+            .catch(next);
     };
 };
 
@@ -134,7 +134,7 @@ ApiController.includesList = function (Model) {
     return function (req, res, next) {
         ApiDataService.includesList(req, Model)
             .then(ApiController.sendResponse(res, 200))
-            .fail(next);
+            .catch(next);
     };
 };
 
@@ -142,7 +142,7 @@ ApiController.includesAdd = function (Model) {
     return function (req, res, next) {
         ApiDataService.includesAdd(req, Model)
             .then(ApiController.sendResponse(res, 200))
-            .fail(next);
+            .catch(next);
     };
 };
 
@@ -150,7 +150,7 @@ ApiController.includesRemove = function (Model) {
     return function (req, res, next) {
         ApiDataService.includesRemove(req, Model)
             .then(ApiController.sendResponse(res, 200))
-            .fail(next);
+            .catch(next);
     };
 };
 

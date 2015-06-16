@@ -49,7 +49,7 @@ API.prototype.startServer = function () {
                 console.log("CMS API Server started: http://" + this.address().address + ":" + this.address().port);
             });
         })
-        .fail(function (err) {
+        .catch(function (err) {
             console.error("Fatal Error:", err);
             mongoose.disconnect();
         });

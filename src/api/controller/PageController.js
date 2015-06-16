@@ -29,12 +29,12 @@ var PageController = ApiController.restForModel(Page, 2);
                             Q.ninvoke(page, "save")
                                 .spread(ApiController.checkDataReturned)
                                 .then(ApiController.sendResponse(res, 201))
-                                .fail(next);
+                                .catch(next);
                         }
                     })
-                    .fail(next);
+                    .catch(next);
             })
-            .fail(next);
+            .catch(next);
     },
 
     removeFromContainers: function (req, res, next) {
@@ -48,9 +48,9 @@ var PageController = ApiController.restForModel(Page, 2);
                 Q.ninvoke(page, "save")
                     .spread(ApiController.checkDataReturned)
                     .then(ApiController.sendResponse(res, 201))
-                    .fail(next);
+                    .catch(next);
             })
-            .fail(next);
+            .catch(next);
     }
 */
 

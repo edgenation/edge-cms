@@ -42,7 +42,7 @@ function cmsRouter(options) {
             var page = apiAdapter.page(response);
 
             return res.render("templates/page/" + page.template, { page: page });
-        }).fail(function(response) {
+        }).catch(function(response) {
             // API error
             next(response.entity);
         });
