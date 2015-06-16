@@ -17,6 +17,14 @@ var PageSchema = new mongoose.Schema({
         match: /^([a-z0-9\-\/]{1,1000})$/
     },
 
+    template: {
+        required: true,
+        type: String,
+        trim: true,
+        default: "default",
+        match: /^\/([^\f\n\r\t]{1,100})$/
+    },
+
     regions: [{ type: mongoose.Schema.Types.ObjectId, ref: "region" }]
 });
 
