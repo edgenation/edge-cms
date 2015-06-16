@@ -17,7 +17,7 @@ var PageSchema = new mongoose.Schema({
         match: /^([a-z0-9\-\/]{1,1000})$/
     },
 
-    containers: [{ type: mongoose.Schema.Types.ObjectId, ref: "content-container" }]
+    regions: [{ type: mongoose.Schema.Types.ObjectId, ref: "region" }]
 });
 
 PageSchema.plugin(apiSchemaPlugin, { type: "page"});

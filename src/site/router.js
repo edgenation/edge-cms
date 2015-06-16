@@ -16,19 +16,19 @@ function loadCmsPage(url) {
     // Attempt to load the page from the API
     return Q(client({
         path: "/api/page",
-        params: { "filter[url]=": url, include: "containers.content" }
+        params: { "filter[url]=": url, include: "regions.content" }
     }));
 }
 
 function apiPageAdapter(response) {
     var page = response.entity.data[0];
 
-    _.forEach(page.attributes.containers, function(containerId, n, containers) {
-        containers[n] = _.find(response.entity.included, function(include) {
-            return include.id === containerId;
+    _.forEach(page.attributes.regions, function(regionId, n, regions) {
+        regions[n] = _.find(response.entity.included, function(include) {
+            return include.id === regionId;
         });
 
-        _.forEach(containers[n].attributes.content, function(contentId, n, content) {
+        _.forEach(regions[n].attributes.content, function(contentId, n, content) {
             content[n] = _.find(response.entity.included, function(include) {
                 return include.id === contentId;
             });

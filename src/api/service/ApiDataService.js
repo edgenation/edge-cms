@@ -156,7 +156,7 @@ ApiDataService.addIncludedData = function(Model, req) {
             funcs.push(func);
         });
 
-        // Nested includes that include a . - e.g. containers.content
+        // Nested includes that include a . - e.g. regions.content
         _.forEach(nestedIncludes, function(linkedPropertyObj) {
             linkedPropertyObj = linkedPropertyObj.split(".");
 
@@ -294,7 +294,7 @@ ApiDataService.includesList = function (req, Model) {
 
     var query = Model.findOne({_id: req.params.id});
 
-    //var RelationshipModel = require("../../model/content-container");
+    //var RelationshipModel = require("../../model/region");
 
     return Q(query.exec())
         .then(ApiDataService.ensureDataReturned)

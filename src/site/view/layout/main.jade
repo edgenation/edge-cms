@@ -2,6 +2,10 @@ doctype html
 html(lang="en-GB")
     head
         meta(charset="UTF-8")
-        title #{page.attributes.title}
+
+        if page
+            title #{page.attributes.title} - Edge CMS
+        else
+            title Edge CMS
     body
         block content

@@ -7,8 +7,8 @@ block content
 
 
     ul
-        each container in page.attributes.containers
-            li #{container.id} - #{container.type}
+        each region in page.attributes.regions
+            li #{region.id} - #{region.type}
             ul
-                each content in container.attributes.content
+                each content in region.attributes.content
                     li #{content.id} - #{content.type}

@@ -1,7 +1,7 @@
 var mongoose = require("mongoose"),
     apiSchemaPlugin = require("./apiSchemaPlugin");
 
-var ContentContainerSchema = new mongoose.Schema({
+var RegionSchema = new mongoose.Schema({
     name: {
         type: String,
         trim: true,
@@ -13,6 +13,6 @@ var ContentContainerSchema = new mongoose.Schema({
     content: [{type: mongoose.Schema.Types.ObjectId, ref: "content"}]
 });
 
-ContentContainerSchema.plugin(apiSchemaPlugin, { type: "content-container" });
+RegionSchema.plugin(apiSchemaPlugin, { type: "region" });
 
-module.exports = mongoose.model("content-container", ContentContainerSchema);
+module.exports = mongoose.model("region", RegionSchema);

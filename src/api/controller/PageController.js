@@ -14,7 +14,7 @@ var PageController = ApiController.restForModel(Page, 2);
                 Q.ninvoke(ContentContainer, "findOne", {_id: req.params.iid})
                     .then(ApiController.checkDataReturned)
                     .then(function (model) {
-                        var val = _.find(page.containers, function (item) {
+                        var val = _.find(page.regions, function (item) {
                             return item._id.equals(model._id);
                         });
 
@@ -23,7 +23,7 @@ var PageController = ApiController.restForModel(Page, 2);
                             ApiController.sendResponse(res, 201)(page);
                         } else {
                             // Add the model to the collection
-                            page.containers.addToSet(model);
+                            page.regions.addToSet(model);
 
                             // Save the collection
                             Q.ninvoke(page, "save")
@@ -42,7 +42,7 @@ var PageController = ApiController.restForModel(Page, 2);
             .then(ApiController.checkDataReturned)
             .then(function (page) {
                 // Remove the item
-                page.containers.pull(req.params.iid);
+                page.regions.pull(req.params.iid);
 
                 // Save the page
                 Q.ninvoke(page, "save")
