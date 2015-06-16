@@ -57,7 +57,7 @@ function cmsRouter(options) {
                 return res.send(response.entity);
             }
 
-            res.render("page", { page: apiPageAdapter(response) });
+            res.render("templates/page", { page: apiPageAdapter(response) });
         }).fail(function(response) {
             // API error
             next(response.entity);

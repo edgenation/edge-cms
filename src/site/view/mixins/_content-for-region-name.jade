@@ -1,0 +1,5 @@
+mixin content-for-region-name(regionName, page)
+    each region in page.attributes.regions
+        if region.name == regionName
+            each content in region.attributes.content
+                + content(content)
