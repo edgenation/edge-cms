@@ -156,7 +156,6 @@ ApiController.includesRemove = function (Model) {
 
 ApiController.restForModel = function (Model, perPage) {
     perPage = perPage || 2;
-    var singularProperty = Model.modelName.substr(0, 1).toLowerCase() + Model.modelName.substr(1);
 
     return {
         list: ApiController.list(Model, perPage),

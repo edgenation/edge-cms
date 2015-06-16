@@ -1,5 +1,5 @@
 {
-    "verbose": true,
+    "verbose": false,
     "ignore": [
         ".git",
         "node_modules",
@@ -8,8 +8,11 @@
         ".idea"
     ],
     "watch": [
-        "src/**/*.js",
-        "example/**/*.js"
+        "src/**/*",
+        "example/**/*"
     ],
+    "env": {
+        "NODE_ENV": "development"
+    },
     "ext": "js"
 }

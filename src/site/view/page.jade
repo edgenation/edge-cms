@@ -1,9 +1,12 @@
-h1 #{page.attributes.title}
+extends /layout/main
 
+block content
 
-ul
-    each container in page.attributes.containers
-        li #{container.id} - #{container.type}
-        ul
-            each content in container.attributes.content
-                li #{content.id} - #{content.type}
+    h1 #{page.attributes.title}
+
+    ul
+        each container in page.attributes.containers
+            li #{container.id} - #{container.type}
+            ul
+                each content in container.attributes.content
+                    li #{content.id} - #{content.type}

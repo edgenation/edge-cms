@@ -20,12 +20,12 @@ cms.modify("views", function(views) {
 // Add error handlers
 cms.use(edgeCMS.errorHandler());
 
+// Apply the CMS API
+edgeCMS.api.useApp(cms.app);
+
 // Add cms routing
 cms.use(edgeCMS.router());
 
-
-// Apply the CMS API
-edgeCMS.api.useApp(cms.app);
 
 // Connect to the database
 edgeCMS.api.connectDB(config.get("database"))

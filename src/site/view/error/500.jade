@@ -1,4 +1,10 @@
-h1 Server error
+extends ../layout/main
 
-p The website has encountered an unexpected error or misconfiguration and was unable to complete your request.
-p Please try again in a few minutes.
+block content
+    h1 Server error
+
+    p The website has encountered an unexpected error or misconfiguration and was unable to complete your request.
+    p Please try again in a few minutes.
+
+    if error
+        pre: code=error
