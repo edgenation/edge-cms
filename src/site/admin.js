@@ -7,14 +7,13 @@ adminRouter.get("*", function (req, res, next) {
     return res.send("admin");
 });
 
-
-module.exports = function (options) {
+adminRouter.middleware = function (options) {
     options = options || {};
     var path = options.path || "/admin";
 
-    return {
-        init: function(app, cms) {
-            app.use(path, adminRouter);
-        }
-    }
+    return function(app, cms) {
+        app.use(path, adminRouter);
+    };
 };
+
+module.exports = adminRouter;

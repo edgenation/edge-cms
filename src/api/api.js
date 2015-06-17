@@ -38,10 +38,8 @@ API.prototype.middleware = function (options) {
     var api = this;
     options = options || {};
 
-    return {
-        init: function(app, cms) {
-            api.useApp(app, options.path);
-        }
+    return function(app, cms) {
+        api.useApp(app, options.path);
     };
 };
 

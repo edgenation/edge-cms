@@ -20,39 +20,39 @@ function loadCmsPage(url) {
     }));
 }
 
+var routes = {};
+
 // Check to see if this page exists in the API
-function cmsRoutes(options) {
-    return function cmsRoutes(req, res, next) {
-        // Ensure we are not api url
-        if (!/^(?!\/api).*/.test(req.path)) {
+routes.cmsPage = function(req, res, next) {
+    // Ensure we are not api url
+    if (!/^(?!\/api).*/.test(req.path)) {
+        return next();
+    }
+
+    // TODO: List of other paths to ignore? assets etc
+    loadCmsPage(req.path).then(function(response) {
+        // Page not found
+        if (!response.entity.data.length) {
             return next();
         }
 
-        // TODO: List of other paths to ignore? assets etc
-        loadCmsPage(req.path).then(function(response) {
-            // Page not found
-            if (!response.entity.data.length) {
-                return next();
-            }
-
-            if (req.query.raw) {
-                return res.send(response.entity);
-            }
-
-            var page = apiAdapter.page(response);
-
-            return res.render("templates/page/" + page.template, { page: page });
-        }).catch(function(response) {
-            // API error
-            next(response.entity);
-        });
-    };
-}
-
-module.exports = function (options) {
-    return {
-        init: function(app, cms) {
-            app.use(cmsRoutes());
+        if (req.query.raw) {
+            return res.send(response.entity);
         }
-    }
+
+        var page = apiAdapter.page(response);
+
+        return res.render("templates/page/" + page.template, { page: page });
+    }).catch(function(response) {
+        // API error
+        next(response.entity);
+    });
 };
+
+routes.middleware = function(options) {
+    return function(app, cms) {
+        app.use(routes.cmsPage);
+    };
+};
+
+module.exports = routes;

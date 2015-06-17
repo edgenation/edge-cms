@@ -28,7 +28,7 @@ CMS.prototype.get = function(option) {
 };
 
 CMS.prototype.use = function(middleware) {
-    return middleware.init(this.app, this);
+    return middleware(this.app, this);
 };
 
 CMS.prototype.log = function(level, msg) {

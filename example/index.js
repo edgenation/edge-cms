@@ -18,16 +18,16 @@ cms.modify("views", function(views) {
 });
 
 // Add error handlers
-cms.use(edgeCMS.errorHandler());
+cms.use(edgeCMS.errorHandler.middleware());
 
 // Add the cms API - can be a different app
 cms.use(edgeCMS.api.middleware({ path: "/api" }));
 
 // Add cms admin
-cms.use(edgeCMS.admin());
+cms.use(edgeCMS.admin.middleware({ path: "/admin" }));
 
 // Add cms routing
-cms.use(edgeCMS.routes());
+cms.use(edgeCMS.routes.middleware());
 
 
 // Connect to the database
