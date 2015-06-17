@@ -6,6 +6,9 @@ Backbone.$ = $;
 
 // Create the application
 var App = new Marionette.Application();
+
+App.module("CmsModule", require("./cms/CmsModule"));
+
 App.start();
 
 // All navigation that is relative should be passed through the navigate
