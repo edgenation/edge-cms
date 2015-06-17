@@ -27,17 +27,20 @@ API.prototype.createApp = function (options) {
     return this.app;
 };
 
-API.prototype.useApp = function (app) {
+API.prototype.useApp = function (app, path) {
+    path = path || "/api";
+
     this.app = app;
-    this.app.use("/api", require("./route/index"));
+    this.app.use(path, require("./route/index"));
 };
 
 API.prototype.middleware = function (options) {
     var api = this;
+    options = options || {};
 
     return {
         init: function(app, cms) {
-            api.useApp(app);
+            api.useApp(app, options.path);
         }
     };
 };

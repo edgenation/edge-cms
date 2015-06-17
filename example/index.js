@@ -21,7 +21,7 @@ cms.modify("views", function(views) {
 cms.use(edgeCMS.errorHandler());
 
 // Add the cms API - can be a different app
-cms.use(edgeCMS.api.middleware());
+cms.use(edgeCMS.api.middleware({ path: "/api" }));
 
 // Add cms routing
 cms.use(edgeCMS.router());
