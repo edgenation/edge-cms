@@ -21,8 +21,8 @@ function loadCmsPage(url) {
 }
 
 // Check to see if this page exists in the API
-function cmsRouter(options) {
-    return function cmsRouter(req, res, next) {
+function cmsRoutes(options) {
+    return function cmsRoutes(req, res, next) {
         // Ensure we are not api url
         if (!/^(?!\/api).*/.test(req.path)) {
             return next();
@@ -52,7 +52,7 @@ function cmsRouter(options) {
 module.exports = function (options) {
     return {
         init: function(app, cms) {
-            app.use(cmsRouter());
+            app.use(cmsRoutes());
         }
     }
 };

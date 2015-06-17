@@ -23,8 +23,11 @@ cms.use(edgeCMS.errorHandler());
 // Add the cms API - can be a different app
 cms.use(edgeCMS.api.middleware({ path: "/api" }));
 
+// Add cms admin
+cms.use(edgeCMS.admin());
+
 // Add cms routing
-cms.use(edgeCMS.router());
+cms.use(edgeCMS.routes());
 
 
 // Connect to the database
