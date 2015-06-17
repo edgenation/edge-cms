@@ -32,6 +32,16 @@ API.prototype.useApp = function (app) {
     this.app.use("/api", require("./route/index"));
 };
 
+API.prototype.middleware = function (options) {
+    var api = this;
+
+    return {
+        init: function(app, cms) {
+            api.useApp(app);
+        }
+    };
+};
+
 API.prototype.connectDB = function (path) {
     return Q.ninvoke(mongoose, "connect", path);
 };

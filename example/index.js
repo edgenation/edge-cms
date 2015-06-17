@@ -20,8 +20,8 @@ cms.modify("views", function(views) {
 // Add error handlers
 cms.use(edgeCMS.errorHandler());
 
-// Apply the CMS API
-edgeCMS.api.useApp(cms.app);
+// Add the cms API - can be a different app
+cms.use(edgeCMS.api.middleware());
 
 // Add cms routing
 cms.use(edgeCMS.router());
