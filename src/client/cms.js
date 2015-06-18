@@ -4,17 +4,18 @@ var Marionette = require("backbone.marionette");
 
 Backbone.$ = $;
 
-// Create the application
-var App = new Marionette.Application();
-
-App.module("CmsModule", require("./cms/CmsModule"));
-
-App.start();
+// start the marionette inspector
+if (window.__agent) {
+    window.__agent.start(Backbone, Marionette);
+}
 
 // All navigation that is relative should be passed through the navigate
 // method, to be processed by the router. If the link has a `data-bypass`
 // attribute, bypass the delegation completely.
 $(document).on("click", "a[href]:not([data-bypass])", function(evt) {
+
+    // TODO: Updates for base url?
+
     // Get the anchor href and protocol
     var href = $(this).attr("href");
     var protocol = this.protocol + "//";
@@ -26,3 +27,13 @@ $(document).on("click", "a[href]:not([data-bypass])", function(evt) {
         Backbone.history.navigate(href, true);
     }
 });
+
+
+// Create the application
+var CmsApplication = require("./cms/CmsApplication");
+//var App = new Marionette.Application();
+var App = new CmsApplication();
+
+App.module("EdgeCMS", require("./cms/CmsModule"));
+
+App.start();

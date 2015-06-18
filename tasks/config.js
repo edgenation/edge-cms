@@ -28,6 +28,8 @@ module.exports = {
         "jquery",
         "lodash",
         "backbone",
-        "backbone.marionette"
+        "backbone.marionette",
+        "backbone.wreqr",
+        "backbone-routing"
     ]
 };
