@@ -1,6 +1,6 @@
 var Marionette = require("backbone.marionette");
 
-var PageCollection = require("./PageCollection");
+var PageCollection = require("./../PageCollection");
 var template = require("./page.jade");
 var childTemplate = require("./pageItem.jade");
 

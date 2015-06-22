@@ -6,7 +6,7 @@ var Marionette = require("backbone.marionette");
 var CmsModule = Marionette.Module.extend({
     onBeforeStart: function () {
         // Load all the modules
-        var modules = require("../modules/*/*Module.js", { mode: "hash" });
+        var modules = require("../modules/**/*Module.js", { mode: "hash" });
         _.forEach(modules, function (module, moduleName) {
             this.app.module("EdgeCMS." + moduleName, module);
         }, this);
