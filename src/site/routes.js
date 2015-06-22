@@ -1,4 +1,4 @@
-var Q = require("q");
+var Promise = require("bluebird");
 var rest = require("rest");
 var mime = require("rest/interceptor/mime");
 var pathPrefix = require("rest/interceptor/pathPrefix");
@@ -14,7 +14,7 @@ var client = rest
 
 function loadCmsPage(url) {
     // Attempt to load the page from the API
-    return Q(client({
+    return Promise.resolve(client({
         path: "/api/page",
         params: { "filter[url]=": url, include: "regions.content" }
     }));

@@ -1,4 +1,4 @@
-var Q = require("q"),
+var Promise = require("bluebird"),
     mongoose = require("mongoose"),
     express = require("express"),
     compression = require("compression"),
@@ -44,7 +44,7 @@ API.prototype.middleware = function (options) {
 };
 
 API.prototype.connectDB = function (path) {
-    return Q.ninvoke(mongoose, "connect", path);
+    return Promise.promisify(mongoose.connect, mongoose)(path);
 };
 
 API.prototype.disconnectDB = function () {

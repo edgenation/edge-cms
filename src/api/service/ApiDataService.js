@@ -1,4 +1,4 @@
-var Q = require("q"),
+var Promise = require("bluebird"),
     _ = require("lodash"),
     mongoose = require("mongoose");
 
@@ -104,8 +104,8 @@ ApiDataService.getIncludedDataFor = function(Model, linkedProperty, response, lo
         linkedIds = response[location][linkedProperty];
     }
 
-    var linkedQuery = LinkedModel.find({ "_id": { $in: linkedIds } });
-    return Q(linkedQuery.exec())
+    var query = LinkedModel.find({ "_id": { $in: linkedIds } });
+    return Promise.promisify(query.exec, query)()
         .then(ApiDataService.ensureDataReturned)
         .then(function(linkedData) {
             if (!response.included) {
@@ -120,7 +120,7 @@ ApiDataService.getIncludedDataFor = function(Model, linkedProperty, response, lo
 ApiDataService.addIncludedData = function(Model, req) {
     var includes = req.query.include;
     if (!includes) {
-        return Q.resolve();
+        return _.identity;
     }
 
     includes = includes.split(",");
@@ -193,15 +193,16 @@ ApiDataService.addIncludedData = function(Model, req) {
             funcs.push(func);
         });
 
-
-        return funcs.reduce(Q.when, Q(response));
+        return funcs.reduce(function (soFar, f) {
+            return soFar.then(f);
+        }, Promise.resolve(response));
     };
 };
 
 
 ApiDataService.addPaginationData = function (Model, offset, limit) {
     return function (response) {
-        return Q.ninvoke(Model, "count").then(function (count) {
+        return Promise.promisify(Model.count, Model)().then(function (count) {
             if (!response.meta) {
                 response.meta = {};
             }
@@ -238,14 +239,14 @@ ApiDataService.addPaginationData = function (Model, offset, limit) {
 
 
 ApiDataService.list = function (req, Model, pageSize) {
-    var listQuery = Model.find();
+    var query = Model.find();
 
-    var page = ApiDataService.paginateQuery(listQuery, req, pageSize);
-    ApiDataService.whereQuery(listQuery, req);
-    ApiDataService.sortQuery(listQuery, req);
-    ApiDataService.selectQuery(listQuery, req);
+    var page = ApiDataService.paginateQuery(query, req, pageSize);
+    ApiDataService.whereQuery(query, req);
+    ApiDataService.sortQuery(query, req);
+    ApiDataService.selectQuery(query, req);
 
-    return Q(listQuery.exec())
+    return Promise.promisify(query.exec, query)()
         .then(ApiDataService.ensureDataReturned)
         .then(ApiDataService.wrapInProperty("data"))
         .then(ApiDataService.addIncludedData(Model, req))
@@ -255,35 +256,35 @@ ApiDataService.list = function (req, Model, pageSize) {
 ApiDataService.create = function (req, Model) {
     var model = new Model(req.body.data.attributes);
 
-    return Q.ninvoke(model, "save")
+    return Promise.promisify(model.save, model)()
         .spread(ApiDataService.ensureDataReturned)
         .then(ApiDataService.wrapInProperty("data"));
 };
 
 ApiDataService.details = function (req, Model) {
-    var detailQuery = Model.findOne({_id: req.params.id});
+    var query = Model.findOne({_id: req.params.id});
 
-    ApiDataService.selectQuery(detailQuery, req);
+    ApiDataService.selectQuery(query, req);
 
-    return Q(detailQuery.exec())
+    return Promise.promisify(query.exec, query)()
         .then(ApiDataService.ensureDataReturned)
         .then(ApiDataService.wrapInProperty("data"))
         .then(ApiDataService.addIncludedData(Model, req));
 };
 
 ApiDataService.update = function (req, Model) {
-    return Q.ninvoke(Model, "findOne", {_id: req.params.id})
+    return Promise.promisify(Model.findOne, Model)({ _id: req.params.id })
         .then(ApiDataService.ensureDataReturned)
         .then(ApiDataService.updateAttributesFromBody(req))
         .then(function (model) {
-            return Q.ninvoke(model, "save")
+            return Promise.promisify(model.save, model)()
                 .spread(ApiDataService.ensureDataReturned)
                 .then(ApiDataService.wrapInProperty("data"));
         });
 };
 
 ApiDataService.remove = function (req, Model) {
-    return Q.ninvoke(Model, "findByIdAndRemove", req.params.id)
+    return Promise.promisify(Model.findByIdAndRemove, Model)(req.params.id)
         .then(ApiDataService.ensureDataReturned)
         .then(ApiDataService.wrapInProperty("data"));
 };
@@ -296,10 +297,11 @@ ApiDataService.includesList = function (req, Model) {
 
     //var RelationshipModel = require("../../model/region");
 
-    return Q(query.exec())
+    return Promise.promisify(query.exec, query)()
         .then(ApiDataService.ensureDataReturned)
         .then(function (data) {
-            return Q.ninvoke(Model, "populate", data, {path: relationshipProperty});
+
+            return Promise.promisify(Model.populate, Model)(data, { path: relationshipProperty });
         })
         //.then(ApiDataService.addIncludedData(Model, req))
         //.then(ApiDataService.addIncludedData(RelationshipModel, req))
@@ -313,7 +315,7 @@ ApiDataService.includesAdd = function(req, Model) {
     // TODO: Validate the body?
     var relationshipProperty = req.params.relationship;
 
-    return Q.ninvoke(Model, "findOne", { _id: req.params.id })
+    return Promise.promisify(Model.findOne, Model)({ _id: req.params.id })
         .then(ApiDataService.ensureDataReturned)
         .then(function(model) {
             // Check the item is not already in the collection
@@ -321,7 +323,7 @@ ApiDataService.includesAdd = function(req, Model) {
                 model[relationshipProperty].push(req.body[relationshipProperty]);
             }
 
-            return Q.ninvoke(model, "save")
+            return Promise.promisify(model.save, model)()
                 .spread(ApiDataService.ensureDataReturned)
                 .then(ApiDataService.wrapInProperty("data"));
         });
@@ -331,12 +333,12 @@ ApiDataService.includesRemove = function(req, Model) {
     // TODO: Validate the body?
     var relationshipProperty = req.params.relationship;
 
-    return Q.ninvoke(Model, "findOne", { _id: req.params.id })
+    return Promise.promisify(Model.findOne, Model)({ _id: req.params.id })
         .then(ApiDataService.ensureDataReturned)
         .then(function(model) {
             model[relationshipProperty].pull(req.body[relationshipProperty]);
 
-            return Q.ninvoke(model, "save")
+            return Promise.promisify(model.save, model)()
                 .spread(ApiDataService.ensureDataReturned)
                 .then(ApiDataService.wrapInProperty("data"));
         });
