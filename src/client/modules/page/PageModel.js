@@ -7,9 +7,9 @@ var PageModel = Backbone.Model.extend({
     },
 
     parse: function(response, options) {
-        console.log(options);
-        //var data = response.data.attributes;
-        //data.id = response.data.id;
+        if (!options.collection) {
+            response = response.data;
+        }
 
         var data = response.attributes;
         data.id = response.id;
