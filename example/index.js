@@ -38,4 +38,5 @@ edgeCMS.api.connectDB(config.get("database"))
     .catch(function (err) {
         console.error("Fatal Error:", err);
         edgeCMS.api.disconnectDB();
+        process.exit(1);
     });

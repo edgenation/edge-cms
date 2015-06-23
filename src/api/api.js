@@ -43,8 +43,27 @@ API.prototype.middleware = function (options) {
     };
 };
 
-API.prototype.connectDB = function (path) {
-    return Promise.promisify(mongoose.connect, mongoose)(path);
+API.prototype.connectDB = function (dbUri) {
+    var options = {
+        server: {
+            socketOptions: {
+                keepAlive: 1,
+                connectTimeoutMS: 30000,
+                socketTimeoutMS: 30000
+            }
+        },
+        replset: {
+            socketOptions: {
+                keepAlive: 1,
+                connectTimeoutMS: 30000,
+                socketTimeoutMS: 30000
+            }
+        }
+    };
+
+    return Promise.promisify(mongoose.connect, mongoose)(dbUri, options).then(function () {
+        mongoose.connection.on("error", console.error.bind(console, "MongoDB connection error:"));
+    });
 };
 
 API.prototype.disconnectDB = function () {
