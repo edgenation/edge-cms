@@ -67,6 +67,7 @@
     "lodash": "^3.0.1",
     "log-symbols": "^1.0.1",
     "moment": "^2.9.0",
+    "mongo-sanitize": "^1.0.0",
     "mongoose": "^4.0.6",
     "require-dir": "^0.3.0",
     "response-time": "^2.2.0",

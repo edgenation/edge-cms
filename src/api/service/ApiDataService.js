@@ -1,6 +1,7 @@
 var Promise = require("bluebird"),
     _ = require("lodash"),
-    mongoose = require("mongoose");
+    mongoose = require("mongoose"),
+    sanitize = require("mongo-sanitize");
 
 var ApiDataService = {};
 
@@ -11,7 +12,7 @@ ApiDataService.isValidId = function(id) {
 ApiDataService.updateAttributesFromBody = function (req) {
     return function (data) {
         _.forEach(req.body.data.attributes, function (value, prop) {
-            data[prop] = value;
+            data[prop] = sanitize(value);
         });
 
         return data;
@@ -28,8 +29,8 @@ ApiDataService.ensureDataReturned = function (data) {
 
 ApiDataService.selectQuery = function (query, req) {
     // GET /articles?include=author&fields[articles]=title,body&fields[people]=name HTTP/1.1
-    var fields = req.query.fields;
-    var includes = req.query.include;
+    var fields = sanitize(req.query.fields);
+    var includes = sanitize(req.query.include);
 
     // TODO: Fix sparse fieldsets
     // TODO: Verify this includes behaviour
@@ -44,13 +45,14 @@ ApiDataService.selectQuery = function (query, req) {
 
 ApiDataService.whereQuery = function (query, req) {
     // GET /comments?filter[post]=1,2&filter[author]=12
-    if (req.query.filter) {
-        query.where(req.query.filter);
+    var filter = sanitize(req.query.filter);
+    if (filter) {
+        query.where(filter);
     }
 };
 
 ApiDataService.paginateQuery = function (query, req, limit) {
-    var offset = req.query.offset;
+    var offset = sanitize(req.query.offset);
     // TODO: Validate offset >= 0
     offset = parseInt(offset, 10) || 0;
     query.skip(offset);
@@ -59,7 +61,7 @@ ApiDataService.paginateQuery = function (query, req, limit) {
 };
 
 ApiDataService.sortQuery = function (query, req) {
-    var sort = req.query.sort;
+    var sort = sanitize(req.query.sort);
     if (sort) {
         query.sort(sort.replace(/,/g, " "));
     }
@@ -118,7 +120,7 @@ ApiDataService.getIncludedDataFor = function(Model, linkedProperty, response, lo
 };
 
 ApiDataService.addIncludedData = function(Model, req) {
-    var includes = req.query.include;
+    var includes = sanitize(req.query.include);
     if (!includes) {
         return _.identity;
     }
@@ -254,6 +256,7 @@ ApiDataService.list = function (req, Model, pageSize) {
 };
 
 ApiDataService.create = function (req, Model) {
+    // TODO: sanitize
     var model = new Model(req.body.data.attributes);
 
     return Promise.promisify(model.save, model)()
@@ -262,7 +265,7 @@ ApiDataService.create = function (req, Model) {
 };
 
 ApiDataService.details = function (req, Model) {
-    var query = Model.findOne({_id: req.params.id});
+    var query = Model.findOne({_id: sanitize(req.params.id)});
 
     ApiDataService.selectQuery(query, req);
 
@@ -273,7 +276,7 @@ ApiDataService.details = function (req, Model) {
 };
 
 ApiDataService.update = function (req, Model) {
-    return Promise.promisify(Model.findOne, Model)({ _id: req.params.id })
+    return Promise.promisify(Model.findOne, Model)({ _id: sanitize(req.params.id) })
         .then(ApiDataService.ensureDataReturned)
         .then(ApiDataService.updateAttributesFromBody(req))
         .then(function (model) {
@@ -284,7 +287,7 @@ ApiDataService.update = function (req, Model) {
 };
 
 ApiDataService.remove = function (req, Model) {
-    return Promise.promisify(Model.findByIdAndRemove, Model)(req.params.id)
+    return Promise.promisify(Model.findByIdAndRemove, Model)(sanitize(req.params.id))
         .then(ApiDataService.ensureDataReturned)
         .then(ApiDataService.wrapInProperty("data"));
 };
@@ -293,7 +296,7 @@ ApiDataService.remove = function (req, Model) {
 ApiDataService.includesList = function (req, Model) {
     var relationshipProperty = req.params.relationship;
 
-    var query = Model.findOne({_id: req.params.id});
+    var query = Model.findOne({_id: sanitize(req.params.id)});
 
     //var RelationshipModel = require("../../model/region");
 
@@ -315,7 +318,7 @@ ApiDataService.includesAdd = function(req, Model) {
     // TODO: Validate the body?
     var relationshipProperty = req.params.relationship;
 
-    return Promise.promisify(Model.findOne, Model)({ _id: req.params.id })
+    return Promise.promisify(Model.findOne, Model)({ _id: sanitize(req.params.id) })
         .then(ApiDataService.ensureDataReturned)
         .then(function(model) {
             // Check the item is not already in the collection
@@ -333,7 +336,7 @@ ApiDataService.includesRemove = function(req, Model) {
     // TODO: Validate the body?
     var relationshipProperty = req.params.relationship;
 
-    return Promise.promisify(Model.findOne, Model)({ _id: req.params.id })
+    return Promise.promisify(Model.findOne, Model)({ _id: sanitize(req.params.id) })
         .then(ApiDataService.ensureDataReturned)
         .then(function(model) {
             model[relationshipProperty].pull(req.body[relationshipProperty]);
