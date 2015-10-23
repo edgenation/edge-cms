@@ -18,10 +18,12 @@ router.param("id", ApiController.validateId);
 router.get("/", UserController.list);
 router.post("/", UserController.create);
 router.get("/:id", UserController.details);
+router.put("/:id", UserController.update);
 router.patch("/:id", UserController.update);
 router.delete("/:id", UserController.remove);
 
 router.get("/:id/:relationship", UserController.includesList);
+router.put("/:id/:relationship", UserController.includesAdd);
 router.patch("/:id/:relationship", UserController.includesAdd);
 router.delete("/:id/:relationship", UserController.includesRemove);
 
