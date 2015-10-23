@@ -1,6 +1,6 @@
 var gulp = require("gulp");
 
-gulp.task("build", ["vendor", "js"]);
+gulp.task("build", ["vendor", "css", "js"]);
 
 gulp.task("test", ["unit-test-api"]);
 

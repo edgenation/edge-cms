@@ -12,6 +12,8 @@ module.exports = {
         src: "src",
         client: "client",
         js: "js",
+        scss: "scss",
+        css: "css",
 
         api: "src/api",
         apiUnitTest: "test/unit/api",
@@ -24,8 +26,11 @@ module.exports = {
             "cms-angular.js"
         ],
         vendor: "cms-vendor.js",
-        gulpfile: "./gulpfile.js"
+        gulpfile: "./gulpfile.js",
+        normalize: "node_modules/normalize.css/normalize.css"
     },
+
+    browsers: ["last 2 versions"],
 
     libs: [
         "jquery",

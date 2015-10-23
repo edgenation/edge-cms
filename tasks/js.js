@@ -13,7 +13,7 @@ var config = require("./config");
 gulp.task("js", function () {
     config.file.entries.forEach(function (entry) {
         var b = browserify({
-            entries: path.join(config.dir.src, config.dir.client, entry),
+            entries: path.join(config.dir.src, config.dir.client, config.dir.js, entry),
             debug: true,
             transform: [jadeify, globify],
             plugin: [bundleCollapser],
