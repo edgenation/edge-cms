@@ -7,14 +7,14 @@ var PageSchema = new mongoose.Schema({
         type: String,
         trim: true,
         // match: /^([[:alpha:][:space:][:punct:]]{1,100})$/
-        match: /^\/([^\f\n\r\t]{1,100})$/
+        match: /^([^\f\n\r\t]{1,100})$/
     },
     url: {
         type: String,
         index: { unique: true },
         trim: true,
         required: true,
-        match: /^([a-z0-9\-\/]{1,1000})$/
+        match: /^\/([a-z0-9\-\/]{1,1000})$/
     },
 
     template: {
@@ -22,7 +22,7 @@ var PageSchema = new mongoose.Schema({
         type: String,
         trim: true,
         default: "default",
-        match: /^\/([^\f\n\r\t]{1,100})$/
+        match: /^([^\f\n\r\t]{1,100})$/
     },
 
     regions: [{ type: mongoose.Schema.Types.ObjectId, ref: "region" }]
