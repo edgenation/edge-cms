@@ -30,10 +30,10 @@ $(document).on("click", "a[href]:not([data-bypass])", function(evt) {
 
 
 // Create the application
-var CmsApplication = require("./cms/CmsApplication");
+var CmsApplication = require("./backbone/cms/CmsApplication");
 //var App = new Marionette.Application();
 var App = new CmsApplication();
 
-App.module("EdgeCMS", require("./cms/CmsModule"));
+App.module("EdgeCMS", require("./backbone/cms/CmsModule"));
 
 App.start();

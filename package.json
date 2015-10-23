@@ -50,6 +50,9 @@
     "vinyl-source-stream": "^1.1.0"
   },
   "dependencies": {
+    "angular": "^1.4.7",
+    "angular-resource": "^1.4.7",
+    "angular-ui-router": "^0.2.15",
     "backbone": "^1.2.3",
     "backbone-routing": "^0.2.0",
     "backbone.marionette": "^2.4.3",

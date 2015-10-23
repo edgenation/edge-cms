@@ -11,27 +11,29 @@ var config = require("./config");
 
 
 gulp.task("js", function () {
-    var b = browserify({
-        entries: path.join(config.dir.src, config.dir.client, config.file.entryjs),
-        debug: true,
-        transform: [jadeify, globify],
-        plugin: [bundleCollapser],
-        bundleExternal: false   // Don't load external requires
+    config.file.entries.forEach(function (entry) {
+        var b = browserify({
+            entries: path.join(config.dir.src, config.dir.client, entry),
+            debug: true,
+            transform: [jadeify, globify],
+            plugin: [bundleCollapser],
+            bundleExternal: false   // Don't load external requires
+        });
+
+        // Add the jade runtime
+        b.require("jade/runtime");
+
+        b.bundle()
+            .on("error", function(err) {
+                console.error(err.message);
+                this.emit("end");
+            })
+            .pipe(plugins.plumber())
+            .pipe(source(entry))
+            .pipe(buffer())
+            .pipe(plugins.sourcemaps.init({ loadMaps: true }))
+            .pipe(plugins.uglify())
+            .pipe(plugins.sourcemaps.write("./"))
+            .pipe(gulp.dest(path.join(config.dir.dist, config.dir.js)));
     });
-
-    // Add the jade runtime
-    b.require("jade/runtime");
-
-    return b.bundle()
-        .on("error", function (err) {
-            console.error(err.message);
-            this.emit("end");
-        })
-        .pipe(plugins.plumber())
-        .pipe(source(config.file.entryjs))
-        .pipe(buffer())
-        .pipe(plugins.sourcemaps.init({ loadMaps: true }))
-        .pipe(plugins.uglify())
-        .pipe(plugins.sourcemaps.write("./"))
-        .pipe(gulp.dest(path.join(config.dir.dist, config.dir.js)));
 });

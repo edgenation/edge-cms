@@ -1,0 +1,7 @@
+div
+    p Pages
+
+    ul.pages
+        li(ng-repeat="page in pages")
+            p Page id: {{page.id}}
+            p: a(ui-sref="pageDetail({id: page.id})") {{page.title}}
