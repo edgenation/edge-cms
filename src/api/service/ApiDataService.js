@@ -213,7 +213,7 @@ ApiDataService.addPaginationData = function (Model, offset, limit) {
             }
 
             response.meta.page = {
-                ofsset: offset,
+                offset: offset,
                 limit: limit,
                 total: count
             };
