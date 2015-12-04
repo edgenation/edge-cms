@@ -2,6 +2,7 @@ var express = require("express"),
     compression = require("compression"),
     bodyParser = require("body-parser"),
     helmet = require("helmet"),
+    cors = require("cors"),
     responseTime = require("response-time"),
     cookieParser = require("cookie-parser");
 
@@ -57,6 +58,11 @@ CMS.prototype.createApp = function (options) {
     this.app.use(bodyParser.json());
     this.app.use(responseTime());
     this.app.use(helmet());
+
+    // TODO: Make configurable
+    this.app.use(cors({
+        origin: '*'
+    }));
 
     this.app.set("port", options.port || 4000);
     this.app.set("host", options.host || "0.0.0.0");
