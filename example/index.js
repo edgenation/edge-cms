@@ -30,8 +30,13 @@ cms.use(edgeCMS.admin.middleware({ path: "/admin" }));
 cms.use(edgeCMS.routes.middleware());
 
 
+var dbConnectionString = "mongodb://" +
+    config.get("database.host") +
+    ":" + config.get("database.port") +
+    "/" + config.get("database.name");
+
 // Connect to the database
-edgeCMS.api.connectDB(config.get("database"))
+edgeCMS.api.connectDB(dbConnectionString)
     .then(function () {
         cms.startServer();
     })

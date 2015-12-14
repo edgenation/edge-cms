@@ -24,10 +24,22 @@ var Config = function (configDirectory) {
             env: "HOST"
         },
         database: {
-            doc: "The mongodb database URL.",
-            format: String,
-            default: "mongodb://127.0.0.1/edge-cms",
-            env: "MONGO_URL"
+            host: {
+                doc: "Database host name/IP",
+                format: String,
+                default: "127.0.0.1",
+                env: "HOST_GATEWAY_IP"
+            },
+            name: {
+                doc: "Database name",
+                format: String,
+                default: "edge-cms"
+            },
+            port: {
+                doc: "Database port",
+                format: "port",
+                default: 27017
+            }
         },
         name: {
             doc: "The application name.",

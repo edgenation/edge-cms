@@ -1,0 +1,16 @@
+# Root files
+.git/
+docs/
+.editorconfig
+.gitignore
+.jshintrc
+LICENSE
+nodemon.json
+README.md
+
+# Tests are not run
+test/
+
+# Tasks not used
+tasks/test.js
+tasks/watch.js
