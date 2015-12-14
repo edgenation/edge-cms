@@ -4,6 +4,7 @@ module.exports = {
         jade: "**/*.jade",
         css: "**/*.css",
         scss: "**/*.scss",
+        scssPartial: "**/_*.scss",
         js: "**/*.js",
         json: "**/*.json"
     },
@@ -23,8 +24,7 @@ module.exports = {
     file: {
         entry: "admin.js",
         vendor: "cms-vendor.js",
-        gulpfile: "./gulpfile.js",
-        normalize: "node_modules/normalize.css/normalize.css"
+        gulpfile: "./gulpfile.js"
     },
 
     browsers: ["last 2 versions"]
