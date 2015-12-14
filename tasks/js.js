@@ -2,8 +2,6 @@ var path = require("path");
 var gulp = require("gulp");
 var plugins = require("gulp-load-plugins")();
 var browserify = require("browserify");
-var jadeify = require("jadeify");
-var globify = require("require-globify");
 var bundleCollapser = require("bundle-collapser/plugin");
 var through2 = require("through2");
 var config = require("./config");
@@ -16,19 +14,13 @@ gulp.task("js", function () {
             plugin: [bundleCollapser],
             bundleExternal: false
         })
-            .transform(jadeify)
-            .transform(globify)
-
-            // Add the jade runtime
-            .require("jade/runtime")
-
-            .bundle(function (err, res) {
-                if (err) {
-                    return next(err);
-                }
-                file.contents = res;
-                next(null, file);
-            });
+        .bundle(function (err, res) {
+            if (err) {
+                return next(err);
+            }
+            file.contents = res;
+            next(null, file);
+        });
     });
 
 
