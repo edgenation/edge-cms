@@ -4,10 +4,12 @@ var plugins = require("gulp-load-plugins")();
 var streamQueue = require("streamqueue");
 var config = require("./config");
 
+
 var onError = function(err) {
     plugins.util.log(err);
     this.emit("end");
 };
+
 
 gulp.task("css", function() {
     var stream = streamQueue({ objectMode: true });
@@ -27,16 +29,6 @@ gulp.task("css", function() {
             errorHandler: onError
         }))
         .pipe(plugins.concat("admin.css"))
-        .pipe(plugins.autoprefixer({
-            browsers: config.browsers,
-            cascade: false
-        }))
-        .pipe(plugins.csscomb())
-        .pipe(plugins.combineMq({ beautify: false }))
-        .pipe(plugins.minifyCss({ keepSpecialComments: 0 }))
-        .pipe(plugins.csso())
-        .pipe(plugins.cssbeautify({ autosemicolon: true }))
-        .pipe(plugins.plumber.stop())
         .pipe(gulp.dest(path.join(config.dir.dist, config.dir.css)));
         //.pipe(browserSync.reload({ stream: true }));
 });

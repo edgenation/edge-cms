@@ -21,28 +21,11 @@ module.exports = {
         tasks: "tasks"
     },
     file: {
-        entries: [
-            "cms-backbone.js",
-            "cms-angular.js"
-        ],
+        entry: "admin.js",
         vendor: "cms-vendor.js",
         gulpfile: "./gulpfile.js",
         normalize: "node_modules/normalize.css/normalize.css"
     },
 
-    browsers: ["last 2 versions"],
-
-    libs: [
-        "jquery",
-        "lodash",
-
-        "backbone",
-        "backbone.marionette",
-        "backbone.wreqr",
-        "backbone-routing",
-
-        "angular",
-        "angular-ui-router",
-        "angular-resource"
-    ]
+    browsers: ["last 2 versions"]
 };

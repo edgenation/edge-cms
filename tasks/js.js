@@ -4,36 +4,40 @@ var plugins = require("gulp-load-plugins")();
 var browserify = require("browserify");
 var jadeify = require("jadeify");
 var globify = require("require-globify");
-var source = require("vinyl-source-stream");
-var buffer = require("vinyl-buffer");
 var bundleCollapser = require("bundle-collapser/plugin");
+var through2 = require("through2");
 var config = require("./config");
 
 
 gulp.task("js", function () {
-    config.file.entries.forEach(function (entry) {
-        var b = browserify({
-            entries: path.join(config.dir.src, config.dir.client, config.dir.js, entry),
+    var bundler = through2.obj(function (file, enc, next) {
+        browserify(file.path, {
             debug: true,
-            transform: [jadeify, globify],
             plugin: [bundleCollapser],
-            bundleExternal: false   // Don't load external requires
-        });
+            bundleExternal: false
+        })
+            .transform(jadeify)
+            .transform(globify)
 
-        // Add the jade runtime
-        b.require("jade/runtime");
+            // Add the jade runtime
+            .require("jade/runtime")
 
-        b.bundle()
-            .on("error", function(err) {
-                console.error(err.message);
-                this.emit("end");
-            })
-            .pipe(plugins.plumber())
-            .pipe(source(entry))
-            .pipe(buffer())
-            .pipe(plugins.sourcemaps.init({ loadMaps: true }))
-            .pipe(plugins.uglify())
-            .pipe(plugins.sourcemaps.write("./"))
-            .pipe(gulp.dest(path.join(config.dir.dist, config.dir.js)));
+            .bundle(function (err, res) {
+                if (err) {
+                    return next(err);
+                }
+                file.contents = res;
+                next(null, file);
+            });
     });
+
+
+    return gulp
+        .src(path.join(config.dir.src, config.dir.client, config.dir.js, config.file.entry))
+        .pipe(plugins.plumber())
+        .pipe(bundler)
+        .pipe(plugins.sourcemaps.init({ loadMaps: true }))
+        .pipe(plugins.uglify())
+        .pipe(plugins.sourcemaps.write("./"))
+        .pipe(gulp.dest(path.join(config.dir.dist, config.dir.js)));
 });
