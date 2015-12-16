@@ -78,7 +78,8 @@ CMS.prototype.initApp = function () {
     var env = nunjucks.configure(this.get("views"), {
         autoescape: true,
         express: this.app,
-        noCache: true // TODO: Change for production
+        // Disable view caching in development
+        noCache: (this.app.get("env") === "development")
     });
 
 
