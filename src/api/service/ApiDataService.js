@@ -314,6 +314,8 @@ ApiDataService.includesList = function (req, Model) {
         .then(ApiDataService.wrapInProperty("data"));
 };
 
+// TODO: Should use ```data: {}```
+// TODO: Change to accept an array?
 ApiDataService.includesAdd = function(req, Model) {
     // TODO: Validate the body?
     var relationshipProperty = req.params.relationship;
@@ -321,17 +323,21 @@ ApiDataService.includesAdd = function(req, Model) {
     return Promise.promisify(Model.findOne, Model)({ _id: sanitize(req.params.id) })
         .then(ApiDataService.ensureDataReturned)
         .then(function(model) {
+            console.log(req.body);
             // Check the item is not already in the collection
             if (model[relationshipProperty].indexOf(req.body[relationshipProperty]) === -1) {
                 model[relationshipProperty].push(req.body[relationshipProperty]);
             }
 
+            // TODO: DO NOT SAVE NULL! IT CAUSES ERRORS!
             return Promise.promisify(model.save, model)()
                 .spread(ApiDataService.ensureDataReturned)
                 .then(ApiDataService.wrapInProperty("data"));
         });
 };
 
+// TODO: Should use ```data: {}```
+// TODO: Change to accept an array?
 ApiDataService.includesRemove = function(req, Model) {
     // TODO: Validate the body?
     var relationshipProperty = req.params.relationship;

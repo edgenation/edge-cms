@@ -62,6 +62,7 @@ API.prototype.connectDB = function (dbUri) {
     };
 
     return Promise.promisify(mongoose.connect, mongoose)(dbUri, options).then(function () {
+        // TODO: Seems to be erroring when its still connected
         mongoose.connection.on("error", console.error.bind(console, "MongoDB connection error:"));
     });
 };
