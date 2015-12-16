@@ -14,7 +14,7 @@ var PageSchema = new mongoose.Schema({
         index: { unique: true },
         trim: true,
         required: true,
-        match: /^\/([a-z0-9\-\/]{1,1000})$/
+        match: /^\/([a-z0-9\-\/]{0,1000})$/
     },
 
     template: {
