@@ -30,6 +30,7 @@ routes.cmsPage = function(req, res, next) {
     }
 
     // TODO: List of other paths to ignore? assets etc
+    // /favicon.ico
     loadCmsPage(req.path).then(function(response) {
         // Page not found
         if (!response.entity.data.length) {
@@ -45,7 +46,7 @@ routes.cmsPage = function(req, res, next) {
         return res.render("templates/page/" + page.template, { page: page });
     }).catch(function(response) {
         // API error
-        next(response.entity);
+        next(response.entity || response);
     });
 };
 
