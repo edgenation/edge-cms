@@ -1,5 +1,15 @@
 # Backlog
 
+## MVP
+
+- [ ] Config for API host/port
+- [ ] Custom server side for pages - e.g. contact form
+- [ ] Listing page? Blog for example
+- [ ] CDNs?
+- [ ] HTTPS?
+- [ ] Improved 404 information
+- [ ] 500 full error only on development
+- [ ] disable ?raw on production?
 
 ## API
 
@@ -18,11 +28,11 @@
 - [ ] Make collections plural (pages, containers etc)?
 
 ## Server
-- [ ] Serve CMS page
-- [ ] Serve admin pages
+- [x] Serve CMS page
+- [x] Serve admin pages
 - [ ] Tests
 
 ## Client
 - [ ] Gulp setup
-- [ ] Initial backbone/marionette app
+- [ ] Initial react app
 - [ ] Tests
