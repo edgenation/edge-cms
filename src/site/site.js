@@ -5,6 +5,7 @@ var express = require("express"),
     cors = require("cors"),
     responseTime = require("response-time"),
     nunjucks = require("nunjucks"),
+    CmsContent = require("./CmsContent"),
     cookieParser = require("cookie-parser");
 
 
@@ -75,41 +76,17 @@ CMS.prototype.initApp = function () {
     // Set the views
     this.app.set("views", this.get("views"));
 
-    var env = nunjucks.configure(this.get("views"), {
+    this.nunjucks = nunjucks.configure(this.get("views"), {
         autoescape: true,
         express: this.app,
         // Disable view caching in development
         noCache: (this.app.get("env") === "development")
     });
 
-
-    // TODO: Externalize
     // Custom tag to load content mixins
-    function CmsContent() {
-        this.tags = ["cmsContent"];
-        this.parse = function (parser, nodes, lexer) {
-            var token = parser.nextToken();
-            var args = parser.parseSignature(null, true);
-            parser.advanceAfterBlockEnd(token.value);
-            return new nodes.CallExtensionAsync(this, 'run', args);
-        };
-        this.run = function (context, theContent, callback) {
-            var mixinName = "content" + theContent.type[0].toUpperCase() + theContent.type.slice(1);
-            var mixinFile = "mixins/content/_" + theContent.type + ".nunj";
-
-            context.env
-                .getTemplate(mixinFile)
-                .getExported(function (ctx, obj) {
-                    callback(null, obj[mixinName](theContent));
-                });
-        };
-    }
-
-    env.addExtension("CmsContent", new CmsContent());
-
+    this.nunjucks.addExtension("CmsContent", new CmsContent());
 
     this.app.use(express.static(__dirname + "/../../public"));
-    this.app.use(express.static(__dirname + "/../../bower_components"));
 
     // Set the error handlers if they exist
     var error404 = this.get("404");
