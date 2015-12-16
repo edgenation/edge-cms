@@ -27,7 +27,7 @@ cms.use(edgeCMS.api.middleware({ path: "/api" }));
 cms.use(edgeCMS.admin.middleware({ path: "/admin" }));
 
 // Add cms routing
-cms.use(edgeCMS.routes.middleware());
+cms.use(edgeCMS.cmsRoutes.middleware());
 
 
 var dbConnectionString = "mongodb://" +
