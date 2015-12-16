@@ -4,7 +4,7 @@ var adminRouter = express.Router();
 
 adminRouter.get("*", function (req, res, next) {
     // Server the admin route!
-    return res.render("templates/admin");
+    return res.render("templates/admin/index");
 });
 
 adminRouter.middleware = function (options) {
