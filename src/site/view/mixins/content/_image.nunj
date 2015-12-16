@@ -1,3 +1,3 @@
-{% macro contentImage(content) %}
+{% macro contentImage(content) -%}
     <img src="{{ content.data.src }}" alt="{{ content.data.alt }}">
-{% endmacro %}
+{%- endmacro %}
