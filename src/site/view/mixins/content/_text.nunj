@@ -1,0 +1,3 @@
+{% macro contentText(content) -%}
+    {{ content.data.text }}
+{%- endmacro %}

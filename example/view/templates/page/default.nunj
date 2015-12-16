@@ -1,0 +1,13 @@
+{% extends "layout/main.nunj" %}
+
+
+{% block content %}
+    <h1>Example</h1>
+    <h2>{{ page.title }}</h2>
+
+    {% for region in page.regions %}
+        <div>
+            {{ contentForRegionName(region.name, page) }}
+        </div>
+    {% endfor %}
+{% endblock %}

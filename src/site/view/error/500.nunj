@@ -1,0 +1,14 @@
+{% extends "layout/main.nunj" %}
+
+
+{% block content %}
+    <h1>Server error</h1>
+
+    <p>The website has encountered an unexpected error or misconfiguration and was unable to complete your request.</p>
+
+    <p>Please try again in a few minutes.</p>
+
+    {% if error %}
+        <pre><code>{{ error }}</code></pre>
+    {% endif %}
+{% endblock %}

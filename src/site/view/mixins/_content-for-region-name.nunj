@@ -1,0 +1,9 @@
+{% macro contentForRegionName(regionName, page) -%}
+    {% for region in page.regions -%}
+        {% if region.name == regionName -%}
+            {% for content in region.content -%}
+                {% cmsContent content %}
+            {%- endfor %}
+        {%- endif %}
+    {%- endfor %}
+{%- endmacro %}

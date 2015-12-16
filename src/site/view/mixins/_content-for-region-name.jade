@@ -1,5 +1,0 @@
-mixin content-for-region-name(regionName, page)
-    each region in page.regions
-        if region.name == regionName
-            each content in region.content
-                + content(content)

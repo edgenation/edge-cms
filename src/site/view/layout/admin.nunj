@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en-GB" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <title>Edge CMS</title>
+    <link rel="stylesheet" href="/css/admin.css">
+<body>
+    <header>
+        <p>Admin</p>
+    </header>
+
+    {% block content %}{% endblock %}
+</body>
+</html>

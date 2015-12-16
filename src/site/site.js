@@ -4,9 +4,9 @@ var express = require("express"),
     helmet = require("helmet"),
     cors = require("cors"),
     responseTime = require("response-time"),
+    nunjucks = require("nunjucks"),
     cookieParser = require("cookie-parser");
 
-require("./jadeMultiLayout");
 
 
 var CMS = function () {
@@ -67,13 +67,45 @@ CMS.prototype.createApp = function (options) {
     this.app.set("port", options.port || 4000);
     this.app.set("host", options.host || "0.0.0.0");
 
-    this.app.set("view engine", "jade");
+    this.app.engine("nunj", nunjucks.render);
+    this.app.set("view engine", "nunj");
 };
 
 CMS.prototype.initApp = function () {
     // Set the views
     this.app.set("views", this.get("views"));
-    this.app.locals.basedir = this.get("views");
+
+    var env = nunjucks.configure(this.get("views"), {
+        autoescape: true,
+        express: this.app,
+        noCache: true // TODO: Change for production
+    });
+
+
+    // TODO: Externalize
+    // Custom tag to load content mixins
+    function CmsContent() {
+        this.tags = ["cmsContent"];
+        this.parse = function (parser, nodes, lexer) {
+            var token = parser.nextToken();
+            var args = parser.parseSignature(null, true);
+            parser.advanceAfterBlockEnd(token.value);
+            return new nodes.CallExtensionAsync(this, 'run', args);
+        };
+        this.run = function (context, theContent, callback) {
+            var mixinName = "content" + theContent.type[0].toUpperCase() + theContent.type.slice(1);
+            var mixinFile = "mixins/content/_" + theContent.type + ".nunj";
+
+            context.env
+                .getTemplate(mixinFile)
+                .getExported(function (ctx, obj) {
+                    callback(null, obj[mixinName](theContent));
+                });
+        };
+    }
+
+    env.addExtension("CmsContent", new CmsContent());
+
 
     this.app.use(express.static(__dirname + "/../../public"));
     this.app.use(express.static(__dirname + "/../../bower_components"));

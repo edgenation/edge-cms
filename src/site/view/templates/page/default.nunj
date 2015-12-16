@@ -1,0 +1,46 @@
+{% extends "layout/main.nunj" %}
+
+
+{% block content %}
+    <h1>{{ page.title }}</h1>
+
+    <dl>
+        <dt>Id:</dt>
+        <dd>{{ page.id }}</dd>
+
+        <dt>Url:</dt>
+        <dd>{{ page.url }}</dd>
+
+        <dt>Author:</dt>
+        <dd>{{ page.author }}</dd>
+
+        <dt>Template:</dt>
+        <dd>{{ page.template }}</dd>
+
+        <dt>Created:</dt>
+        <dd>{{ page.created }}</dd>
+
+        <dt>Updated:</dt>
+        <dd>{{ page.updated }}</dd>
+
+        <dt>Regions:</dt>
+        <dd>{{ page.regions.length }}</dd>
+    </dl>
+
+    <ul>
+        {% for region in page.regions %}
+            <li>
+                [{{ region.id }} => {{ region.name }}]
+
+                <ul>
+                    {% for content in region.content %}
+                        <li style="margin-bottom: 1em;">
+                            [{{ content.id }} => {{ content.type }}]
+                            <div>{% cmsContent content %}</div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

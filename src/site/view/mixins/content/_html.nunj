@@ -1,0 +1,3 @@
+{% macro contentHtml(content) %}
+    {{ content.data.html | safe }}
+{% endmacro %}
