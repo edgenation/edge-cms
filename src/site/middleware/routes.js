@@ -3,7 +3,7 @@ var rest = require("rest");
 var mime = require("rest/interceptor/mime");
 var pathPrefix = require("rest/interceptor/pathPrefix");
 var timeout = require("rest/interceptor/timeout");
-var apiAdapter = require("./apiAdapter");
+var apiAdapter = require("../apiAdapter");
 
 
 var client = rest
