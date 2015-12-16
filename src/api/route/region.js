@@ -15,9 +15,9 @@ router.put("/:id", RegionController.update);
 router.patch("/:id", RegionController.update);
 router.delete("/:id", RegionController.remove);
 
-router.get("/:id/:relationship", RegionController.includesList);
-router.put("/:id/:relationship", RegionController.includesAdd);
-router.patch("/:id/:relationship", RegionController.includesAdd);
-router.delete("/:id/:relationship", RegionController.includesRemove);
+router.get("/:id/content", RegionController.includesList);
+router.put("/:id/content", RegionController.includesAdd);
+router.patch("/:id/content", RegionController.includesAdd);
+router.delete("/:id/content", RegionController.includesRemove);
 
 module.exports = router;
