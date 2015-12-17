@@ -1,6 +1,7 @@
 var edgeCMS = require("../src");
 var staticRoute = require("./route/static");
 var homepageRoute = require("./route/homepage");
+var blogRoute = require("./route/blog");
 
 var config = edgeCMS.config(__dirname + "/config");
 var cms = new edgeCMS.site();
@@ -33,6 +34,7 @@ cms.use(edgeCMS.admin.middleware({ path: "/admin" }));
 
 // Add custom routes
 cms.use(homepageRoute);
+cms.use(blogRoute);
 cms.use(staticRoute);
 
 // Add cms routing

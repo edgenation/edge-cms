@@ -11,6 +11,7 @@ cmsRoutes.middleware = function (options) {
     return function (app, cms) {
         // Check to see if this page exists in the API
         app.use(function cmsPage (req, res, next) {
+            // TODO: Being called twice??
             // Skip some paths as they are not cms managed
             var skip = _.some(skipRoutes, function (path) { return path.test(req.path) });
             if (skip) {
@@ -28,6 +29,10 @@ cmsRoutes.middleware = function (options) {
                 }
 
                 var page = apiAdapter.page(response);
+
+                if (req.query.json) {
+                    return res.json(page);
+                }
 
                 return res.render("templates/page/" + page.template, { page: page });
             }).catch(function (response) {

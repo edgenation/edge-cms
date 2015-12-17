@@ -25,7 +25,17 @@ apiService.load = function (path, params) {
 };
 
 apiService.loadPage = function (url) {
-    return apiService.load("/page", { "filter[url]=": url, include: "regions.content" });
+    return apiService.load("/page", {
+        "filter[url]=": url,
+        include: "regions.content"
+    });
+};
+
+apiService.loadPageList = function (url) {
+    return apiService.load("/page-list", {
+        "filter[url]=": url,
+        include: "pages.regions.content"
+    });
 };
 
 module.exports = apiService;

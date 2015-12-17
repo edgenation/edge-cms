@@ -36,5 +36,26 @@ apiAdapter.page = function(response) {
     return page;
 };
 
+apiAdapter.pageList = function(response) {
+    var list = response.entity.data[0];
+
+    apiAdapter.flattenAttributes(list);
+
+    // Nest the pages
+    apiAdapter.nestIncluded(list.pages, response.entity.included);
+
+    // Nest the page regions
+    _.forEach(list.pages, function (pageId, pageIndex, pages) {
+        apiAdapter.nestIncluded(pages[pageIndex].regions, response.entity.included);
+
+        // Nest the region contents
+        _.forEach(pages[pageIndex].regions, function (regionId, regionIndex, regions) {
+            apiAdapter.nestIncluded(regions[regionIndex].content, response.entity.included);
+        });
+    });
+
+    return list;
+};
+
 
 module.exports = apiAdapter;
