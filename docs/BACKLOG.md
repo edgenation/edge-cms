@@ -3,7 +3,8 @@
 ## MVP
 
 - [x] Config for API host/port
-- [ ] Custom server side for pages - e.g. contact form
+- [x] Custom server side routes - e.g. contact form
+- [ ] Custom server side for cms pages - to add additional logic
 - [ ] Listing page? Blog for example
 - [ ] CDNs?
 - [ ] HTTPS?
