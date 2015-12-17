@@ -3,6 +3,10 @@ var Promise = require("bluebird"),
     mongoose = require("mongoose"),
     sanitize = require("mongo-sanitize");
 
+function modelHasProperty(Model, property) {
+    return Model.schema.paths[property];
+}
+
 var ApiDataService = {};
 
 ApiDataService.isValidId = function(id) {
@@ -76,7 +80,7 @@ ApiDataService.wrapInProperty = function (propertyName) {
 };
 
 ApiDataService.getReferencedModelNameByPath = function (Model, path) {
-    if (!Model.schema.paths[path]) {
+    if (!modelHasProperty(Model, path)) {
         return false;
     }
 
@@ -91,10 +95,15 @@ ApiDataService.getModelFromName = function (Model, name) {
     return Model.db.model(name);
 };
 
+
+ApiDataService.getReferencedModelByPath = function (Model, path) {
+    var referenceModelName = ApiDataService.getReferencedModelNameByPath(Model, path);
+    return ApiDataService.getModelFromName(Model, referenceModelName);
+};
+
 ApiDataService.getIncludedDataFor = function(Model, linkedProperty, response, location) {
     location = location || "data";
-    var linkedModelName = ApiDataService.getReferencedModelNameByPath(Model, linkedProperty);
-    var LinkedModel = ApiDataService.getModelFromName(Model, linkedModelName);
+    var LinkedModel = ApiDataService.getReferencedModelByPath(Model, linkedProperty);
 
     var linkedIds = [];
     if (Array.isArray(response[location])) {
@@ -119,80 +128,87 @@ ApiDataService.getIncludedDataFor = function(Model, linkedProperty, response, lo
         });
 };
 
+
+function generateNestedInclude(includedProperty) {
+    var include = {};
+
+    includedProperty = includedProperty.split(".");
+
+    if (includedProperty.length === 1) {
+        include[includedProperty[0]] = true;
+    } else if (includedProperty.length === 2) {
+        include[includedProperty[0]] = {};
+        include[includedProperty[0]][includedProperty[1]] = true;
+    } else {
+        include[includedProperty[0]] = {};
+        include[includedProperty[0]][includedProperty[1]] = {};
+        include[includedProperty[0]][includedProperty[1]][includedProperty[2]] = true;
+    }
+
+    return include;
+}
+
+
 ApiDataService.addIncludedData = function(Model, req) {
     var includes = sanitize(req.query.include);
     if (!includes) {
         return _.identity;
     }
 
-    includes = includes.split(",");
+    var nestedIncludes = {};
 
-    var nestedIncludes = _.remove(includes, function(linkedProperty) {
-        return (linkedProperty.indexOf(".") !== -1);
+    // Generated object representing includes
+    _.forEach(includes.split(","), function (includedProperty) {
+        nestedIncludes = _.merge(nestedIncludes, generateNestedInclude(includedProperty));
     });
 
-    // Ensure nested also includes parent if not specified
-    _.forEach(nestedIncludes, function (includedProperty) {
-        includedProperty = includedProperty.split(".");
-
-        if (includes.indexOf(includedProperty[0]) === -1) {
-            includes.push(includedProperty[0])
+    // Remove includes that do not exist on the schema
+    _.forEach(nestedIncludes, function (n, linkedProperty) {
+        if (!modelHasProperty(Model, linkedProperty)) {
+            delete(nestedIncludes[linkedProperty])
         }
     });
 
+
     // Process the includes
-    return function(response) {
+    return function (response) {
         var funcs = [];
 
-        // Single includes
-        _.forEach(includes, function(linkedProperty) {
-            // No such nested property
-            if (!Model.schema.paths[linkedProperty]) {
-                return;
+        _.forEach(nestedIncludes, function (nestedIncludes2, linkedProperty1) {
+            var Model1 = Model;
+
+            // Single includes
+            funcs.push(function (response) {
+                return ApiDataService.getIncludedDataFor(Model1, linkedProperty1, response);
+            });
+
+            // Check second level
+            if (_.isObject(nestedIncludes2)) {
+                _.forEach(nestedIncludes2, function (nestedIncludes3, linkedProperty2) {
+                    var Model2 = ApiDataService.getReferencedModelByPath(Model1, linkedProperty1);
+                    if (!modelHasProperty(Model2, linkedProperty2)) {
+                        return;
+                    }
+
+                    funcs.push(function (response) {
+                        return ApiDataService.getIncludedDataFor(Model2, linkedProperty2, response, "included");
+                    });
+
+                    // Check third level
+                    if (_.isObject(nestedIncludes3)) {
+                        _.forEach(nestedIncludes3, function (nestedIncludes4, linkedProperty3) {
+                            var Model3 = ApiDataService.getReferencedModelByPath(Model2, linkedProperty2);
+                            if (!modelHasProperty(Model3, linkedProperty3)) {
+                                return;
+                            }
+
+                            funcs.push(function (response) {
+                                return ApiDataService.getIncludedDataFor(Model3, linkedProperty3, response, "included");
+                            });
+                        });
+                    }
+                });
             }
-
-            var func = function(response) {
-                return ApiDataService.getIncludedDataFor(Model, linkedProperty, response);
-            };
-
-            funcs.push(func);
-        });
-
-        // Nested includes that include a . - e.g. regions.content
-        _.forEach(nestedIncludes, function(linkedPropertyObj) {
-            linkedPropertyObj = linkedPropertyObj.split(".");
-
-            // Ensure only one level deep!
-            if (linkedPropertyObj.length !== 2) {
-                return;
-            }
-
-            var parentProperty = linkedPropertyObj[0];
-            var nestedProperty = linkedPropertyObj[1];
-
-            // No such nested property
-            if (!Model.schema.paths[parentProperty]) {
-                return;
-            }
-
-            var func = function(response) {
-                // If there is no included data to parse
-                if (!response.included || response.included.length === 0) {
-                    return response;
-                }
-
-                var parentModelName = ApiDataService.getReferencedModelNameByPath(Model, parentProperty);
-                var ParentModel = ApiDataService.getModelFromName(Model, parentModelName);
-
-                // No such deep nested property
-                if (!ParentModel.schema.paths[nestedProperty]) {
-                    return response;
-                }
-
-                return ApiDataService.getIncludedDataFor(ParentModel, nestedProperty, response, "included");
-            };
-
-            funcs.push(func);
         });
 
         return funcs.reduce(function (soFar, f) {
