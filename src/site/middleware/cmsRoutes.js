@@ -26,17 +26,13 @@ cmsRoutes.middleware = function (options) {
         .wrap(mime, { mime: "application/vnd.api+json" })
         .wrap(pathPrefix, { prefix: apiConnectionString });
 
-    // TODO: Get from options
-    var skipPaths = [
-        /^\/api(\/|^\/+)/,
-        /^\/favicon.ico$/
-    ];
+    var skipRoutes = options.skipRoutes || [];
 
     return function (app, cms) {
         // Check to see if this page exists in the API
         app.use(function cmsPage (req, res, next) {
             // Skip some paths as they are not cms managed
-            var skip = _.some(skipPaths, function (path) { return path.test(req.path) });
+            var skip = _.some(skipRoutes, function (path) { return path.test(req.path) });
             if (skip) {
                 return next();
             }

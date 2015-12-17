@@ -33,7 +33,11 @@ cms.use(edgeCMS.cmsRoutes.middleware({
         host: config.get("api.host"),
         port: config.get("api.port"),
         path: config.get("api.path")
-    }
+    },
+    skipRoutes: [
+        /^\/api(\/|^\/+)/,
+        /^\/favicon.ico$/
+    ]
 }));
 
 
