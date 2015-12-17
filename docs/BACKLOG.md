@@ -2,7 +2,7 @@
 
 ## MVP
 
-- [ ] Config for API host/port
+- [x] Config for API host/port
 - [ ] Custom server side for pages - e.g. contact form
 - [ ] Listing page? Blog for example
 - [ ] CDNs?

@@ -18,11 +18,13 @@ function loadCmsPage(restClient, url) {
 
 var cmsRoutes = {};
 
-cmsRoutes.middleware = function(options) {
+cmsRoutes.middleware = function (options) {
+    var apiConnectionString = options.api.protocol + "//" + options.api.host + ":" + options.api.port + options.api.path;
+
     var restClient = rest
         .wrap(timeout, { timeout: 10e3 })   // 10 seconds
         .wrap(mime, { mime: "application/vnd.api+json" })
-        .wrap(pathPrefix, { prefix: "http://localhost:4000/api" }); // TODO: Get from config
+        .wrap(pathPrefix, { prefix: apiConnectionString });
 
     // TODO: Get from options
     var skipPaths = [
@@ -30,9 +32,9 @@ cmsRoutes.middleware = function(options) {
         /^\/favicon.ico$/
     ];
 
-    return function(app, cms) {
+    return function (app, cms) {
         // Check to see if this page exists in the API
-        app.use(function cmsPage(req, res, next) {
+        app.use(function cmsPage (req, res, next) {
             // Skip some paths as they are not cms managed
             var skip = _.some(skipPaths, function (path) { return path.test(req.path) });
             if (skip) {

@@ -11,17 +11,51 @@ var Config = function (configDirectory) {
             default: "development",
             env: "NODE_ENV"
         },
-        port: {
-            doc: "The port to bind.",
-            format: "port",
-            default: 4000,
-            env: "PORT"
+        app: {
+            port: {
+                doc: "The port to bind.",
+                format: "port",
+                default: 4000,
+                env: "PORT"
+            },
+            host: {
+                doc: "The host to bind.",
+                format: "ipaddress",
+                default: "0.0.0.0",
+                env: "HOST"
+            },
+            name: {
+                doc: "The application name.",
+                format: String,
+                default: "EdgeCMS"
+            },
+            "cookie-secret-key": {
+                doc: "A secret key for cookies.",
+                format: String,
+                default: "edge-cms-secret-key"
+            }
         },
-        host: {
-            doc: "The host to bind.",
-            format: "ipaddress",
-            default: "0.0.0.0",
-            env: "HOST"
+        api: {
+            port: {
+                doc: "The api port.",
+                format: "port",
+                default: 4000
+            },
+            host: {
+                doc: "The api host.",
+                format: "ipaddress",
+                default: "127.0.0.1"
+            },
+            protocol: {
+                doc: "The api protocol.",
+                format: String,
+                default: "http:"
+            },
+            path: {
+                doc: "The api path.",
+                format: String,
+                default: "/"
+            }
         },
         database: {
             host: {
@@ -40,16 +74,6 @@ var Config = function (configDirectory) {
                 format: "port",
                 default: 27017
             }
-        },
-        name: {
-            doc: "The application name.",
-            format: String,
-            default: "EdgeCMS"
-        },
-        "cookie-secret-key": {
-            doc: "A secret key for cookies.",
-            format: String,
-            default: "edge-cms-secret-key"
         }
     });
 

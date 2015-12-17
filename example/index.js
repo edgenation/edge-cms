@@ -8,8 +8,8 @@ var cms = new edgeCMS.site();
 
 // Create the CMS app
 cms.createApp({
-    port: config.get("port"),
-    host: config.get("host")
+    port: config.get("app.port"),
+    host: config.get("app.host")
 });
 
 // Add our client views
@@ -21,13 +21,20 @@ cms.modify("views", function(views) {
 cms.use(edgeCMS.errorHandler.middleware());
 
 // Add the cms API - can be a different app
-cms.use(edgeCMS.api.middleware({ path: "/api" }));
+cms.use(edgeCMS.api.middleware({ path: config.get("api.path") }));
 
 // Add cms admin
 cms.use(edgeCMS.admin.middleware({ path: "/admin" }));
 
 // Add cms routing
-cms.use(edgeCMS.cmsRoutes.middleware());
+cms.use(edgeCMS.cmsRoutes.middleware({
+    api: {
+        protocol: config.get("api.protocol"),
+        host: config.get("api.host"),
+        port: config.get("api.port"),
+        path: config.get("api.path")
+    }
+}));
 
 
 var dbConnectionString = "mongodb://" +

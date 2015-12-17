@@ -2,8 +2,8 @@ FROM alpine
 MAINTAINER Chris Sheppard
 
 # Setup
-ENV PORT=8080 NODE_ENV=production
-EXPOSE 8080
+ENV PORT=4000 NODE_ENV=production
+EXPOSE 4000
 
 RUN apk update && \
     apk upgrade && \
