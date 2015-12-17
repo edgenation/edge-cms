@@ -1,3 +1,4 @@
+var _ = require("lodash");
 var ApiDataService = require("../service/ApiDataService");
 
 var ApiController = {};
@@ -29,6 +30,21 @@ ApiController.validateId = function (req, res, next, id) {
     }
 
     next();
+};
+
+
+// Router middleware to validate :relationship
+ApiController.validateRelationship = function(relationships) {
+    return function (req, res, next, relationship) {
+        // Check relationship is in relationships
+        if (!relationships || !_.contains(relationships, relationship)) {
+            var err = new Error("Invalid Relationship");
+            err.status = 400;
+            return next(err);
+        }
+
+        next();
+    };
 };
 
 
