@@ -45,25 +45,26 @@ API.prototype.middleware = function (options) {
 
 API.prototype.connectDB = function (dbUri) {
     var options = {
+        db: {
+            numberOfRetries: 10,
+            retryMiliSeconds: 1000
+        },
         server: {
+            auto_reconnect: true,
+            poolSize: 5,
             socketOptions: {
-                keepAlive: 1,
-                connectTimeoutMS: 30000,
-                socketTimeoutMS: 30000
+                keepAlive: 1
             }
         },
         replset: {
             socketOptions: {
-                keepAlive: 1,
-                connectTimeoutMS: 30000,
-                socketTimeoutMS: 30000
+                keepAlive: 1
             }
         }
     };
 
     return Promise.promisify(mongoose.connect, mongoose)(dbUri, options).then(function () {
-        // TODO: Seems to be erroring when its still connected
-        mongoose.connection.on("error", console.error.bind(console, "MongoDB connection error:"));
+        mongoose.connection.on("error", console.error.bind(console, "MongoDB error:"));
     });
 };
 
