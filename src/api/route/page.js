@@ -7,7 +7,7 @@ var router = express.Router();
 
 // Pre-route validation
 router.param("id", ApiController.validateId);
-router.param("id", ApiController.validateRelationship(["regions"]));
+router.param("relationship", ApiController.validateRelationship(["regions"]));
 
 router.get("/", PageController.list);
 router.post("/", PageController.create);
