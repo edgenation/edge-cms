@@ -34,12 +34,7 @@ cms.use(staticRoute);
 
 // Add cms routing
 cms.use(edgeCMS.cmsRoutes.middleware({
-    api: {
-        protocol: config.get("api.protocol"),
-        host: config.get("api.host"),
-        port: config.get("api.port"),
-        path: config.get("api.path")
-    },
+    api: config.get("api.uri"),
     skipRoutes: [
         /^\/api(\/|^\/+)/,
         /^\/favicon.ico$/
@@ -47,13 +42,8 @@ cms.use(edgeCMS.cmsRoutes.middleware({
 }));
 
 
-var dbConnectionString = "mongodb://" +
-    config.get("database.host") +
-    ":" + config.get("database.port") +
-    "/" + config.get("database.name");
-
 // Connect to the database
-edgeCMS.api.connectDB(dbConnectionString)
+edgeCMS.api.connectDB(config.get("database.uri"))
     .then(function () {
         cms.startServer();
     })

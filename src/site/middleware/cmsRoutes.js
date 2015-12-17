@@ -19,12 +19,10 @@ function loadCmsPage(restClient, url) {
 var cmsRoutes = {};
 
 cmsRoutes.middleware = function (options) {
-    var apiConnectionString = options.api.protocol + "//" + options.api.host + ":" + options.api.port + options.api.path;
-
     var restClient = rest
         .wrap(timeout, { timeout: 10e3 })   // 10 seconds
         .wrap(mime, { mime: "application/vnd.api+json" })
-        .wrap(pathPrefix, { prefix: apiConnectionString });
+        .wrap(pathPrefix, { prefix: options.api });
 
     var skipRoutes = options.skipRoutes || [];
 

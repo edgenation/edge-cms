@@ -84,6 +84,22 @@ var Config = function (configDirectory) {
     // Perform validation
     config.validate();
 
+    // Set easier to use database connection string
+    var dbConnection = "mongodb://" +
+        config.get("database.host") +
+        ":" + config.get("database.port") +
+        "/" + config.get("database.name");
+
+    config.set("database.uri", dbConnection);
+
+    // Set easier to use api connection string
+    var apiConnection = config.get("api.protocol") + "//" +
+        config.get("api.host") + ":" +
+        config.get("api.port") +
+        config.get("api.path");
+
+    config.set("api.uri", apiConnection);
+
     return config;
 };
 
