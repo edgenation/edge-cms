@@ -55,13 +55,9 @@ ApiDataService.whereQuery = function (query, req) {
     }
 };
 
-ApiDataService.paginateQuery = function (query, req, limit) {
-    var offset = sanitize(req.query.offset);
+ApiDataService.paginateQuery = function (query, offset, limit) {
     // TODO: Validate offset >= 0
-    offset = parseInt(offset, 10) || 0;
-    query.skip(offset);
-    query.limit(limit);
-    return offset;
+    return query.skip(offset).limit(limit);
 };
 
 ApiDataService.sortQuery = function (query, req) {
@@ -218,11 +214,11 @@ ApiDataService.addIncludedData = function(Model, req) {
 };
 
 
-ApiDataService.addPaginationData = function (Model, offset, limit) {
+ApiDataService.addPaginationData = function (Model, offset, limit, originalQuery) {
+    originalQuery = originalQuery || {};
 
-    // TODO: Doesn't account for filters etc!
     return function (response) {
-        return Promise.promisify(Model.count, Model)().then(function (count) {
+        return Promise.promisify(Model.count, Model)(originalQuery).then(function (count) {
             if (!response.meta) {
                 response.meta = {};
             }
@@ -261,18 +257,22 @@ ApiDataService.addPaginationData = function (Model, offset, limit) {
 
 ApiDataService.list = function (req, Model, defaultPageSize) {
     var query = Model.find();
-    var pageSize = parseInt(req.query.limit, 10) || defaultPageSize;
+    var limit = parseInt(req.query.limit, 10) || defaultPageSize;
+    var offset = parseInt(req.query.offset, 10) || 0;
 
-    var page = ApiDataService.paginateQuery(query, req, pageSize);
     ApiDataService.whereQuery(query, req);
     ApiDataService.sortQuery(query, req);
     ApiDataService.selectQuery(query, req);
+
+    var originalQuery = query.getQuery();
+
+   ApiDataService.paginateQuery(query, offset, limit);
 
     return Promise.promisify(query.exec, query)()
         .then(ApiDataService.ensureDataReturned)
         .then(ApiDataService.wrapInProperty("data"))
         .then(ApiDataService.addIncludedData(Model, req))
-        .then(ApiDataService.addPaginationData(Model, page, pageSize));
+        .then(ApiDataService.addPaginationData(Model, offset, limit, originalQuery));
 };
 
 ApiDataService.create = function (req, Model) {
@@ -315,7 +315,7 @@ ApiDataService.remove = function (req, Model) {
 
 ApiDataService.includesList = function (req, Model, defaultPageSize) {
     var relationshipProperty = req.params.relationship;
-    var pageSize = parseInt(req.query.limit, 10) || defaultPageSize;
+    var limit = parseInt(req.query.limit, 10) || defaultPageSize;
     var offset = parseInt(sanitize(req.query.offset), 10) || 0;
 
     var query = Model.findOne({_id: sanitize(req.params.id)});
@@ -329,7 +329,7 @@ ApiDataService.includesList = function (req, Model, defaultPageSize) {
             return Promise.promisify(Model.populate, Model)(data, {
                 path: relationshipProperty,
                 options: {
-                    limit: pageSize,
+                    limit: limit,
                     skip: offset
                 }
             });
@@ -341,7 +341,8 @@ ApiDataService.includesList = function (req, Model, defaultPageSize) {
         })
         .then(ApiDataService.wrapInProperty("data"));
         // Would have to do a second lookup to count the matching records
-        //.then(ApiDataService.addPaginationData(Model, offset, pageSize));
+        //var originalQuery = query.getQuery();
+        //.then(ApiDataService.addPaginationData(Model, offset, limit, originalQuery));
 };
 
 // TODO: Should use ```data: {}```
