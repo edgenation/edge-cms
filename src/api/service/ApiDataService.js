@@ -219,11 +219,14 @@ ApiDataService.addIncludedData = function(Model, req) {
 
 
 ApiDataService.addPaginationData = function (Model, offset, limit) {
+
+    // TODO: Doesn't account for filters etc!
     return function (response) {
         return Promise.promisify(Model.count, Model)().then(function (count) {
             if (!response.meta) {
                 response.meta = {};
             }
+
             if (!response.links) {
                 response.links = {};
             }
@@ -256,8 +259,9 @@ ApiDataService.addPaginationData = function (Model, offset, limit) {
 };
 
 
-ApiDataService.list = function (req, Model, pageSize) {
+ApiDataService.list = function (req, Model, defaultPageSize) {
     var query = Model.find();
+    var pageSize = parseInt(req.query.limit, 10) || defaultPageSize;
 
     var page = ApiDataService.paginateQuery(query, req, pageSize);
     ApiDataService.whereQuery(query, req);
@@ -309,8 +313,10 @@ ApiDataService.remove = function (req, Model) {
 };
 
 
-ApiDataService.includesList = function (req, Model) {
+ApiDataService.includesList = function (req, Model, defaultPageSize) {
     var relationshipProperty = req.params.relationship;
+    var pageSize = parseInt(req.query.limit, 10) || defaultPageSize;
+    var offset = parseInt(sanitize(req.query.offset), 10) || 0;
 
     var query = Model.findOne({_id: sanitize(req.params.id)});
 
@@ -320,7 +326,13 @@ ApiDataService.includesList = function (req, Model) {
         .then(ApiDataService.ensureDataReturned)
         .then(function (data) {
 
-            return Promise.promisify(Model.populate, Model)(data, { path: relationshipProperty });
+            return Promise.promisify(Model.populate, Model)(data, {
+                path: relationshipProperty,
+                options: {
+                    limit: pageSize,
+                    skip: offset
+                }
+            });
         })
         //.then(ApiDataService.addIncludedData(Model, req))
         //.then(ApiDataService.addIncludedData(RelationshipModel, req))
@@ -328,6 +340,8 @@ ApiDataService.includesList = function (req, Model) {
             return data[relationshipProperty];
         })
         .then(ApiDataService.wrapInProperty("data"));
+        // Would have to do a second lookup to count the matching records
+        //.then(ApiDataService.addPaginationData(Model, offset, pageSize));
 };
 
 // TODO: Should use ```data: {}```

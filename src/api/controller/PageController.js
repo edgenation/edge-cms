@@ -3,7 +3,7 @@ var ApiController = require("./ApiController"),
 
 
 // http://jsonapi.org/format/
-var PageController = ApiController.restForModel(Page, 1);
+var PageController = ApiController.restForModel(Page, 10);
 
 /*
     addToContainers: function (req, res, next) {

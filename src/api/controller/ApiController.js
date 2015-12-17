@@ -179,7 +179,7 @@ ApiController.restForModel = function (Model, perPage) {
         details: ApiController.details(Model),
         update: ApiController.update(Model),
         remove: ApiController.remove(Model),
-        includesList: ApiController.includesList(Model),
+        includesList: ApiController.includesList(Model, perPage),
         includesAdd: ApiController.includesAdd(Model),
         includesRemove: ApiController.includesRemove(Model)
     };
