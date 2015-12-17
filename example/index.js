@@ -22,6 +22,9 @@ cms.modify("views", function(views) {
 // Add error handlers
 cms.use(edgeCMS.errorHandler.middleware());
 
+// Initialize the cms api service
+edgeCMS.apiService.init(config.get("api.uri"));
+
 // Add the cms API - can be a different app
 cms.use(edgeCMS.api.middleware({ path: config.get("api.path") }));
 
@@ -34,7 +37,6 @@ cms.use(staticRoute);
 
 // Add cms routing
 cms.use(edgeCMS.cmsRoutes.middleware({
-    api: config.get("api.uri"),
     skipRoutes: [
         /^\/api(\/|^\/+)/,
         /^\/favicon.ico$/
