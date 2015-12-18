@@ -15,11 +15,18 @@ module.exports = function (app, cms) {
             }
 
             var page = apiAdapter.page(pageResponse);
-            var list = apiAdapter.pageList(pageListResponse);
+            var posts = apiAdapter.pageList(pageListResponse);
 
-            //console.log(JSON.stringify(list, null, 4));
+            //console.log(JSON.stringify(posts, null, 4));
 
-            return res.render("templates/page/" + page.template, { page: page, list: list });
+            if (req.query.json) {
+                return res.json({
+                    page: page,
+                    posts: posts
+                });
+            }
+
+            return res.render("templates/page/" + page.template, { page: page, posts: posts });
         }).catch(next);
 
     });
