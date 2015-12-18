@@ -11,14 +11,14 @@ errorHandler.middleware = function (options) {
         cms.set("404", function (req, res, next) {
             // Don't cache 404s
             res.set({ "Cache-Control": disabledCache });
-            res.render("error/404", { url: req.url });
+            res.render("errors/404", { url: req.url });
         });
 
         cms.set("500", function (err, req, res, next) {
             cms.log("error", err);
             // Don't cache 500s
             res.set({ "Cache-Control": disabledCache });
-            res.render("error/500", { error: err });
+            res.render("errors/500", { error: err });
         });
     };
 };

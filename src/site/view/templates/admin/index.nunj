@@ -1,4 +1,4 @@
-{% extends "layout/admin.nunj" %}
+{% extends "layouts/admin.nunj" %}
 
 
 {% block content %}
