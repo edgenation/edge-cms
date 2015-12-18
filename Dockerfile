@@ -1,4 +1,4 @@
-FROM alpine
+FROM mhart/alpine-node
 MAINTAINER Chris Sheppard
 
 # Setup
@@ -7,7 +7,6 @@ EXPOSE 4000
 
 RUN apk update && \
     apk upgrade && \
-    apk add nodejs && \
     rm -rf /var/cache/apk/* && \
     mkdir -p /app
 
