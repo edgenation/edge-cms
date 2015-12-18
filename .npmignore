@@ -1,0 +1,14 @@
+# Root files
+.git/
+docs/
+example/
+test/
+tasks/
+public/
+.dockerignore
+.editorconfig
+.gitignore
+.jshintrc
+Dockerfile
+gulpfile.js
+nodemon.json
