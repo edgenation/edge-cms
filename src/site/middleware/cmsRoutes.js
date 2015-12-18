@@ -24,7 +24,7 @@ cmsRoutes.middleware = function (options) {
                     return next();
                 }
 
-                if (req.query.raw) {
+                if (req.query.raw && app.get("env") === "development") {
                     return res.send(response);
                 }
 

@@ -10,7 +10,7 @@
 - [ ] HTTPS?
 - [ ] Improved 404 information
 - [ ] 500 full error only on development
-- [ ] disable ?raw on production?
+- [x] Disable ?raw on production
 
 ## API
 
