@@ -1,3 +1,5 @@
+"use strict";
+
 var express = require("express");
 
 var ApiController = require("../controller/ApiController");
@@ -7,7 +9,7 @@ var router = express.Router();
 
 // TODO: Authorisation
 router.use(function (req, res, next) {
-    var err = new Error("Unauthorized");
+    let err = new Error("Unauthorized");
     err.status = 401;
     next(err);
 });

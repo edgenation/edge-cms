@@ -1,3 +1,5 @@
+"use strict";
+
 var path = require("path");
 var gulp = require("gulp");
 var gulpLoadPlugins = require("gulp-load-plugins");
@@ -12,7 +14,7 @@ var postCss = gulpLoadPlugins({
 
 
 gulp.task("css", function() {
-    var cssProcessors = [
+    let cssProcessors = [
         postCss.normalize(),
         postCss.partialImport({
             extension: "scss"

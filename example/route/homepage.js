@@ -1,3 +1,5 @@
+"use strict";
+
 // This is an example of adding additional functionality to a cms route
 module.exports = function (app, cms) {
 

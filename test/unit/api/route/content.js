@@ -1,4 +1,6 @@
 /* global global, describe, it, beforeEach, afterEach, after */
+"use strict";
+
 
 require("../../../helpers");
 

@@ -1,10 +1,12 @@
+"use strict";
+
 var path = require("path");
 var convict = require("convict");
 
 
 var Config = function (configDirectory) {
     // Define schema
-    var config = convict({
+    let config = convict({
         env: {
             doc: "The application environment.",
             format: ["production", "development", "test"],
@@ -78,14 +80,14 @@ var Config = function (configDirectory) {
     });
 
     // Load environment dependent configuration
-    var env = config.get("env");
+    let env = config.get("env");
     config.loadFile(path.resolve(configDirectory, env + ".json"));
 
     // Perform validation
     config.validate();
 
     // Set easier to use database connection string
-    var dbConnection = "mongodb://" +
+    let dbConnection = "mongodb://" +
         config.get("database.host") +
         ":" + config.get("database.port") +
         "/" + config.get("database.name");
@@ -93,7 +95,7 @@ var Config = function (configDirectory) {
     config.set("database.uri", dbConnection);
 
     // Set easier to use api connection string
-    var apiConnection = config.get("api.protocol") + "//" +
+    let apiConnection = config.get("api.protocol") + "//" +
         config.get("api.host") + ":" +
         config.get("api.port") +
         config.get("api.path");

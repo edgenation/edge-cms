@@ -1,3 +1,5 @@
+"use strict";
+
 var _ = require("lodash"),
     express = require("express"),
     bodyParser = require("body-parser"),

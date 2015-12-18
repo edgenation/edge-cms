@@ -1,3 +1,5 @@
+"use strict";
+
 var Promise = require("bluebird"),
     mongoose = require("mongoose"),
     express = require("express"),
@@ -35,7 +37,7 @@ API.prototype.useApp = function (app, path) {
 };
 
 API.prototype.middleware = function (options) {
-    var api = this;
+    let api = this;
     options = options || {};
 
     return function(app, cms) {
@@ -73,7 +75,7 @@ API.prototype.disconnectDB = function () {
 };
 
 API.prototype.startServer = function () {
-    var app = this.app;
+    let app = this.app;
 
     this.connectDB()
         .then(function () {

@@ -1,3 +1,5 @@
+"use strict";
+
 var _ = require("lodash");
 
 var apiAdapter = {};
@@ -16,9 +18,7 @@ apiAdapter.nestIncluded = function(data, included) {
     }
 
     _.forEach(data, function(id, index, content) {
-        content[index] = _.find(included, function(include) {
-            return include.id === id;
-        });
+        content[index] = _.find(included, include => (include.id === id));
 
         if (content[index]) {
             apiAdapter.flattenAttributes(content[index]);
@@ -34,7 +34,7 @@ apiAdapter.page = function(response) {
         return false;
     }
 
-    var page = response.data[0];
+    let page = response.data[0];
 
     apiAdapter.flattenAttributes(page);
 
@@ -54,7 +54,7 @@ apiAdapter.pageList = function(response) {
         return false;
     }
 
-    var list = response.data;
+    let list = response.data;
 
     // Nest the page regions
     _.forEach(list, function (page, n) {

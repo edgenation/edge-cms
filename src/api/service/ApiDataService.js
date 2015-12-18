@@ -1,7 +1,12 @@
+"use strict";
+
 var Promise = require("bluebird"),
     _ = require("lodash"),
     mongoose = require("mongoose"),
     sanitize = require("mongo-sanitize");
+
+const REGEX_COMMAS = /,/g;
+
 
 function modelHasProperty(Model, property) {
     return Model.schema.paths[property];
@@ -33,8 +38,8 @@ ApiDataService.ensureDataReturned = function (data) {
 
 ApiDataService.selectQuery = function (query, req) {
     // GET /articles?include=author&fields[articles]=title,body&fields[people]=name HTTP/1.1
-    var fields = sanitize(req.query.fields);
-    var includes = sanitize(req.query.include);
+    let fields = sanitize(req.query.fields);
+    let includes = sanitize(req.query.include);
 
     // TODO: Fix sparse fieldsets
     // TODO: Verify this includes behaviour
@@ -43,13 +48,13 @@ ApiDataService.selectQuery = function (query, req) {
         if (includes) {
             fields += "," + includes;
         }
-        query.select(fields.replace(/,/g, " "));
+        query.select(fields.replace(REGEX_COMMAS, " "));
     }
 };
 
 ApiDataService.whereQuery = function (query, req) {
     // GET /comments?filter[post]=1,2&filter[author]=12
-    var filter = sanitize(req.query.filter);
+    let filter = sanitize(req.query.filter);
     if (filter) {
         query.where(filter);
     }
@@ -61,15 +66,15 @@ ApiDataService.paginateQuery = function (query, offset, limit) {
 };
 
 ApiDataService.sortQuery = function (query, req) {
-    var sort = sanitize(req.query.sort);
+    let sort = sanitize(req.query.sort);
     if (sort) {
-        query.sort(sort.replace(/,/g, " "));
+        query.sort(sort.replace(REGEX_COMMAS, " "));
     }
 };
 
 ApiDataService.wrapInProperty = function (propertyName) {
     return function (data) {
-        var res = {};
+        let res = {};
         res[propertyName] = data;
         return res;
     };
@@ -82,9 +87,9 @@ ApiDataService.getReferencedModelNameByPath = function (Model, path) {
 
     if (Array.isArray(Model.schema.paths[path].options.type)) {
         return Model.schema.paths[path].options.type[0].ref
-    } else {
-        return Model.schema.paths[path].options.ref;
     }
+
+    return Model.schema.paths[path].options.ref;
 };
 
 ApiDataService.getModelFromName = function (Model, name) {
@@ -99,9 +104,9 @@ ApiDataService.getReferencedModelByPath = function (Model, path) {
 
 ApiDataService.getIncludedDataFor = function(Model, linkedProperty, response, location) {
     location = location || "data";
-    var LinkedModel = ApiDataService.getReferencedModelByPath(Model, linkedProperty);
+    let LinkedModel = ApiDataService.getReferencedModelByPath(Model, linkedProperty);
 
-    var linkedIds = [];
+    let linkedIds = [];
     if (Array.isArray(response[location])) {
         _.forEach(response[location], function(d) {
             linkedIds = linkedIds.concat(d[linkedProperty]);
@@ -111,7 +116,7 @@ ApiDataService.getIncludedDataFor = function(Model, linkedProperty, response, lo
         linkedIds = response[location][linkedProperty];
     }
 
-    var query = LinkedModel.find({ "_id": { $in: linkedIds } });
+    let query = LinkedModel.find({ "_id": { $in: linkedIds } });
     return Promise.promisify(query.exec, query)()
         .then(ApiDataService.ensureDataReturned)
         .then(function(linkedData) {
@@ -126,7 +131,7 @@ ApiDataService.getIncludedDataFor = function(Model, linkedProperty, response, lo
 
 
 function generateNestedInclude(includedProperty) {
-    var include = {};
+    let include = {};
 
     includedProperty = includedProperty.split(".");
 
@@ -146,7 +151,7 @@ function generateNestedInclude(includedProperty) {
 
 
 ApiDataService.addIncludedData = function(Model, req) {
-    var includes = sanitize(req.query.include);
+    let includes = sanitize(req.query.include);
     if (!includes) {
         return _.identity;
     }
@@ -168,48 +173,40 @@ ApiDataService.addIncludedData = function(Model, req) {
 
     // Process the includes
     return function (response) {
-        var funcs = [];
+        let funcs = [];
 
         _.forEach(nestedIncludes, function (nestedIncludes2, linkedProperty1) {
-            var Model1 = Model;
+            let Model1 = Model;
 
             // Single includes
-            funcs.push(function (response) {
-                return ApiDataService.getIncludedDataFor(Model1, linkedProperty1, response);
-            });
+            funcs.push(response => ApiDataService.getIncludedDataFor(Model1, linkedProperty1, response));
 
             // Check second level
             if (_.isObject(nestedIncludes2)) {
                 _.forEach(nestedIncludes2, function (nestedIncludes3, linkedProperty2) {
-                    var Model2 = ApiDataService.getReferencedModelByPath(Model1, linkedProperty1);
+                    let Model2 = ApiDataService.getReferencedModelByPath(Model1, linkedProperty1);
                     if (!modelHasProperty(Model2, linkedProperty2)) {
                         return;
                     }
 
-                    funcs.push(function (response) {
-                        return ApiDataService.getIncludedDataFor(Model2, linkedProperty2, response, "included");
-                    });
+                    funcs.push(response => ApiDataService.getIncludedDataFor(Model2, linkedProperty2, response, "included"));
 
                     // Check third level
                     if (_.isObject(nestedIncludes3)) {
                         _.forEach(nestedIncludes3, function (nestedIncludes4, linkedProperty3) {
-                            var Model3 = ApiDataService.getReferencedModelByPath(Model2, linkedProperty2);
+                            let Model3 = ApiDataService.getReferencedModelByPath(Model2, linkedProperty2);
                             if (!modelHasProperty(Model3, linkedProperty3)) {
                                 return;
                             }
 
-                            funcs.push(function (response) {
-                                return ApiDataService.getIncludedDataFor(Model3, linkedProperty3, response, "included");
-                            });
+                            funcs.push(response => ApiDataService.getIncludedDataFor(Model3, linkedProperty3, response, "included"));
                         });
                     }
                 });
             }
         });
 
-        return funcs.reduce(function (soFar, f) {
-            return soFar.then(f);
-        }, Promise.resolve(response));
+        return funcs.reduce((soFar, f) => soFar.then(f), Promise.resolve(response));
     };
 };
 
@@ -223,11 +220,7 @@ ApiDataService.addPaginationData = function (response, offset, limit, total) {
         response.links = {};
     }
 
-    response.meta.page = {
-        offset: offset,
-        limit: limit,
-        total: total
-    };
+    response.meta.page = { offset, limit, total };
 
     // TODO: Add the links
     response.links.first = null;
@@ -260,15 +253,15 @@ ApiDataService.getPaginationData = function (Model, offset, limit, originalQuery
 
 
 ApiDataService.list = function (req, Model, defaultPageSize) {
-    var query = Model.find();
-    var limit = parseInt(req.query.limit, 10) || defaultPageSize;
-    var offset = parseInt(req.query.offset, 10) || 0;
+    let query = Model.find();
+    let limit = parseInt(req.query.limit, 10) || defaultPageSize;
+    let offset = parseInt(req.query.offset, 10) || 0;
 
     ApiDataService.whereQuery(query, req);
     ApiDataService.sortQuery(query, req);
     ApiDataService.selectQuery(query, req);
 
-    var originalQuery = query.getQuery();
+    let originalQuery = query.getQuery();
 
    ApiDataService.paginateQuery(query, offset, limit);
 
@@ -281,7 +274,7 @@ ApiDataService.list = function (req, Model, defaultPageSize) {
 
 ApiDataService.create = function (req, Model) {
     // TODO: sanitize
-    var model = new Model(req.body.data.attributes);
+    let model = new Model(req.body.data.attributes);
 
     return Promise.promisify(model.save, model)()
         .spread(ApiDataService.ensureDataReturned)
@@ -289,7 +282,7 @@ ApiDataService.create = function (req, Model) {
 };
 
 ApiDataService.details = function (req, Model) {
-    var query = Model.findOne({_id: sanitize(req.params.id)});
+    let query = Model.findOne({_id: sanitize(req.params.id)});
 
     ApiDataService.selectQuery(query, req);
 
@@ -318,12 +311,12 @@ ApiDataService.remove = function (req, Model) {
 
 
 ApiDataService.includesList = function (req, Model, defaultPageSize) {
-    var relationshipProperty = req.params.relationship;
-    var limit = parseInt(req.query.limit, 10) || defaultPageSize;
-    var offset = parseInt(sanitize(req.query.offset), 10) || 0;
+    let relationshipProperty = req.params.relationship;
+    let limit = parseInt(req.query.limit, 10) || defaultPageSize;
+    let skip = parseInt(sanitize(req.query.offset), 10) || 0;
 
-    var query = Model.findOne({_id: sanitize(req.params.id)});
-    var total = 0;
+    let query = Model.findOne({_id: sanitize(req.params.id)});
+    let total = 0;
 
     var RelationshipModel = ApiDataService.getReferencedModelByPath(Model, relationshipProperty);
 
@@ -335,10 +328,7 @@ ApiDataService.includesList = function (req, Model, defaultPageSize) {
 
             return Promise.promisify(Model.populate, Model)(data, {
                 path: relationshipProperty,
-                options: {
-                    limit: limit,
-                    skip: offset
-                }
+                options: { limit, skip }
             });
         })
         .then(function (data) {
@@ -347,7 +337,7 @@ ApiDataService.includesList = function (req, Model, defaultPageSize) {
         .then(ApiDataService.wrapInProperty("data"))
         .then(ApiDataService.addIncludedData(RelationshipModel, req))
         .then(function (response) {
-            return ApiDataService.addPaginationData(response, offset, limit, total);
+            return ApiDataService.addPaginationData(response, skip, limit, total);
         });
 };
 
@@ -355,7 +345,7 @@ ApiDataService.includesList = function (req, Model, defaultPageSize) {
 // TODO: Change to accept an array?
 ApiDataService.includesAdd = function(req, Model) {
     // TODO: Validate the body?
-    var relationshipProperty = req.params.relationship;
+    let relationshipProperty = req.params.relationship;
 
     return Promise.promisify(Model.findOne, Model)({ _id: sanitize(req.params.id) })
         .then(ApiDataService.ensureDataReturned)
@@ -376,7 +366,7 @@ ApiDataService.includesAdd = function(req, Model) {
 // TODO: Change to accept an array?
 ApiDataService.includesRemove = function(req, Model) {
     // TODO: Validate the body?
-    var relationshipProperty = req.params.relationship;
+    let relationshipProperty = req.params.relationship;
 
     return Promise.promisify(Model.findOne, Model)({ _id: sanitize(req.params.id) })
         .then(ApiDataService.ensureDataReturned)

@@ -1,3 +1,5 @@
+"use strict";
+
 var _ = require("lodash");
 var apiAdapter = require("../apiAdapter");
 var apiService = require("../apiService");
@@ -13,8 +15,7 @@ cmsRoutes.middleware = function (options) {
         app.use(function cmsPage (req, res, next) {
             // TODO: Being called twice??
             // Skip some paths as they are not cms managed
-            var skip = _.some(skipRoutes, function (path) { return path.test(req.path) });
-            if (skip) {
+            if (_.some(skipRoutes, path => path.test(req.path))) {
                 return next();
             }
 
@@ -34,7 +35,7 @@ cmsRoutes.middleware = function (options) {
                     return res.json(page);
                 }
 
-                return res.render("templates/page/" + page.template, { page: page });
+                return res.render(`templates/page/${page.template}`, { page });
             }).catch(next);
         });
     };

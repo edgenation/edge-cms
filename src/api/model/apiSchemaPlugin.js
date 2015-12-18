@@ -1,3 +1,5 @@
+"use strict";
+
 function apiSchemaPlugin(schema, options) {
     // Add timestamps
     schema.add({

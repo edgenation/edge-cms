@@ -1,3 +1,5 @@
+"use strict";
+
 var _ = require("lodash");
 var ApiDataService = require("../service/ApiDataService");
 
@@ -24,7 +26,7 @@ ApiController.checkDataReturned = function (data) {
 // Router middleware to validate :id
 ApiController.validateId = function (req, res, next, id) {
     if (!ApiDataService.isValidId(id)) {
-        var err = new Error("Invalid ID");
+        let err = new Error("Invalid ID");
         err.status = 400;
         return next(err);
     }
@@ -38,7 +40,7 @@ ApiController.validateRelationship = function(relationships) {
     return function (req, res, next, relationship) {
         // Check relationship is in relationships
         if (!relationships || !_.contains(relationships, relationship)) {
-            var err = new Error("Invalid Relationship");
+            let err = new Error("Invalid Relationship");
             err.status = 400;
             return next(err);
         }
@@ -50,7 +52,7 @@ ApiController.validateRelationship = function(relationships) {
 
 // Router level 404 handler
 ApiController.error404 = function (req, res, next) {
-    var err = new Error("Not Found");
+    let err = new Error("Not Found");
     err.status = 404;
     next(err);
 };
@@ -72,10 +74,8 @@ ApiController.error500 = function (err, req, res, next) {
     }
 
     // Only add stack traces in development
-    if (process.env.NODE_ENV === "development") {
-        if (error.status === 500 && err.stack) {
-            error.stack = err.stack;
-        }
+    if (process.env.NODE_ENV === "development" && error.status === 500 && err.stack) {
+        error.stack = err.stack;
     }
 
     if (error.status !== 404) {
@@ -171,7 +171,7 @@ ApiController.includesRemove = function (Model) {
 };
 
 ApiController.restForModel = function (Model, perPage) {
-    perPage = perPage || 2;
+    perPage = perPage || 10;
 
     return {
         list: ApiController.list(Model, perPage),

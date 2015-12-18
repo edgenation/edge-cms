@@ -1,3 +1,5 @@
+"use strict";
+
 var path = require("path");
 var gulp = require("gulp");
 var plugins = require("gulp-load-plugins")();
@@ -8,7 +10,7 @@ var config = require("./config");
 
 
 gulp.task("js", function () {
-    var bundler = through2.obj(function (file, enc, next) {
+    let bundler = through2.obj(function (file, enc, next) {
         browserify(file.path, {
             debug: true,
             plugin: [bundleCollapser],

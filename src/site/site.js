@@ -1,4 +1,7 @@
-var express = require("express"),
+"use strict";
+
+var path = require("path"),
+    express = require("express"),
     compression = require("compression"),
     bodyParser = require("body-parser"),
     helmet = require("helmet"),
@@ -14,7 +17,7 @@ var CMS = function () {
     this.app = null;
     this.options = [];
     this.set("log", console);
-    this.set("views", [__dirname + "/view"]);
+    this.set("views", [path.join(__dirname, "view")]);
 };
 
 CMS.prototype.set = function(option, value) {
@@ -34,7 +37,7 @@ CMS.prototype.use = function(middleware) {
 };
 
 CMS.prototype.log = function(level, msg) {
-    var logger = this.get("log");
+    let logger = this.get("log");
 
     if (!logger) {
         return;
@@ -62,7 +65,7 @@ CMS.prototype.createApp = function (options) {
 
     // TODO: Make configurable
     this.app.use(cors({
-        origin: '*'
+        origin: "*"
     }));
 
     this.app.set("port", options.port || 4000);
