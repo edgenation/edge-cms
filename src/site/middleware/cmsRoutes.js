@@ -20,12 +20,12 @@ cmsRoutes.middleware = function (options) {
 
             apiService.loadPage(req.path).then(function (response) {
                 // Page not found
-                if (!response.entity.data.length) {
+                if (!response.data.length) {
                     return next();
                 }
 
                 if (req.query.raw) {
-                    return res.send(response.entity);
+                    return res.send(response);
                 }
 
                 var page = apiAdapter.page(response);
@@ -35,10 +35,7 @@ cmsRoutes.middleware = function (options) {
                 }
 
                 return res.render("templates/page/" + page.template, { page: page });
-            }).catch(function (response) {
-                // API error
-                next(response.entity || response);
-            });
+            }).catch(next);
         });
     };
 };

@@ -12,7 +12,7 @@
     <div>
         <h3>List</h3>
 
-        {% for post in list.pages %}
+        {% for post in list %}
             <div>
                 <h4>{{ post.title }}</h4>
                 {{ contentForRegionName("test-container", post) }}

@@ -214,42 +214,46 @@ ApiDataService.addIncludedData = function(Model, req) {
 };
 
 
-ApiDataService.addPaginationData = function (Model, offset, limit, originalQuery) {
+ApiDataService.addPaginationData = function (response, offset, limit, total) {
+    if (!response.meta) {
+        response.meta = {};
+    }
+
+    if (!response.links) {
+        response.links = {};
+    }
+
+    response.meta.page = {
+        offset: offset,
+        limit: limit,
+        total: total
+    };
+
+    // TODO: Add the links
+    response.links.first = null;
+    response.links.last = null;
+    response.links.prev = null;
+    response.links.next = null;
+
+    if (offset - limit >= 0) {
+        // TODO: Add the href
+        response.links.prev = offset - limit;
+    }
+
+    if (offset + limit < response.meta.page.count) {
+        // TODO: Add the href
+        response.links.next = offset + limit;
+    }
+
+    return response;
+};
+
+ApiDataService.getPaginationData = function (Model, offset, limit, originalQuery) {
     originalQuery = originalQuery || {};
 
     return function (response) {
         return Promise.promisify(Model.count, Model)(originalQuery).then(function (count) {
-            if (!response.meta) {
-                response.meta = {};
-            }
-
-            if (!response.links) {
-                response.links = {};
-            }
-
-            response.meta.page = {
-                offset: offset,
-                limit: limit,
-                total: count
-            };
-
-            // TODO: Add the links
-            response.links.first = null;
-            response.links.last = null;
-            response.links.prev = null;
-            response.links.next = null;
-
-            if (offset - limit >= 0) {
-                // TODO: Add the href
-                response.links.prev = offset - limit;
-            }
-
-            if (offset + limit < response.meta.page.count) {
-                // TODO: Add the href
-                response.links.next = offset + limit;
-            }
-
-            return response;
+            return ApiDataService.addPaginationData(response, offset, limit, count);
         });
     };
 };
@@ -272,7 +276,7 @@ ApiDataService.list = function (req, Model, defaultPageSize) {
         .then(ApiDataService.ensureDataReturned)
         .then(ApiDataService.wrapInProperty("data"))
         .then(ApiDataService.addIncludedData(Model, req))
-        .then(ApiDataService.addPaginationData(Model, offset, limit, originalQuery));
+        .then(ApiDataService.getPaginationData(Model, offset, limit, originalQuery));
 };
 
 ApiDataService.create = function (req, Model) {
@@ -319,12 +323,15 @@ ApiDataService.includesList = function (req, Model, defaultPageSize) {
     var offset = parseInt(sanitize(req.query.offset), 10) || 0;
 
     var query = Model.findOne({_id: sanitize(req.params.id)});
+    var total = 0;
 
-    //var RelationshipModel = require("../../model/region");
+    var RelationshipModel = ApiDataService.getReferencedModelByPath(Model, relationshipProperty);
 
     return Promise.promisify(query.exec, query)()
         .then(ApiDataService.ensureDataReturned)
         .then(function (data) {
+            // Store the total
+            total = data[relationshipProperty].length;
 
             return Promise.promisify(Model.populate, Model)(data, {
                 path: relationshipProperty,
@@ -334,15 +341,14 @@ ApiDataService.includesList = function (req, Model, defaultPageSize) {
                 }
             });
         })
-        //.then(ApiDataService.addIncludedData(Model, req))
-        //.then(ApiDataService.addIncludedData(RelationshipModel, req))
         .then(function (data) {
             return data[relationshipProperty];
         })
-        .then(ApiDataService.wrapInProperty("data"));
-        // Would have to do a second lookup to count the matching records
-        //var originalQuery = query.getQuery();
-        //.then(ApiDataService.addPaginationData(Model, offset, limit, originalQuery));
+        .then(ApiDataService.wrapInProperty("data"))
+        .then(ApiDataService.addIncludedData(RelationshipModel, req))
+        .then(function (response) {
+            return ApiDataService.addPaginationData(response, offset, limit, total);
+        });
 };
 
 // TODO: Should use ```data: {}```

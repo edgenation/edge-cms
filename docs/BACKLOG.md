@@ -5,7 +5,7 @@
 - [x] Config for API host/port
 - [x] Custom server side routes - e.g. contact form
 - [x] Custom server side for cms pages - to add additional logic
-- [ ] Listing page? Blog for example
+- [x] Listing page? Blog for example
 - [ ] CDNs?
 - [ ] HTTPS?
 - [ ] Improved 404 information

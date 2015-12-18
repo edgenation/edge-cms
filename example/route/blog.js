@@ -10,18 +10,17 @@ module.exports = function (app, cms) {
 
         Promise.join(apiService.loadPage(req.path), apiService.loadPageList(req.path), function (pageResponse, pageListResponse) {
             // Page not found
-            if (!pageResponse.entity.data.length) {
+            if (!pageResponse || !pageResponse.data.length) {
                 return next();
             }
 
-            var page = apiAdapter.pageList(pageResponse);
+            var page = apiAdapter.page(pageResponse);
             var list = apiAdapter.pageList(pageListResponse);
 
+            //console.log(JSON.stringify(list, null, 4));
+
             return res.render("templates/page/" + page.template, { page: page, list: list });
-        }).catch(function (response) {
-            // API error
-            next(response.entity || response);
-        });
+        }).catch(next);
 
     });
 

@@ -11,46 +11,61 @@ apiAdapter.flattenAttributes = function (data) {
 };
 
 apiAdapter.nestIncluded = function(data, included) {
+    if (!data.length) {
+        return;
+    }
+
     _.forEach(data, function(id, index, content) {
         content[index] = _.find(included, function(include) {
             return include.id === id;
         });
 
-        apiAdapter.flattenAttributes(content[index]);
+        if (content[index]) {
+            apiAdapter.flattenAttributes(content[index]);
+        }
     });
+
+    // Remove any items that were not found
+    _.remove(data, _.isUndefined);
 };
 
 apiAdapter.page = function(response) {
-    var page = response.entity.data[0];
+    if (!response || !response.data.length) {
+        return false;
+    }
+
+    var page = response.data[0];
 
     apiAdapter.flattenAttributes(page);
 
     // Nest the regions
-    apiAdapter.nestIncluded(page.regions, response.entity.included);
+    apiAdapter.nestIncluded(page.regions, response.included);
 
     // Nest the region contents
     _.forEach(page.regions, function(regionId, regionIndex, regions) {
-        apiAdapter.nestIncluded(regions[regionIndex].content, response.entity.included);
+        apiAdapter.nestIncluded(regions[regionIndex].content, response.included);
     });
 
     return page;
 };
 
 apiAdapter.pageList = function(response) {
-    var list = response.entity.data[0];
+    if (!response || !response.data.length) {
+        return false;
+    }
 
-    apiAdapter.flattenAttributes(list);
-
-    // Nest the pages
-    apiAdapter.nestIncluded(list.pages, response.entity.included);
+    var list = response.data;
 
     // Nest the page regions
-    _.forEach(list.pages, function (pageId, pageIndex, pages) {
-        apiAdapter.nestIncluded(pages[pageIndex].regions, response.entity.included);
+    _.forEach(list, function (page, n) {
+        apiAdapter.flattenAttributes(page);
+
+        // Nest the page regions
+        apiAdapter.nestIncluded(page.regions, response.included);
 
         // Nest the region contents
-        _.forEach(pages[pageIndex].regions, function (regionId, regionIndex, regions) {
-            apiAdapter.nestIncluded(regions[regionIndex].content, response.entity.included);
+        _.forEach(page.regions, function (regionId, regionIndex, regions) {
+            apiAdapter.nestIncluded(regions[regionIndex].content, response.included);
         });
     });
 
