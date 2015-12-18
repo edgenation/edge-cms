@@ -13,6 +13,10 @@ function CmsContent() {
     };
 
     this.run = function (context, theContent, callback) {
+        if (!theContent || !theContent.type) {
+            return callback(null, "");
+        }
+
         let mixinName = "content" + theContent.type[0].toUpperCase() + theContent.type.slice(1);
         let mixinFile = `mixins/content/_${theContent.type}.nunj`;
 
