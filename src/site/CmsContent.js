@@ -20,11 +20,19 @@ function CmsContent() {
         let mixinName = "content" + theContent.type[0].toUpperCase() + theContent.type.slice(1);
         let mixinFile = `mixins/content/_${theContent.type}.nunj`;
 
-        context.env
-            .getTemplate(mixinFile)
-            .getExported(function (ctx, obj) {
-                callback(null, obj[mixinName](theContent));
-            });
+        // Safely handle templates that do not exist
+        try {
+            context.env
+                .getTemplate(mixinFile)
+                .getExported(function (ctx, obj) {
+                    callback(null, obj[mixinName](theContent));
+                });
+        } catch (e) {
+            // TODO: Nice error log
+            console.error(e);
+            callback(e);
+        }
+
     };
 }
 
