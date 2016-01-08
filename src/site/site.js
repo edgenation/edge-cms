@@ -18,7 +18,7 @@ var CMS = function () {
     this.options = [];
     this.set("log", console);
     this.set("views", [path.join(__dirname, "view")]);
-    this.set("statics", { "/": __dirname + "/../../public" });
+    this.set("statics", { "/": [__dirname + "/../../public"] });
 };
 
 CMS.prototype.set = function(option, value) {
@@ -92,9 +92,11 @@ CMS.prototype.initApp = function () {
 
     // Static paths
     let statics = this.get("statics");
-    for (let path in statics) {
-        if (statics.hasOwnProperty(path)) {
-            this.app.use(path, express.static(statics[path]));
+    for (let url in statics) {
+        if (statics.hasOwnProperty(url)) {
+            for (let path of statics[url]) {
+                this.app.use(url, express.static(path));
+            }
         }
     }
 
