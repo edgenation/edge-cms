@@ -146,9 +146,9 @@ ApiController.remove = function (Model) {
     };
 };
 
-ApiController.includesList = function (Model) {
+ApiController.includesList = function (Model, pageSize) {
     return function (req, res, next) {
-        ApiDataService.includesList(req, Model)
+        ApiDataService.includesList(req, Model, pageSize)
             .then(ApiController.sendResponse(res, 200))
             .catch(next);
     };
