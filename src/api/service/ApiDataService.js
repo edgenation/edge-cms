@@ -65,10 +65,20 @@ ApiDataService.paginateQuery = function (query, offset, limit) {
     return query.skip(offset).limit(limit);
 };
 
-ApiDataService.sortQuery = function (query, req) {
+ApiDataService.getSort = function (req) {
     let sort = sanitize(req.query.sort);
+
+    if (!sort) {
+        return false;
+    }
+
+    return sort.replace(REGEX_COMMAS, " ");
+};
+
+ApiDataService.sortQuery = function (query, req) {
+    let sort = this.getSort(req);
     if (sort) {
-        query.sort(sort.replace(REGEX_COMMAS, " "));
+        query.sort(sort);
     }
 };
 
@@ -326,9 +336,15 @@ ApiDataService.includesList = function (req, Model, defaultPageSize) {
             // Store the total
             total = data[relationshipProperty].length;
 
+            let options = { limit, skip };
+            let sort = ApiDataService.getSort(req);
+            if (sort) {
+                options.sort = sort;
+            }
+
             return Promise.promisify(Model.populate, Model)(data, {
                 path: relationshipProperty,
-                options: { limit, skip }
+                options
             });
         })
         .then(function (data) {
