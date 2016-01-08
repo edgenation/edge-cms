@@ -14,7 +14,7 @@ cmsRoutes.middleware = function (options) {
         // Check to see if this page exists in the API
         app.use(function cmsPage (req, res, next) {
             // TODO: Being called twice??
-            console.debug("Request 1");
+            console.log("Request 1");
             // Skip some paths as they are not cms managed
             if (_.some(skipRoutes, path => path.test(req.path))) {
                 return next();
