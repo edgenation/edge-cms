@@ -23,7 +23,12 @@ apiService.load = function (path, params) {
     return Promise.resolve(apiService.client({
         path: path,
         params: params
-    })).then(response => response.entity);
+    })).then((response) => {
+        let debug = response.entity.debug || [];
+        debug.push({ path: response.raw.request.path })
+        response.entity.debug = debug;
+        return response.entity;
+    });
 };
 
 apiService.loadPage = function (url) {
