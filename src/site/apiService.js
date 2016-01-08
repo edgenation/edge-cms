@@ -33,14 +33,15 @@ apiService.loadPage = function (url) {
     })
 };
 
-apiService.loadPageListPages = function (id) {
+apiService.loadPageListPages = function (id, sort) {
     return apiService.load(`/page-list/${id}/pages`, {
-        include: "regions.content"
+        include: "regions.content",
+        sort
     });
 };
 
 
-apiService.loadPageList = function (url) {
+apiService.loadPageList = function (url, sort) {
     return apiService.load("/page-list", {
         "filter[url]=": url,
         fields: "id"
@@ -48,7 +49,7 @@ apiService.loadPageList = function (url) {
         let lists = response.data;
 
         if (lists.length === 1) {
-            return apiService.loadPageListPages(lists[0].id);
+            return apiService.loadPageListPages(lists[0].id, sort);
         }
 
         return false;
