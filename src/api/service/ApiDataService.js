@@ -52,11 +52,68 @@ ApiDataService.selectQuery = function (query, req) {
     }
 };
 
+ApiDataService.filterStrToRegex = function (str) {
+    let len = str.length;
+    let firstChar = str[0];
+    let lastChar = str[len - 1];
+
+    // TODO: Sanitize the regex input!
+    if (firstChar !== "*" && lastChar === "*") {
+        return new RegExp("^" + str.substr(0, len - 1));
+    } else if (firstChar === "*" && lastChar !== "*") {
+        return new RegExp(str.substr(1) + "$");
+    } else if (firstChar === "*" && lastChar === "*") {
+        return new RegExp(str.substr(1, len - 1));
+    }
+
+    return false;
+};
+
+ApiDataService.excludeStrToRegex = function (str) {
+    let len = str.length;
+    let firstChar = str[0];
+    let lastChar = str[len - 1];
+
+    // TODO: Sanitize the regex input!
+    if (firstChar !== "*" && lastChar === "*") {
+        return new RegExp("^(?!" + str.substr(0, len - 1) + ")");
+    } else if (firstChar === "*" && lastChar !== "*") {
+        return new RegExp("^(?:(?!" + str.substr(1) + "$).)*$");
+    } else if (firstChar === "*" && lastChar === "*") {
+        return new RegExp("^(?:(?!^" + str.substr(1, len - 1) + "$).)*$");
+    }
+
+    return false;
+};
+
 ApiDataService.whereQuery = function (query, req) {
     // GET /comments?filter[post]=1,2&filter[author]=12
     let filter = sanitize(req.query.filter);
     if (filter) {
-        query.where(filter);
+        for (let field in filter) {
+            if (filter.hasOwnProperty(field)) {
+                let regex = ApiDataService.filterStrToRegex(filter[field]);
+                if (regex) {
+                    query.where(field, regex);
+                } else {
+                    query.where(field, filter[field]);
+                }
+            }
+        }
+    }
+
+    let excludes = sanitize(req.query.exclude);
+    if (excludes) {
+        for (let field in excludes) {
+            if (excludes.hasOwnProperty(field)) {
+                let regex = ApiDataService.excludeStrToRegex(excludes[field]);
+                if (regex) {
+                    query.where(field, regex);
+                } else {
+                    query.where(field).ne(excludes[field]);
+                }
+            }
+        }
     }
 };
 
