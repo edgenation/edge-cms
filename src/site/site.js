@@ -9,6 +9,8 @@ var path = require("path"),
     responseTime = require("response-time"),
     nunjucks = require("nunjucks"),
     CmsContent = require("./CmsContent"),
+    markdown = require("nunjucks-markdown"),
+    marked = require("marked"),
     cookieParser = require("cookie-parser");
 
 
@@ -86,6 +88,9 @@ CMS.prototype.initApp = function () {
         // Disable view caching in development
         noCache: (this.app.get("env") === "development")
     });
+
+    // Enable markdown
+    markdown.register(this.nunjucks, marked);
 
     // Custom tag to load content mixins
     this.nunjucks.addExtension("CmsContent", new CmsContent());
