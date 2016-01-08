@@ -61,12 +61,16 @@ apiAdapter.pageList = function(response) {
         apiAdapter.flattenAttributes(page);
 
         // Nest the page regions
-        apiAdapter.nestIncluded(page.regions, response.included);
+        if (page.regions && page.included) {
+            apiAdapter.nestIncluded(page.regions, response.included);
+        }
 
         // Nest the region contents
-        _.forEach(page.regions, function (regionId, regionIndex, regions) {
-            apiAdapter.nestIncluded(regions[regionIndex].content, response.included);
-        });
+        if (page.regions) {
+            _.forEach(page.regions, function (regionId, regionIndex, regions) {
+                apiAdapter.nestIncluded(regions[regionIndex].content, response.included);
+            });
+        }
     });
 
     return list;
