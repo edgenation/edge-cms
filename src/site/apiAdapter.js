@@ -72,5 +72,22 @@ apiAdapter.pageList = function(response) {
     return list;
 };
 
+apiAdapter.pagination = function (response) {
+    if (!response || !response.meta.page) {
+        return false;
+    }
+
+    let pagination = {
+        offset: response.meta.page.offset,
+        total: response.meta.page.total,
+        limit: response.meta.page.limit,
+    };
+
+    pagination.page = Math.ceil(pagination.offset / pagination.limit) || 1;
+    pagination.pages = Math.ceil(pagination.total / pagination.limit);
+
+    return pagination;
+};
+
 
 module.exports = apiAdapter;
