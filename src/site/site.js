@@ -18,6 +18,7 @@ var CMS = function () {
     this.options = [];
     this.set("log", console);
     this.set("views", [path.join(__dirname, "view")]);
+    this.set("statics", { "/": __dirname + "/../../public" });
 };
 
 CMS.prototype.set = function(option, value) {
@@ -89,7 +90,13 @@ CMS.prototype.initApp = function () {
     // Custom tag to load content mixins
     this.nunjucks.addExtension("CmsContent", new CmsContent());
 
-    this.app.use(express.static(__dirname + "/../../public"));
+    // Static paths
+    let statics = this.get("statics");
+    for (let path in statics) {
+        if (statics.hasOwnProperty(path)) {
+            this.app.use(path, express.static(statics[path]));
+        }
+    }
 
     // Set the error handlers if they exist
     var error404 = this.get("404");
