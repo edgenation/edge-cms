@@ -39,7 +39,7 @@ apiAdapter.page = function(response) {
     apiAdapter.flattenAttributes(page);
 
     // Nest the regions
-    if (page.regions && page.included) {
+    if (page.regions && response.included) {
         apiAdapter.nestIncluded(page.regions, response.included);
     }
 
@@ -65,7 +65,7 @@ apiAdapter.pageList = function(response) {
         apiAdapter.flattenAttributes(page);
 
         // Nest the page regions
-        if (page.regions && page.included) {
+        if (page.regions && response.included) {
             apiAdapter.nestIncluded(page.regions, response.included);
         }
 
