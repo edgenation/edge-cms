@@ -59,9 +59,9 @@ var Config = function (configDirectory) {
         },
         database: {
             uri: {
-                doc: "The mongodb URI"
+                doc: "The mongodb URI",
                 format: String,
-                default: ""
+                default: "",
                 env: "MONGOLAB_URI"
             },
             host: {
