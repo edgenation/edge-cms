@@ -19,7 +19,7 @@ cmsRoutes.middleware = function (options) {
             }
 
             // TODO: Being called twice??
-            console.log("Request 1", req.url, req.params, req.query);
+            // console.log("Request 1", req.method, req.url, req.params, req.query);
 
             apiService.loadPage(req.path).then(function (response) {
                 // Page not found
