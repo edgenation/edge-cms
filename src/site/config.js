@@ -38,6 +38,10 @@ var Config = function (configDirectory) {
             }
         },
         api: {
+            uri: {
+                doc: "The full app URI",
+                format: String
+            },
             port: {
                 doc: "The api port.",
                 format: "port"
