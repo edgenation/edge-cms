@@ -40,13 +40,11 @@ var Config = function (configDirectory) {
         api: {
             port: {
                 doc: "The api port.",
-                format: "port",
-                default: 4000
+                format: "port"
             },
             host: {
                 doc: "The api host.",
-                format: "ipaddress",
-                default: "127.0.0.1"
+                format: "ipaddress"
             },
             protocol: {
                 doc: "The api protocol.",
@@ -60,6 +58,12 @@ var Config = function (configDirectory) {
             }
         },
         database: {
+            uri: {
+                doc: "The mongodb URI"
+                format: String,
+                default: ""
+                env: "MONGOLAB_URI"
+            },
             host: {
                 doc: "Database host name/IP",
                 format: String,
@@ -87,20 +91,33 @@ var Config = function (configDirectory) {
     config.validate();
 
     // Set easier to use database connection string
-    let dbConnection = "mongodb://" +
-        config.get("database.host") +
-        ":" + config.get("database.port") +
-        "/" + config.get("database.name");
+    if (!config.get("database.uri")) {
+        config.set("database.uri",
+            "mongodb://" + config.get("database.host") +
+            ":" + config.get("database.port") +
+            "/" + config.get("database.name")
+        );
+    }
 
-    config.set("database.uri", dbConnection);
+    // Default to same api host
+    if (!config.get("api.host")) {
+        config.set("api.host", config.get("app.host"));
+    }
+
+    // Default to same api port
+    if (!config.get("api.port")) {
+        config.set("api.port", config.get("app.port"));
+    }
 
     // Set easier to use api connection string
-    let apiConnection = config.get("api.protocol") + "//" +
-        config.get("api.host") + ":" +
-        config.get("api.port") +
-        config.get("api.path");
-
-    config.set("api.uri", apiConnection);
+    if (!config.get("api.uri")) {
+        config.set("api.uri",
+            config.get("api.protocol") + "//" +
+            config.get("api.host") + ":" +
+            config.get("api.port") +
+            config.get("api.path")
+        );
+    }
 
     return config;
 };
