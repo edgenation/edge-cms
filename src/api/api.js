@@ -20,13 +20,18 @@ API.prototype.createApp = function (options) {
     //this.app.use(bodyParser.urlencoded({extended: true}));
     //this.app.use(bodyParser.json());
     this.app.use(responseTime());
-    this.app.use(helmet());
-    this.app.use("/api", require("./route/index"));
+    this.secureApp();
+
+    this.app.use(options.path, require("./route/index")(options.readOnly));
 
     this.app.set("port", options.port || 4000);
     this.app.set("host", options.host || "0.0.0.0");
 
     return this.app;
+};
+
+API.prototype.secureApp = function () {
+    this.app.use(helmet());
 };
 
 API.prototype.useApp = function (app, path) {

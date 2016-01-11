@@ -5,22 +5,27 @@ var express = require("express");
 var ApiController = require("../controller/ApiController");
 var PageListController = require("../controller/PageListController");
 
-var router = express.Router();
 
-// Pre-route validation
-router.param("id", ApiController.validateId);
-router.param("relationship", ApiController.validateRelationship(["pages"]));
+module.exports = function (readOnly) {
+    let router = express.Router();
 
-router.get("/", PageListController.list);
-router.post("/", PageListController.create);
-router.get("/:id", PageListController.details);
-router.put("/:id", PageListController.update);
-router.patch("/:id", PageListController.update);
-router.delete("/:id", PageListController.remove);
+    // Pre-route validation
+    router.param("id", ApiController.validateId);
+    router.param("relationship", ApiController.validateRelationship(["pages"]));
 
-router.get("/:id/:relationship", PageListController.includesList);
-router.put("/:id/:relationship", PageListController.includesAdd);
-router.patch("/:id/:relationship", PageListController.includesAdd);
-router.delete("/:id/:relationship", PageListController.includesRemove);
+    router.get("/", PageListController.list);
+    router.get("/:id", PageListController.details);
+    router.get("/:id/:relationship", PageListController.includesList);
 
-module.exports = router;
+    if (!readOnly) {
+        router.post("/", PageListController.create);
+        router.put("/:id", PageListController.update);
+        router.patch("/:id", PageListController.update);
+        router.delete("/:id", PageListController.remove);
+        router.put("/:id/:relationship", PageListController.includesAdd);
+        router.patch("/:id/:relationship", PageListController.includesAdd);
+        router.delete("/:id/:relationship", PageListController.includesRemove);
+    }
+
+    return router;
+};
