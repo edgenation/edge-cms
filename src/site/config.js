@@ -28,31 +28,28 @@ var Config = function (configDirectory) {
             },
             name: {
                 doc: "The application name.",
-                format: String,
                 default: "EdgeCMS"
             },
             "cookie-secret-key": {
                 doc: "A secret key for cookies.",
-                format: String,
                 default: "edge-cms-secret-key"
             }
         },
         api: {
             uri: {
                 doc: "The full app URI",
-                format: String
+                default: ""
             },
             port: {
                 doc: "The api port.",
-                format: "port"
+                default: ""
             },
             host: {
                 doc: "The api host.",
-                format: "ipaddress"
+                default: ""
             },
             protocol: {
                 doc: "The api protocol.",
-                format: String,
                 default: "http:"
             },
             path: {
@@ -105,7 +102,11 @@ var Config = function (configDirectory) {
 
     // Default to same api host
     if (!config.get("api.host")) {
-        config.set("api.host", config.get("app.host"));
+        let host = config.get("app.host");
+        if (host === "0.0.0.0") {
+            host = "127.0.0.1";
+        }
+        config.set("api.host", host);
     }
 
     // Default to same api port
