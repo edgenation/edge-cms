@@ -58,18 +58,46 @@ CMS.prototype.log = function(level, msg) {
     logger[level].call(this, msg);
 };
 
+CMS.prototype.secureApp = function() {
+    // Implement CSP with Helmet
+    this.app.use(helmet.csp({
+        // TODO: Make configurable
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["*.google-analytics.com"],
+            styleSrc: ["'unsafe-inline'", "fonts.googleapis.com"],
+            imgSrc: ["*.google-analytics.com"],
+            connectSrc: ["'none'"],
+            fontSrc: ["fonts.googleapis.com", "fonts.gstatic.com"],
+            objectSrc: [],
+            mediaSrc: [],
+            frameSrc: []
+        }
+    }));
+
+    // Implement X-XSS-Protection
+    this.app.use(helmet.xssFilter());
+
+    // Implement X-Frame: Deny
+    this.app.use(helmet.frameguard());
+
+    // Hide X-Powered-By
+    app.use(helmet.hidePoweredBy());
+
+    // TODO: Make configurable
+    this.app.use(cors({
+        origin: "*"
+    }));
+};
+
 CMS.prototype.createApp = function (options) {
     this.app = express();
     this.app.use(compression());
     this.app.use(bodyParser.urlencoded({extended: true}));
     this.app.use(bodyParser.json());
     this.app.use(responseTime());
-    this.app.use(helmet());
 
-    // TODO: Make configurable
-    this.app.use(cors({
-        origin: "*"
-    }));
+    this.secureApp();
 
     this.app.set("port", options.port || 4000);
     this.app.set("host", options.host || "0.0.0.0");
