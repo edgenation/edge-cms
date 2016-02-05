@@ -1,6 +1,6 @@
 "use strict";
 
-var Promise = require("bluebird"),
+const Promise = require("bluebird"),
     _ = require("lodash"),
     mongoose = require("mongoose"),
     sanitize = require("mongo-sanitize");
@@ -153,7 +153,7 @@ ApiDataService.getReferencedModelNameByPath = function (Model, path) {
     }
 
     if (Array.isArray(Model.schema.paths[path].options.type)) {
-        return Model.schema.paths[path].options.type[0].ref
+        return Model.schema.paths[path].options.type[0].ref;
     }
 
     return Model.schema.paths[path].options.ref;

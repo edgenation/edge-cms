@@ -1,9 +1,9 @@
 "use strict";
 
-var mongoose = require("mongoose"),
+const mongoose = require("mongoose"),
     apiSchemaPlugin = require("./apiSchemaPlugin");
 
-var PageSchema = new mongoose.Schema({
+const PageSchema = new mongoose.Schema({
     title: {
         required: true,
         type: String,

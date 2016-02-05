@@ -1,10 +1,10 @@
 "use strict";
 
-var Promise = require("bluebird");
-var rest = require("rest");
-var mime = require("rest/interceptor/mime");
-var pathPrefix = require("rest/interceptor/pathPrefix");
-var timeout = require("rest/interceptor/timeout");
+const Promise = require("bluebird");
+const rest = require("rest");
+const mime = require("rest/interceptor/mime");
+const pathPrefix = require("rest/interceptor/pathPrefix");
+const timeout = require("rest/interceptor/timeout");
 
 var apiService = {};
 

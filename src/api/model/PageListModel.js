@@ -1,9 +1,9 @@
 "use strict";
 
-var mongoose = require("mongoose"),
+const mongoose = require("mongoose"),
     apiSchemaPlugin = require("./apiSchemaPlugin");
 
-var PageListSchema = new mongoose.Schema({
+const PageListSchema = new mongoose.Schema({
     url: {
         type: String,
         index: { unique: true },

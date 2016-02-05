@@ -1,9 +1,9 @@
 "use strict";
 
-var express = require("express");
+const express = require("express");
 
-var ApiController = require("../controller/ApiController");
-var ContentController = require("../controller/ContentController");
+const ApiController = require("../controller/ApiController");
+const ContentController = require("../controller/ContentController");
 
 
 module.exports = function (readOnly) {

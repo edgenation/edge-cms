@@ -1,8 +1,8 @@
 "use strict";
 
-var Promise = require("bluebird");
-var apiService = require("../../src/").apiService;
-var apiAdapter = require("../../src/").apiAdapter;
+const Promise = require("bluebird");
+const apiService = require("../../src/").apiService;
+const apiAdapter = require("../../src/").apiAdapter;
 
 
 module.exports = function (app, cms) {

@@ -1,13 +1,14 @@
 "use strict";
 
-var _ = require("lodash");
-var apiAdapter = require("../apiAdapter");
-var apiService = require("../apiService");
+const _ = require("lodash");
+const apiAdapter = require("../apiAdapter");
+const apiService = require("../apiService");
 
 
 var cmsRoutes = {};
 
 cmsRoutes.middleware = function (options) {
+    options = options || {};
     var skipRoutes = options.skipRoutes || [];
 
     return function (app, cms) {
@@ -31,7 +32,7 @@ cmsRoutes.middleware = function (options) {
                     return res.send(response);
                 }
 
-                var page = apiAdapter.page(response);
+                let page = apiAdapter.page(response);
 
                 if (app.get("env") === "development" && response.debug) {
                    page.debug = JSON.stringify(response.debug);

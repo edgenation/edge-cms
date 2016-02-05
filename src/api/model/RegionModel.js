@@ -1,9 +1,9 @@
 "use strict";
 
-var mongoose = require("mongoose"),
+const mongoose = require("mongoose"),
     apiSchemaPlugin = require("./apiSchemaPlugin");
 
-var RegionSchema = new mongoose.Schema({
+const RegionSchema = new mongoose.Schema({
     name: {
         type: String,
         trim: true,

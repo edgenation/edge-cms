@@ -1,6 +1,6 @@
 "use strict";
 
-var ApiController = require("./ApiController"),
+const ApiController = require("./ApiController"),
     Page = require("../model/PageModel");
 
 

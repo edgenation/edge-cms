@@ -1,11 +1,11 @@
 "use strict";
 
-var _ = require("lodash"),
+const _ = require("lodash"),
     express = require("express"),
     bodyParser = require("body-parser"),
     requireDir = require("require-dir");
 
-var ApiController = require("../controller/ApiController");
+const ApiController = require("../controller/ApiController");
 
 
 module.exports = function (readOnly) {

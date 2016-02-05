@@ -1,6 +1,6 @@
 "use strict";
 
-var _ = require("lodash");
+const _ = require("lodash");
 
 var apiAdapter = {};
 
@@ -88,7 +88,7 @@ apiAdapter.pagination = function (response) {
     let pagination = {
         offset: response.meta.page.offset,
         total: response.meta.page.total,
-        limit: response.meta.page.limit,
+        limit: response.meta.page.limit
     };
 
     pagination.page = Math.ceil(pagination.offset / pagination.limit) || 1;

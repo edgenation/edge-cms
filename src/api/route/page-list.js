@@ -1,9 +1,9 @@
 "use strict";
 
-var express = require("express");
+const express = require("express");
 
-var ApiController = require("../controller/ApiController");
-var PageListController = require("../controller/PageListController");
+const ApiController = require("../controller/ApiController");
+const PageListController = require("../controller/PageListController");
 
 
 module.exports = function (readOnly) {

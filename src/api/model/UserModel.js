@@ -1,16 +1,16 @@
 "use strict";
 
-var mongoose = require("mongoose"),
+const mongoose = require("mongoose"),
     bcrypt = require("bcrypt-nodejs"),
     apiSchemaPlugin = require("./apiSchemaPlugin");
 
 
-var SALT_WORK_FACTOR = 10,
+const SALT_WORK_FACTOR = 10,
     MAX_LOGIN_ATTEMPTS = 5,
     LOCK_TIME = 2 * 60 * 60 * 1000;
 
 
-var UserSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
     firstName: {
         type: String,
         required: true,
@@ -53,27 +53,25 @@ UserSchema.statics.failedLogin = {
 };
 
 UserSchema.pre("save", function (next) {
-    var user = this;
-
     // Check to see if the password was modified
-    if (!user.isModified("password")) {
+    if (!this.isModified("password")) {
         return next();
     }
 
     // Generate a salt
-    bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
+    bcrypt.genSalt(SALT_WORK_FACTOR, (err, salt) => {
         if (err) {
             return next(err);
         }
 
         // Hash the password using our new salt
-        bcrypt.hash(user.password, salt, function (err, hash) {
+        bcrypt.hash(this.password, salt, (err, hash) => {
             if (err) {
                 return next(err);
             }
 
             // Override the text password with the hashed one
-            user.password = hash;
+            this.password = hash;
             next();
         });
     });

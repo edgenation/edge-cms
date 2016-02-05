@@ -1,7 +1,7 @@
 "use strict";
 
-var _ = require("lodash");
-var ApiDataService = require("../service/ApiDataService");
+const _ = require("lodash");
+const ApiDataService = require("../service/ApiDataService");
 
 var ApiController = {};
 

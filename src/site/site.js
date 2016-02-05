@@ -1,6 +1,6 @@
 "use strict";
 
-var path = require("path"),
+const path = require("path"),
     express = require("express"),
     compression = require("compression"),
     bodyParser = require("body-parser"),
@@ -14,147 +14,149 @@ var path = require("path"),
     cookieParser = require("cookie-parser");
 
 
-
-var CMS = function () {
-    this.app = null;
-    this.options = [];
-    this.set("log", console);
-    this.set("views", [path.join(__dirname, "view")]);
-    this.set("statics", { "/": [__dirname + "/../../public"] });
-};
-
-CMS.prototype.set = function(option, value) {
-    this.options[option] = value;
-};
-
-CMS.prototype.modify = function(option, fn) {
-    fn(this.options[option]);
-};
-
-CMS.prototype.get = function(option) {
-    return this.options[option];
-};
-
-CMS.prototype.use = function(middleware) {
-    return middleware(this.app, this);
-};
-
-CMS.prototype.log = function(level, msg) {
-    let logger = this.get("log");
-
-    if (!logger) {
-        return;
+class CMS {
+    constructor() {
+        this.app = null;
+        this.options = [];
+        this.set("log", console);
+        this.set("views", [path.join(__dirname, "view")]);
+        this.set("statics", { "/": [__dirname + "/../../public"] });
     }
 
-    if (!msg) {
-        msg = level;
-        level = "log";
+    set(option, value) {
+        this.options[option] = value;
     }
 
-    if (typeof logger[level] !== "function") {
-        level = "log";
+    modify(option, fn) {
+        fn(this.options[option]);
     }
 
-    logger[level].call(this, msg);
-};
+    get(option) {
+        return this.options[option];
+    }
 
-CMS.prototype.secureApp = function() {
-    // Implement CSP with Helmet
-    this.app.use(helmet.csp({
-        // TODO: Make configurable
-        directives: {
-            defaultSrc: ["'self'"],
-            scriptSrc: ["*.google-analytics.com"],
-            styleSrc: ["'unsafe-inline'", "fonts.googleapis.com"],
-            imgSrc: ["*.google-analytics.com"],
-            connectSrc: ["'none'"],
-            fontSrc: ["fonts.googleapis.com", "fonts.gstatic.com"],
-            objectSrc: [],
-            mediaSrc: [],
-            frameSrc: []
+    use(middleware) {
+        return middleware(this.app, this);
+    }
+
+    log(level, msg) {
+        let logger = this.get("log");
+
+        if (!logger) {
+            return;
         }
-    }));
 
-    // Implement X-XSS-Protection
-    this.app.use(helmet.xssFilter());
+        if (!msg) {
+            msg = level;
+            level = "log";
+        }
 
-    // Implement X-Frame: Deny
-    this.app.use(helmet.frameguard());
+        if (typeof logger[level] !== "function") {
+            level = "log";
+        }
 
-    // Hide X-Powered-By
-    this.app.use(helmet.hidePoweredBy());
+        logger[level].call(this, msg);
+    }
 
-    // TODO: Make configurable
-    this.app.use(cors({
-        origin: "*"
-    }));
-};
+    secureApp() {
+        // Implement CSP with Helmet
+        this.app.use(helmet.csp({
+            // TODO: Make configurable
+            directives: {
+                defaultSrc: ["'self'"],
+                scriptSrc: ["*.google-analytics.com"],
+                styleSrc: ["'unsafe-inline'", "fonts.googleapis.com"],
+                imgSrc: ["*.google-analytics.com"],
+                connectSrc: ["'none'"],
+                fontSrc: ["fonts.googleapis.com", "fonts.gstatic.com"],
+                objectSrc: [],
+                mediaSrc: [],
+                frameSrc: []
+            }
+        }));
 
-CMS.prototype.createApp = function (options) {
-    this.app = express();
-    this.app.use(compression());
-    this.app.use(bodyParser.urlencoded({extended: true}));
-    this.app.use(bodyParser.json());
-    this.app.use(responseTime());
+        // Implement X-XSS-Protection
+        this.app.use(helmet.xssFilter());
 
-    this.secureApp();
+        // Implement X-Frame: Deny
+        this.app.use(helmet.frameguard());
 
-    this.app.set("port", options.port || 4000);
-    this.app.set("host", options.host || "0.0.0.0");
+        // Hide X-Powered-By
+        this.app.use(helmet.hidePoweredBy());
 
-    this.app.engine("nunj", nunjucks.render);
-    this.app.set("view engine", "nunj");
-};
+        // TODO: Make configurable
+        this.app.use(cors({
+            origin: "*"
+        }));
+    }
 
-CMS.prototype.initApp = function () {
-    // Set the views
-    this.app.set("views", this.get("views"));
+    createApp(options) {
+        options = options || {};
+        this.app = express();
+        this.app.use(compression());
+        this.app.use(bodyParser.urlencoded({extended: true}));
+        this.app.use(bodyParser.json());
+        this.app.use(responseTime());
 
-    this.nunjucks = nunjucks.configure(this.get("views"), {
-        autoescape: true,
-        express: this.app,
-        // Disable view caching in development
-        noCache: (this.app.get("env") === "development")
-    });
+        this.secureApp();
 
-    // Enable markdown
-    markdown.register(this.nunjucks, marked);
+        this.app.set("port", options.port || 4000);
+        this.app.set("host", options.host || "0.0.0.0");
 
-    // Custom tag to load content mixins
-    this.nunjucks.addExtension("CmsContent", new CmsContent());
+        this.app.engine("nunj", nunjucks.render);
+        this.app.set("view engine", "nunj");
+    }
 
-    // Static paths
-    let statics = this.get("statics");
-    for (let url in statics) {
-        if (statics.hasOwnProperty(url)) {
-            for (let path of statics[url]) {
-                this.app.use(url, express.static(path));
+    initApp() {
+        // Set the views
+        this.app.set("views", this.get("views"));
+
+        this.nunjucks = nunjucks.configure(this.get("views"), {
+            autoescape: true,
+            express: this.app,
+            // Disable view caching in development
+            noCache: (this.app.get("env") === "development")
+        });
+
+        // Enable markdown
+        markdown.register(this.nunjucks, marked);
+
+        // Custom tag to load content mixins
+        this.nunjucks.addExtension("CmsContent", new CmsContent());
+
+        // Static paths
+        let statics = this.get("statics");
+        for (let url in statics) {
+            if (statics.hasOwnProperty(url)) {
+                for (let path of statics[url]) {
+                    this.app.use(url, express.static(path));
+                }
             }
         }
-    }
 
-    // Set the error handlers if they exist
-    var error404 = this.get("404");
-    if (error404) {
-        this.app.use(error404);
-    }
-
-    var error500 = this.get("500");
-    if (error500) {
-        this.app.use(error500);
-    }
-};
-
-CMS.prototype.startServer = function (callback) {
-    this.initApp();
-
-    this.app.listen(this.app.get("port"), this.app.get("host"), () => {
-        if (callback) {
-            callback();
-        } else {
-            console.log("CMS Server started: http://" + this.app.get("host") + ":" + this.app.get("port"));
+        // Set the error handlers if they exist
+        var error404 = this.get("404");
+        if (error404) {
+            this.app.use(error404);
         }
-    });
-};
+
+        var error500 = this.get("500");
+        if (error500) {
+            this.app.use(error500);
+        }
+    }
+
+    startServer(callback) {
+        this.initApp();
+
+        this.app.listen(this.app.get("port"), this.app.get("host"), () => {
+            if (callback) {
+                callback();
+            } else {
+                console.log("CMS Server started: http://" + this.app.get("host") + ":" + this.app.get("port"));
+            }
+        });
+    }
+}
 
 module.exports = CMS;

@@ -2,17 +2,19 @@
 
 // Custom nunjucks tag to load content mixins
 // Usage in views: {% cmsContent contentObj %}
-function CmsContent() {
-    this.tags = ["cmsContent"];
+class CmsContent {
+    constructor() {
+        this.tags = ["cmsContent"];
+    }
 
-    this.parse = function (parser, nodes, lexer) {
+    parse(parser, nodes, lexer) {
         let token = parser.nextToken();
         let args = parser.parseSignature(null, true);
         parser.advanceAfterBlockEnd(token.value);
         return new nodes.CallExtensionAsync(this, "run", args);
-    };
+    }
 
-    this.run = function (context, theContent, callback) {
+    run(context, theContent, callback) {
         if (!theContent || !theContent.type) {
             return callback(null, "");
         }
@@ -32,8 +34,7 @@ function CmsContent() {
             console.error(e);
             callback(e);
         }
-
-    };
+    }
 }
 
 module.exports = CmsContent;

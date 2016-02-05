@@ -1,7 +1,7 @@
 "use strict";
 
-var path = require("path");
-var convict = require("convict");
+const path = require("path");
+const convict = require("convict");
 
 
 var Config = function (configDirectory) {

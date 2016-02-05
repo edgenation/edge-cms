@@ -1,8 +1,8 @@
 "use strict";
 
-var express = require("express");
+const express = require("express");
 
-var adminRouter = express.Router();
+const adminRouter = express.Router();
 
 adminRouter.get("*", function (req, res, next) {
     // Server the admin route!

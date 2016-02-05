@@ -1,10 +1,10 @@
-var edgeCMS = require("../src");
-var staticRoute = require("./route/static");
-var homepageRoute = require("./route/homepage");
-var blogRoute = require("./route/blog");
+const edgeCMS = require("../src");
+const staticRoute = require("./route/static");
+const homepageRoute = require("./route/homepage");
+const blogRoute = require("./route/blog");
 
-var config = edgeCMS.config(__dirname + "/config");
-var cms = new edgeCMS.site();
+const config = edgeCMS.config(__dirname + "/config");
+const cms = new edgeCMS.site();
 
 // Set a logger
 //cms.set("log", edgeCMS.logger);
