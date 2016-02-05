@@ -15,15 +15,11 @@ errorHandler.middleware = function (options) {
         });
 
         cms.set("500", function (err, req, res, next) {
-            if (err.stack) {
-                cms.log("error", err.stack);
-            } else {
-                cms.log("error", err);
-            }
+            cms.log("error", err.stack || err);
 
             // Don't cache 500s
             res.set({ "Cache-Control": disabledCache });
-            res.render("errors/500", { error: err });
+            res.render("errors/500", { error: err.stack || err });
         });
     };
 };
