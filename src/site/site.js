@@ -82,7 +82,7 @@ CMS.prototype.secureApp = function() {
     this.app.use(helmet.frameguard());
 
     // Hide X-Powered-By
-    app.use(helmet.hidePoweredBy());
+    this.app.use(helmet.hidePoweredBy());
 
     // TODO: Make configurable
     this.app.use(cors({
