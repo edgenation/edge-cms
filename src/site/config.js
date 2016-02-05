@@ -42,7 +42,7 @@ var Config = function (configDirectory) {
             },
             port: {
                 doc: "The api port.",
-                default: ""
+                default: 0
             },
             host: {
                 doc: "The api host.",
