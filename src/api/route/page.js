@@ -6,7 +6,7 @@ var ApiController = require("../controller/ApiController");
 var PageController = require("../controller/PageController");
 
 
-module.exports = function () {
+module.exports = function (readOnly) {
     let router = express.Router();
 
     // Pre-route validation
