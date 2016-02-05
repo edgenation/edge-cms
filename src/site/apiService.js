@@ -6,11 +6,17 @@ const mime = require("rest/interceptor/mime");
 const pathPrefix = require("rest/interceptor/pathPrefix");
 const timeout = require("rest/interceptor/timeout");
 
+/**
+ * @namespace
+ */
 var apiService = {};
 
 apiService.client = rest;
 
 
+/**
+ * @param {string} apiUri
+ */
 apiService.init = function (apiUri) {
     apiService.client = apiService.client
         .wrap(timeout, { timeout: 10e3 })   // 10 seconds
@@ -19,10 +25,15 @@ apiService.init = function (apiUri) {
 };
 
 
+/**
+ * @param {string} path
+ * @param {Object} params
+ * @returns {Promise.<*>}
+ */
 apiService.load = function (path, params) {
     return Promise.resolve(apiService.client({
-        path: path,
-        params: params
+        path,
+        params
     })).then((response) => {
         let debug = response.entity.debug || [];
         debug.push({ path: response.raw.request.path });
@@ -31,6 +42,11 @@ apiService.load = function (path, params) {
     });
 };
 
+
+/**
+ * @param {string} url
+ * @returns {Promise.<*>}
+ */
 apiService.loadPage = function (url) {
     return apiService.load("/page", {
         "filter[url]=": url,
@@ -38,6 +54,12 @@ apiService.loadPage = function (url) {
     })
 };
 
+
+/**
+ * @param {string|number} id - A mongodb id
+ * @param {string} sort
+ * @returns {Promise.<*>}
+ */
 apiService.loadPageListPages = function (id, sort) {
     return apiService.load(`/page-list/${id}/pages`, {
         include: "regions.content",
@@ -46,6 +68,11 @@ apiService.loadPageListPages = function (id, sort) {
 };
 
 
+/**
+ * @param {string} url
+ * @param {string} sort
+ * @returns {Promise.<*>}
+ */
 apiService.loadPageList = function (url, sort) {
     return apiService.load("/page-list", {
         "filter[url]=": url,
@@ -60,5 +87,6 @@ apiService.loadPageList = function (url, sort) {
         return false;
     });
 };
+
 
 module.exports = apiService;

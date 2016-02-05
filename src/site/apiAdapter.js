@@ -2,8 +2,15 @@
 
 const _ = require("lodash");
 
+/**
+ * @namespace
+ */
 var apiAdapter = {};
 
+
+/**
+ * @param {Object} data
+ */
 apiAdapter.flattenAttributes = function (data) {
     _.forEach(data.attributes, function(value, name) {
         data[name] = value;
@@ -12,6 +19,11 @@ apiAdapter.flattenAttributes = function (data) {
     delete data.attributes;
 };
 
+
+/**
+ * @param {Array} data
+ * @param {Array} included
+ */
 apiAdapter.nestIncluded = function(data, included) {
     if (!data || !data.length) {
         return;
@@ -29,6 +41,11 @@ apiAdapter.nestIncluded = function(data, included) {
     _.remove(data, _.isUndefined);
 };
 
+
+/**
+ * @param {Object} response
+ * @returns {boolean|Object}
+ */
 apiAdapter.page = function(response) {
     if (!response || !response.data.length) {
         return false;
@@ -53,6 +70,11 @@ apiAdapter.page = function(response) {
     return page;
 };
 
+
+/**
+ * @param {Object} response
+ * @returns {boolean|Object}
+ */
 apiAdapter.pageList = function(response) {
     if (!response || !response.data.length) {
         return false;
@@ -61,7 +83,7 @@ apiAdapter.pageList = function(response) {
     let list = response.data;
 
     // Nest the page regions
-    _.forEach(list, function (page, n) {
+    _.forEach(list, function (page) {
         apiAdapter.flattenAttributes(page);
 
         // Nest the page regions
@@ -80,6 +102,11 @@ apiAdapter.pageList = function(response) {
     return list;
 };
 
+
+/**
+ * @param {Object} response
+ * @returns {boolean|Object}
+ */
 apiAdapter.pagination = function (response) {
     if (!response || !response.meta.page) {
         return false;

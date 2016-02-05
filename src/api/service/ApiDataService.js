@@ -5,19 +5,44 @@ const Promise = require("bluebird"),
     mongoose = require("mongoose"),
     sanitize = require("mongo-sanitize");
 
+/**
+ * Regular expression to match all commas
+ * @type {RegExp}
+ */
 const REGEX_COMMAS = /,/g;
 
 
+/**
+ * Check if a model has a given property
+ *
+ * @param {Object} Model
+ * @param {string} property
+ * @returns {boolean}
+ */
 function modelHasProperty(Model, property) {
-    return Model.schema.paths[property];
+    return !!Model.schema.paths[property];
 }
 
+
+/** @namespace */
 var ApiDataService = {};
 
+
+/**
+ * Check if a mongodb id is valid
+ *
+ * @param {string|number} id - A mongodb id
+ * @returns {boolean}
+ */
 ApiDataService.isValidId = function(id) {
     return mongoose.Types.ObjectId.isValid(id);
 };
 
+
+/**
+ * @param {Object} req - The HTTP request
+ * @returns {Function}
+ */
 ApiDataService.updateAttributesFromBody = function (req) {
     return function (data) {
         _.forEach(req.body.data.attributes, function (value, prop) {
@@ -28,6 +53,14 @@ ApiDataService.updateAttributesFromBody = function (req) {
     };
 };
 
+
+/**
+ * Checks that some data has been returned
+ *
+ * @throws {null} If the data does not exist
+ * @param {Object} data - The data to check
+ * @returns {Object} The data
+ */
 ApiDataService.ensureDataReturned = function (data) {
     if (!data) {
         throw null;
@@ -36,6 +69,11 @@ ApiDataService.ensureDataReturned = function (data) {
     return data;
 };
 
+
+/**
+ * @param {Object} query - The mongoose query
+ * @param {Object} req - The HTTP request
+ */
 ApiDataService.selectQuery = function (query, req) {
     // GET /articles?include=author&fields[articles]=title,body&fields[people]=name HTTP/1.1
     let fields = sanitize(req.query.fields);
@@ -52,6 +90,11 @@ ApiDataService.selectQuery = function (query, req) {
     }
 };
 
+
+/**
+ * @param {string} str
+ * @returns {boolean|RegExp}
+ */
 ApiDataService.filterStrToRegex = function (str) {
     let len = str.length;
     let firstChar = str[0];
@@ -69,6 +112,11 @@ ApiDataService.filterStrToRegex = function (str) {
     return false;
 };
 
+
+/**
+ * @param {string} str
+ * @returns {boolean|RegExp}
+ */
 ApiDataService.excludeStrToRegex = function (str) {
     let len = str.length;
     let firstChar = str[0];
@@ -86,6 +134,11 @@ ApiDataService.excludeStrToRegex = function (str) {
     return false;
 };
 
+
+/**
+ * @param {Object} query - The mongoose query
+ * @param {Object} req - The HTTP request
+ */
 ApiDataService.whereQuery = function (query, req) {
     // GET /comments?filter[post]=1,2&filter[author]=12
     let filter = sanitize(req.query.filter);
@@ -117,11 +170,23 @@ ApiDataService.whereQuery = function (query, req) {
     }
 };
 
+
+/**
+ * @param {Object} query - The mongoose query
+ * @param {number} offset
+ * @param {number} limit
+ * @returns {Object} The new query
+ */
 ApiDataService.paginateQuery = function (query, offset, limit) {
     // TODO: Validate offset >= 0
     return query.skip(offset).limit(limit);
 };
 
+
+/**
+ * @param {Object} req - The HTTP request
+ * @returns {boolean|string}
+ */
 ApiDataService.getSort = function (req) {
     let sort = sanitize(req.query.sort);
 
@@ -132,6 +197,11 @@ ApiDataService.getSort = function (req) {
     return sort.replace(REGEX_COMMAS, " ");
 };
 
+
+/**
+ * @param {Object} query - The mongoose query
+ * @param {Object} req - The HTTP request
+ */
 ApiDataService.sortQuery = function (query, req) {
     let sort = this.getSort(req);
     if (sort) {
@@ -139,6 +209,11 @@ ApiDataService.sortQuery = function (query, req) {
     }
 };
 
+
+/**
+ * @param {string} propertyName
+ * @returns {Function}
+ */
 ApiDataService.wrapInProperty = function (propertyName) {
     return function (data) {
         let res = {};
@@ -147,6 +222,12 @@ ApiDataService.wrapInProperty = function (propertyName) {
     };
 };
 
+
+/**
+ * @param {Object} Model
+ * @param {string} path
+ * @returns {boolean|string}
+ */
 ApiDataService.getReferencedModelNameByPath = function (Model, path) {
     if (!modelHasProperty(Model, path)) {
         return false;
@@ -159,16 +240,35 @@ ApiDataService.getReferencedModelNameByPath = function (Model, path) {
     return Model.schema.paths[path].options.ref;
 };
 
+
+/**
+ * @param {Object} Model
+ * @param {string} name
+ * @returns {Object}
+ */
 ApiDataService.getModelFromName = function (Model, name) {
     return Model.db.model(name);
 };
 
 
+/**
+ * @param {Object} Model
+ * @param {string} path
+ * @returns {Object}
+ */
 ApiDataService.getReferencedModelByPath = function (Model, path) {
     var referenceModelName = ApiDataService.getReferencedModelNameByPath(Model, path);
     return ApiDataService.getModelFromName(Model, referenceModelName);
 };
 
+
+/**
+ * @param {Object} Model
+ * @param {string} linkedProperty
+ * @param {Object} response - The JSON response
+ * @param {string} location
+ * @returns {Promise.<T>}
+ */
 ApiDataService.getIncludedDataFor = function(Model, linkedProperty, response, location) {
     location = location || "data";
     let LinkedModel = ApiDataService.getReferencedModelByPath(Model, linkedProperty);
@@ -197,6 +297,10 @@ ApiDataService.getIncludedDataFor = function(Model, linkedProperty, response, lo
 };
 
 
+/**
+ * @param {string} includedProperty
+ * @returns {Object}
+ */
 function generateNestedInclude(includedProperty) {
     let include = {};
 
@@ -217,6 +321,11 @@ function generateNestedInclude(includedProperty) {
 }
 
 
+/**
+ * @param {object} Model
+ * @param {Object} req - The HTTP request
+ * @returns {Function}
+ */
 ApiDataService.addIncludedData = function(Model, req) {
     let includes = sanitize(req.query.include);
     if (!includes) {
@@ -278,6 +387,14 @@ ApiDataService.addIncludedData = function(Model, req) {
 };
 
 
+/**
+ *
+ * @param {Object} response - The JSON response
+ * @param {number} offset
+ * @param {number} limit
+ * @param {number} total
+ * @returns {Object} The JSON response
+ */
 ApiDataService.addPaginationData = function (response, offset, limit, total) {
     if (!response.meta) {
         response.meta = {};
@@ -308,6 +425,15 @@ ApiDataService.addPaginationData = function (response, offset, limit, total) {
     return response;
 };
 
+
+/**
+ *
+ * @param {Object} Model
+ * @param {number} offset
+ * @param {number} limit
+ * @param {Object} [originalQuery={}]
+ * @returns {Function}
+ */
 ApiDataService.getPaginationData = function (Model, offset, limit, originalQuery) {
     originalQuery = originalQuery || {};
 
@@ -319,6 +445,12 @@ ApiDataService.getPaginationData = function (Model, offset, limit, originalQuery
 };
 
 
+/**
+ * @param {Object} req - The HTTP request
+ * @param {Object} Model
+ * @param {number} defaultPageSize
+ * @returns {Promise.<T>}
+ */
 ApiDataService.list = function (req, Model, defaultPageSize) {
     let query = Model.find();
     let limit = parseInt(req.query.limit, 10) || defaultPageSize;
@@ -339,6 +471,12 @@ ApiDataService.list = function (req, Model, defaultPageSize) {
         .then(ApiDataService.getPaginationData(Model, offset, limit, originalQuery));
 };
 
+
+/**
+ * @param {Object} req - The HTTP request
+ * @param {Object} Model
+ * @returns {Promise.<T>}
+ */
 ApiDataService.create = function (req, Model) {
     // TODO: sanitize
     let model = new Model(req.body.data.attributes);
@@ -348,6 +486,12 @@ ApiDataService.create = function (req, Model) {
         .then(ApiDataService.wrapInProperty("data"));
 };
 
+
+/**
+ * @param {Object} req - The HTTP request
+ * @param {Object} Model
+ * @returns {Promise.<T>}
+ */
 ApiDataService.details = function (req, Model) {
     let query = Model.findOne({_id: sanitize(req.params.id)});
 
@@ -359,6 +503,12 @@ ApiDataService.details = function (req, Model) {
         .then(ApiDataService.addIncludedData(Model, req));
 };
 
+
+/**
+ * @param {Object} req - The HTTP request
+ * @param {Object} Model
+ * @returns {Promise.<T>}
+ */
 ApiDataService.update = function (req, Model) {
     return Promise.promisify(Model.findOne, Model)({ _id: sanitize(req.params.id) })
         .then(ApiDataService.ensureDataReturned)
@@ -370,6 +520,12 @@ ApiDataService.update = function (req, Model) {
         });
 };
 
+
+/**
+ * @param {Object} req - The HTTP request
+ * @param {Object} Model
+ * @returns {Promise.<T>}
+ */
 ApiDataService.remove = function (req, Model) {
     return Promise.promisify(Model.findByIdAndRemove, Model)(sanitize(req.params.id))
         .then(ApiDataService.ensureDataReturned)
@@ -377,6 +533,12 @@ ApiDataService.remove = function (req, Model) {
 };
 
 
+/**
+ * @param {Object} req - The HTTP request
+ * @param {Object} Model
+ * @param {number} defaultPageSize
+ * @returns {Promise.<T>}
+ */
 ApiDataService.includesList = function (req, Model, defaultPageSize) {
     let relationshipProperty = req.params.relationship;
     let limit = parseInt(req.query.limit, 10) || defaultPageSize;
@@ -414,9 +576,16 @@ ApiDataService.includesList = function (req, Model, defaultPageSize) {
         });
 };
 
-// TODO: Should use ```data: {}```
-// TODO: Change to accept an array?
+
+/**
+ * @param {Object} req - The HTTP request
+ * @param {Object} Model
+ * @returns {Promise.<T>}
+ */
 ApiDataService.includesAdd = function(req, Model) {
+    // TODO: Should use ```data: {}```
+    // TODO: Change to accept an array?
+
     // TODO: Validate the body?
     let relationshipProperty = req.params.relationship;
 
@@ -435,9 +604,15 @@ ApiDataService.includesAdd = function(req, Model) {
         });
 };
 
-// TODO: Should use ```data: {}```
-// TODO: Change to accept an array?
+
+/**
+ * @param {Object} req - The HTTP request
+ * @param {Object} Model
+ * @returns {Promise.<T>}
+ */
 ApiDataService.includesRemove = function(req, Model) {
+    // TODO: Should use ```data: {}```
+    // TODO: Change to accept an array?
     // TODO: Validate the body?
     let relationshipProperty = req.params.relationship;
 

@@ -5,8 +5,16 @@ const apiAdapter = require("../apiAdapter");
 const apiService = require("../apiService");
 
 
+/**
+ * @namespace
+ */
 var cmsRoutes = {};
 
+
+/**
+ * @param {Object} [options={}]
+ * @returns {Function}
+ */
 cmsRoutes.middleware = function (options) {
     options = options || {};
     var skipRoutes = options.skipRoutes || [];
@@ -47,5 +55,6 @@ cmsRoutes.middleware = function (options) {
         });
     };
 };
+
 
 module.exports = cmsRoutes;

@@ -11,11 +11,14 @@ const Promise = require("bluebird"),
 
 
 class API {
-
     constructor() {
         this.app = null;
     }
 
+    /**
+     * @param {Object} [options={}]
+     * @returns {Object} The express application
+     */
     createApp(options) {
         options = options || {};
         this.app = express();
@@ -37,6 +40,12 @@ class API {
         this.app.use(helmet());
     }
 
+    /**
+     *
+     * @param {Object} app - An existing express application
+     * @param {string} path - The path to run at
+     * @param {Object} [options={}]
+     */
     useApp(app, path, options) {
         options = options || {};
         path = path || "/api";
@@ -45,6 +54,10 @@ class API {
         this.app.use(path, require("./route/index")(options.readOnly));
     }
 
+    /**
+     * @param {Object} [options={}]
+     * @returns {Function}
+     */
     middleware(options) {
         options = options || {};
 
@@ -53,6 +66,10 @@ class API {
         };
     }
 
+    /**
+     * @param {string} dbUri
+     * @returns {Promise.<T>}
+     */
     connectDB(dbUri) {
         var options = {
             db: {
@@ -82,6 +99,9 @@ class API {
         mongoose.disconnect();
     };
 
+    /**
+     * @param {Function} callback
+     */
     startServer(callback) {
         let app = this.app;
 

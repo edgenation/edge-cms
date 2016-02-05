@@ -1,10 +1,18 @@
 "use strict";
 
-const _ = require("lodash");
 const ApiDataService = require("../service/ApiDataService");
 
+/** @namespace */
 var ApiController = {};
 
+
+/**
+ * Send the response as json
+ *
+ * @param {Object} res - The HTTP response
+ * @param {number} [status=200] - The HTTP stats
+ * @returns {Function}
+ */
 ApiController.sendResponse = function (res, status) {
     status = status || 200;
 
@@ -14,6 +22,13 @@ ApiController.sendResponse = function (res, status) {
 };
 
 
+/**
+ * Checks that some data has been returned
+ *
+ * @throws {null} If the data does not exist
+ * @param {Object} data - The data to check
+ * @returns {Object} The data
+ */
 ApiController.checkDataReturned = function (data) {
     if (!data) {
         throw null;
@@ -23,7 +38,14 @@ ApiController.checkDataReturned = function (data) {
 };
 
 
-// Router middleware to validate :id
+/**
+ * Router middleware to validate the :id parameter
+ *
+ * @param {Object} req - The HTTP request
+ * @param {Object} res - The HTTP response
+ * @param {Function} next - The next middleware
+ * @param {string|number} id - A mongodb id
+ */
 ApiController.validateId = function (req, res, next, id) {
     if (!ApiDataService.isValidId(id)) {
         let err = new Error("Invalid ID");
@@ -35,11 +57,16 @@ ApiController.validateId = function (req, res, next, id) {
 };
 
 
-// Router middleware to validate :relationship
+/**
+ * Router middleware to validate the :relationship parameter
+ *
+ * @param {Array} relationships
+ * @returns {Function}
+ */
 ApiController.validateRelationship = function(relationships) {
     return function (req, res, next, relationship) {
         // Check relationship is in relationships
-        if (!relationships || !_.contains(relationships, relationship)) {
+        if (!relationships || relationships.indexOf(relationship) === -1) {
             let err = new Error("Invalid Relationship");
             err.status = 400;
             return next(err);
@@ -50,7 +77,13 @@ ApiController.validateRelationship = function(relationships) {
 };
 
 
-// Router level 404 handler
+/**
+ * Router level 404 handler
+ *
+ * @param {Object} req - The HTTP request
+ * @param {Object} res - The HTTP response
+ * @param {Function} next - The next middleware
+ */
 ApiController.error404 = function (req, res, next) {
     let err = new Error("Not Found");
     err.status = 404;
@@ -58,7 +91,14 @@ ApiController.error404 = function (req, res, next) {
 };
 
 
-// Router level error handler
+/**
+ * Router level error handler
+ *
+ * @param {Object} err - The error
+ * @param {Object} req - The HTTP request
+ * @param {Object} res - The HTTP response
+ * @param {Function} next - The next middleware
+ */
 ApiController.error500 = function (err, req, res, next) {
     if (err.name === "ValidationError") {
         err.status = 400;
@@ -101,6 +141,11 @@ ApiController.error500 = function (err, req, res, next) {
 };
 
 
+/**
+ * @param {Object} Model
+ * @param {number} pageSize
+ * @returns {Function}
+ */
 ApiController.list = function (Model, pageSize) {
     return function (req, res, next) {
         ApiDataService.list(req, Model, pageSize)
@@ -109,6 +154,11 @@ ApiController.list = function (Model, pageSize) {
     };
 };
 
+
+/**
+ * @param {Object} Model
+ * @returns {Function}
+ */
 ApiController.create = function (Model) {
     return function (req, res, next) {
         ApiDataService.create(req, Model)
@@ -122,6 +172,11 @@ ApiController.create = function (Model) {
     };
 };
 
+
+/**
+ * @param {Object} Model
+ * @returns {Function}
+ */
 ApiController.details = function (Model) {
     return function (req, res, next) {
         ApiDataService.details(req, Model)
@@ -130,6 +185,11 @@ ApiController.details = function (Model) {
     };
 };
 
+
+/**
+ * @param {Object} Model
+ * @returns {Function}
+ */
 ApiController.update = function (Model) {
     return function (req, res, next) {
         ApiDataService.update(req, Model)
@@ -138,6 +198,11 @@ ApiController.update = function (Model) {
     };
 };
 
+
+/**
+ * @param {Object} Model
+ * @returns {Function}
+ */
 ApiController.remove = function (Model) {
     return function (req, res, next) {
         ApiDataService.update(req, Model)
@@ -146,6 +211,12 @@ ApiController.remove = function (Model) {
     };
 };
 
+
+/**
+ * @param {Object} Model
+ * @param {number} pageSize
+ * @returns {Function}
+ */
 ApiController.includesList = function (Model, pageSize) {
     return function (req, res, next) {
         ApiDataService.includesList(req, Model, pageSize)
@@ -154,6 +225,11 @@ ApiController.includesList = function (Model, pageSize) {
     };
 };
 
+
+/**
+ * @param {Object} Model
+ * @returns {Function}
+ */
 ApiController.includesAdd = function (Model) {
     return function (req, res, next) {
         ApiDataService.includesAdd(req, Model)
@@ -162,6 +238,11 @@ ApiController.includesAdd = function (Model) {
     };
 };
 
+
+/**
+ * @param {Object} Model
+ * @returns {Function}
+ */
 ApiController.includesRemove = function (Model) {
     return function (req, res, next) {
         ApiDataService.includesRemove(req, Model)
@@ -170,6 +251,11 @@ ApiController.includesRemove = function (Model) {
     };
 };
 
+/**
+ * @param {Object} Model
+ * @param {number} [perPage=10]
+ * @returns {{list: Function, create: Function, details: Function, update: Function, remove: Function, includesList: Function, includesAdd: Function, includesRemove: Function}}
+ */
 ApiController.restForModel = function (Model, perPage) {
     perPage = perPage || 10;
 
@@ -184,5 +270,6 @@ ApiController.restForModel = function (Model, perPage) {
         includesRemove: ApiController.includesRemove(Model)
     };
 };
+
 
 module.exports = ApiController;

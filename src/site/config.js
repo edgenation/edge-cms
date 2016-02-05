@@ -4,7 +4,11 @@ const path = require("path");
 const convict = require("convict");
 
 
-var Config = function (configDirectory) {
+/**
+ * @param {string} configDirectory
+ * @returns {Object}
+ */
+var config = function (configDirectory) {
     // Define schema
     let config = convict({
         env: {
@@ -128,4 +132,4 @@ var Config = function (configDirectory) {
 };
 
 
-module.exports = Config;
+module.exports = config;

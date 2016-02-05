@@ -1,12 +1,22 @@
 "use strict";
 
-// Custom nunjucks tag to load content mixins
-// Usage in views: {% cmsContent contentObj %}
+/**
+ * Custom nunjucks tag to load content mixins
+ *
+ * Usage in views:
+ *  {% cmsContent contentObj %}
+ */
 class CmsContent {
     constructor() {
         this.tags = ["cmsContent"];
     }
 
+    /**
+     * @param parser
+     * @param nodes
+     * @param lexer
+     * @returns {*}
+     */
     parse(parser, nodes, lexer) {
         let token = parser.nextToken();
         let args = parser.parseSignature(null, true);
@@ -14,6 +24,13 @@ class CmsContent {
         return new nodes.CallExtensionAsync(this, "run", args);
     }
 
+    /**
+     *
+     * @param context
+     * @param theContent
+     * @param callback
+     * @returns {*}
+     */
     run(context, theContent, callback) {
         if (!theContent || !theContent.type) {
             return callback(null, "");
@@ -36,5 +53,6 @@ class CmsContent {
         }
     }
 }
+
 
 module.exports = CmsContent;
