@@ -33,7 +33,7 @@ cmsRoutes.middleware = function (options) {
 
                 var page = apiAdapter.page(response);
 
-                if (app.get("env") === "development") {
+                if (app.get("env") === "development" && response.debug) {
                    page.debug = JSON.stringify(response.debug);
                 }
 
