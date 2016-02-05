@@ -15,6 +15,7 @@ var API = function () {
 };
 
 API.prototype.createApp = function (options) {
+    options = options || {};
     this.app = express();
     this.app.use(compression());
     //this.app.use(bodyParser.urlencoded({extended: true}));
