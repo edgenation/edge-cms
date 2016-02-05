@@ -35,11 +35,12 @@ API.prototype.secureApp = function () {
     this.app.use(helmet());
 };
 
-API.prototype.useApp = function (app, path) {
+API.prototype.useApp = function (app, path, options) {
+    options = options || {};
     path = path || "/api";
 
     this.app = app;
-    this.app.use(path, require("./route/index"));
+    this.app.use(path, require("./route/index")(options.readOnly));
 };
 
 API.prototype.middleware = function (options) {
@@ -47,7 +48,7 @@ API.prototype.middleware = function (options) {
     options = options || {};
 
     return function(app, cms) {
-        api.useApp(app, options.path);
+        api.useApp(app, options.path, options);
     };
 };
 
@@ -80,13 +81,17 @@ API.prototype.disconnectDB = function () {
     mongoose.disconnect();
 };
 
-API.prototype.startServer = function () {
+API.prototype.startServer = function (callback) {
     let app = this.app;
 
     this.connectDB()
         .then(function () {
-            app.listen(app.get("port"), app.get("host"), function () {
-                console.log("CMS API Server started: http://" + this.address().address + ":" + this.address().port);
+            app.listen(app.get("port"), app.get("host"), () => {
+                if (callback) {
+                    callback();
+                } else {
+                    console.log("CMS API Server started: http://" + this.app.get("host") + ":" + this.app.get("port"));
+                }
             });
         })
         .catch(function (err) {
