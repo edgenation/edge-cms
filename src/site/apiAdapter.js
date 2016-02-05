@@ -18,7 +18,7 @@ apiAdapter.nestIncluded = function(data, included) {
     }
 
     _.forEach(data, function(id, index, content) {
-        content[index] = _.find(included, include => (include.id === id));
+        content[index] = included.find(include => (include.id === id));
 
         if (content[index]) {
             apiAdapter.flattenAttributes(content[index]);

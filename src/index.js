@@ -1,4 +1,3 @@
-var _ = require("lodash");
-var requireDir = require("require-dir");
+const requireDir = require("require-dir");
 
-module.exports = _.assign({}, requireDir("./site"), requireDir("./site/middleware"), requireDir("./api"));
+module.exports = Object.assign({}, requireDir("./site"), requireDir("./site/middleware"), requireDir("./api"));

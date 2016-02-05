@@ -220,7 +220,7 @@ function generateNestedInclude(includedProperty) {
 ApiDataService.addIncludedData = function(Model, req) {
     let includes = sanitize(req.query.include);
     if (!includes) {
-        return _.identity;
+        return value => value;
     }
 
     var nestedIncludes = {};

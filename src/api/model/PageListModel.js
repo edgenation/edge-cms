@@ -17,4 +17,5 @@ const PageListSchema = new mongoose.Schema({
 
 PageListSchema.plugin(apiSchemaPlugin, { type: "page-list"});
 
+
 module.exports = mongoose.model("pageList", PageListSchema);
