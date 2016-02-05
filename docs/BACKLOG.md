@@ -11,7 +11,7 @@
 - [ ] CDNs?
 - [ ] HTTPS?
 - [ ] Improved 404 information
-- [ ] 500 full error only on development
+- [x] 500 full error only on development
 - [x] Disable ?raw on production
 
 ## API
@@ -33,9 +33,4 @@
 ## Server
 - [x] Serve CMS page
 - [x] Serve admin pages
-- [ ] Tests
-
-## Client
-- [ ] Gulp setup
-- [ ] Initial react app
 - [ ] Tests
