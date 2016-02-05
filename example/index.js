@@ -49,7 +49,10 @@ cms.use(edgeCMS.cmsRoutes.middleware({
 // Connect to the database
 edgeCMS.api.connectDB(config.get("database.uri"))
     .then(function () {
-        cms.startServer();
+        cms.startServer(function () {
+            console.log("CMS Server started: http://" + config.get("app.host") + ":" + config.get("app.port"));
+            console.log("API Server started: " + config.get("api.uri"));
+        });
     })
     .catch(function (err) {
         console.error("Fatal Error:", err);

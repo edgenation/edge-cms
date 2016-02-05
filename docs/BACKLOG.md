@@ -2,6 +2,8 @@
 
 ## MVP
 
+- [ ] Add limit=false - to disable limiting?
+
 - [x] Config for API host/port
 - [x] Custom server side routes - e.g. contact form
 - [x] Custom server side for cms pages - to add additional logic

@@ -10,5 +10,6 @@
 
     {% if error %}
         <pre><code>{{ error }}</code></pre>
+        <pre><code>{{ error.stack }}</code></pre>
     {% endif %}
 {% endblock %}

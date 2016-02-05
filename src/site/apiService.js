@@ -25,7 +25,7 @@ apiService.load = function (path, params) {
         params: params
     })).then((response) => {
         let debug = response.entity.debug || [];
-        debug.push({ path: response.raw.request.path })
+        debug.push({ path: response.raw.request.path });
         response.entity.debug = debug;
         return response.entity;
     });

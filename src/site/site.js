@@ -145,11 +145,15 @@ CMS.prototype.initApp = function () {
     }
 };
 
-CMS.prototype.startServer = function () {
+CMS.prototype.startServer = function (callback) {
     this.initApp();
 
-    this.app.listen(this.app.get("port"), this.app.get("host"), function () {
-        console.log("CMS Server started: http://" + this.address().address + ":" + this.address().port);
+    this.app.listen(this.app.get("port"), this.app.get("host"), () => {
+        if (callback) {
+            callback();
+        } else {
+            console.log("CMS Server started: http://" + this.app.get("host") + ":" + this.app.get("port"));
+        }
     });
 };
 
