@@ -15,7 +15,7 @@ errorHandler.middleware = function (options) {
         });
 
         cms.set("500", function (err, req, res, next) {
-            cms.log("error", err);
+            cms.log("error", err.stack);
             // Don't cache 500s
             res.set({ "Cache-Control": disabledCache });
             res.render("errors/500", { error: err });
